@@ -1,0 +1,680 @@
+.page {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.1rem 0 0.35rem;
+  color: var(--admin-ink);
+}
+
+.pageHeader {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.titleIcon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 3rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #1888ec;
+  background: #d8f0ff;
+}
+
+.titleIcon svg {
+  width: 1.65rem;
+  height: 1.65rem;
+  fill: #1888ec;
+  stroke: #1888ec;
+  stroke-width: 2;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  color: #103f91;
+  font-size: clamp(1.25rem, 1.8vw, 1.65rem);
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.pageHeader p {
+  margin: 0.18rem 0 0;
+  color: #7596c2;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.topGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.6rem;
+}
+
+.bottomGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
+  align-items: stretch;
+  gap: 0.6rem;
+}
+
+.card {
+  min-width: 0;
+  padding: 0.68rem 0.75rem;
+  border: 1px solid #d9eafb;
+  border-radius: 0.65rem;
+  background: rgb(255 255 255 / 93%);
+  box-shadow: var(--admin-panel-shadow);
+}
+
+.cardHeader {
+  display: flex;
+  min-height: 1.8rem;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.sectionIcon,
+.preferenceIcon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #1888ec;
+  background: #e0f2ff;
+}
+
+.sectionIcon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: #1888ec;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  color: #124b9c;
+  font-size: 0.7rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.cardHeader p {
+  margin: 0.16rem 0 0;
+  color: #7292bb;
+  font-size: 0.56rem;
+  line-height: 1.3;
+}
+
+.accountContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.1rem 0.1rem;
+}
+
+.avatar {
+  display: grid;
+  width: 5rem;
+  height: 5rem;
+  flex: 0 0 5rem;
+  place-items: center;
+  border: 0.25rem solid #e6f5ff;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, #1679d8, #68c8ec);
+  font-size: 2rem;
+  font-weight: 850;
+}
+
+.accountDetails {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.16rem;
+}
+
+.accountDetails > strong {
+  color: #144a96;
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.accountDetails > span {
+  overflow-wrap: anywhere;
+  color: #7391b4;
+  font-size: 0.56rem;
+}
+
+.editButton {
+  display: inline-flex;
+  min-height: 1.7rem;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.58rem;
+  border: 0;
+  border-radius: 0.45rem;
+  color: #1168bd;
+  background: #e1f2ff;
+  font: inherit;
+  font-size: 0.54rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.editButton svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.localNote {
+  margin: 0.35rem 0 0;
+  color: #849fbd;
+  font-size: 0.48rem;
+}
+
+.preferencePreview {
+  margin: 0.35rem 0 0;
+  color: #6482a7;
+  font-size: 0.5rem;
+}
+
+.page[aria-busy='true'] .topGrid,
+.page[aria-busy='true'] .bottomGrid {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.profileFields {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.profileFields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  color: #587aa2;
+  font-size: 0.48rem;
+}
+
+.profileFields input {
+  width: 100%;
+  min-height: 1.55rem;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid #d6e4f2;
+  border-radius: 0.35rem;
+  color: #164d94;
+  font: inherit;
+  font-size: 0.55rem;
+}
+
+.cardDescription {
+  margin: 0.18rem 0 0.7rem;
+  color: #7292bb;
+  font-size: 0.56rem;
+}
+
+.selectField {
+  display: flex;
+  min-height: 2.1rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.55rem;
+  border: 1px solid #d7e9fb;
+  border-radius: 0.5rem;
+  color: #207cce;
+  background: #fbfdff;
+}
+
+.languageIcon {
+  display: grid;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 1.15rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #218df0;
+}
+
+.languageIcon svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.selectField select {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  color: #285c98;
+  background: transparent;
+  font: inherit;
+  font-size: 0.56rem;
+  cursor: pointer;
+}
+
+.selectField > svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  transform: rotate(90deg);
+}
+
+.helperText {
+  margin: 0.6rem 0 0;
+  color: #829dbd;
+  font-size: 0.5rem;
+  line-height: 1.35;
+}
+
+.themeOptions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.themeOption {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 4.2rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.2rem;
+  border: 1px solid #d8e9fa;
+  border-radius: 0.48rem;
+  color: #5e86b7;
+  background: #fff;
+  font: inherit;
+  font-size: 0.52rem;
+  cursor: pointer;
+}
+
+.themeOption > svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  color: #258be6;
+}
+
+.selectedTheme {
+  border: 1.5px solid #218df0;
+  color: #165bac;
+  background: #f5fbff;
+}
+
+.themeCheck {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #218df0;
+}
+
+.themeCheck svg {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+.notificationCard,
+.systemCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.preferenceList {
+  margin-top: 0.35rem;
+}
+
+.preferenceRow {
+  display: flex;
+  min-height: 3.15rem;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.34rem 0.05rem;
+  border-top: 1px solid #edf3f9;
+}
+
+.preferenceIcon {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex-basis: 1.9rem;
+}
+
+.preferenceIcon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: #1888ec;
+}
+
+.preferenceCopy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.preferenceCopy strong {
+  color: #1b579d;
+  font-size: 0.56rem;
+  font-weight: 750;
+}
+
+.preferenceCopy small {
+  color: #7a98bc;
+  font-size: 0.49rem;
+  line-height: 1.3;
+}
+
+.switch {
+  position: relative;
+  width: 3.75rem;
+  height: 2.75rem;
+  min-width: 3.75rem !important;
+  flex: 0 0 3.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.switch::before {
+  position: absolute;
+  top: 50%;
+  right: 0.25rem;
+  left: 0.25rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: #b8bec7;
+  content: '';
+  transform: translateY(-50%);
+  transition: background 150ms ease;
+}
+
+.switch span {
+  position: absolute;
+  top: 50%;
+  left: 0.3rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(28 76 126 / 20%);
+  transform: translateY(-50%);
+  transition: transform 150ms ease;
+}
+
+.switchOn {
+  background: transparent;
+}
+
+.switchOn::before {
+  background: #208df1;
+}
+
+.switchOn span {
+  transform: translate(2.05rem, -50%);
+}
+
+.systemOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.65rem 0 0.8rem;
+}
+
+.systemRow {
+  display: grid;
+  min-height: 2.05rem;
+  grid-template-columns: 1.9rem minmax(5rem, 0.7fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.48rem;
+  color: #4f7eaf;
+  font-size: 0.54rem;
+}
+
+.systemRow select {
+  width: 100%;
+  min-width: 0;
+  height: 1.85rem;
+  padding: 0 0.5rem;
+  border: 1px solid #d7e9fb;
+  border-radius: 0.45rem;
+  color: #5280af;
+  background: #fff;
+  font: inherit;
+  font-size: 0.52rem;
+  cursor: pointer;
+}
+
+.saveArea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding: 0.52rem 0.6rem;
+  border-radius: 0.5rem;
+  background: #eaf6ff;
+}
+
+.successStatus,
+.errorStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: #4983b9;
+  font-size: 0.48rem;
+  line-height: 1.35;
+}
+
+.successStatus svg,
+.errorStatus svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: 0 0 1.05rem;
+  color: #1689e7;
+  stroke-width: 2.5;
+}
+
+.errorStatus,
+.errorStatus svg {
+  color: #b4233d;
+}
+
+.saveButton {
+  display: inline-flex;
+  min-height: 1.9rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  border-radius: 0.45rem;
+  color: #fff;
+  background: #1689ed;
+  font: inherit;
+  font-size: 0.52rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.saveButton:hover {
+  transform: translateY(-1px);
+  background: #0b68c2;
+}
+
+.saveButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+}
+
+.saveButton svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.page button:focus-visible,
+.page select:focus-visible,
+.page input:focus-visible {
+  outline: 3px solid #f0a500;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1100px) {
+  .topGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .accountCard {
+    grid-column: span 2;
+  }
+
+  .bottomGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .topGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .accountCard {
+    grid-column: auto;
+  }
+
+  .accountContent {
+    align-items: flex-start;
+  }
+
+  .accountDetails,
+  .profileFields {
+    width: 100%;
+  }
+
+  .avatar {
+    width: 4rem;
+    height: 4rem;
+    flex-basis: 4rem;
+    font-size: 1.6rem;
+  }
+
+  .themeOption {
+    min-height: 3.8rem;
+    font-size: 0.5rem;
+  }
+
+  .systemRow {
+    grid-template-columns: 1.9rem minmax(4.5rem, 0.65fr) minmax(0, 1fr);
+    gap: 0.35rem;
+    font-size: 0.5rem;
+  }
+
+  .systemRow select {
+    padding-inline: 0.32rem;
+    font-size: 0.48rem;
+  }
+
+  .preferenceRow {
+    gap: 0.35rem;
+  }
+
+  .preferenceCopy small {
+    font-size: 0.46rem;
+  }
+
+  .saveArea {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .saveButton {
+    width: 100%;
+  }
+}
+
+:global([data-theme='dark']) .card {
+  border-color: #3a4b60;
+  background: #1c2a3b;
+}
+
+:global([data-theme='dark']) .cardHeader h2,
+:global([data-theme='dark']) .accountDetails > strong,
+:global([data-theme='dark']) .preferenceCopy strong,
+:global([data-theme='dark']) .pageHeader h1 {
+  color: #e4eefb;
+}
+
+:global([data-theme='dark']) .cardHeader p,
+:global([data-theme='dark']) .cardDescription,
+:global([data-theme='dark']) .helperText,
+:global([data-theme='dark']) .accountDetails > span,
+:global([data-theme='dark']) .preferenceCopy small,
+:global([data-theme='dark']) .systemRow,
+:global([data-theme='dark']) .preferencePreview {
+  color: #bdcde0;
+}
+
+:global([data-theme='dark']) .selectField,
+:global([data-theme='dark']) .systemRow select,
+:global([data-theme='dark']) .profileFields input,
+:global([data-theme='dark']) .themeOption {
+  border-color: #50647d;
+  color: #e4eefb;
+  background: #253448;
+}
+
+:global([data-theme='dark']) .selectedTheme {
+  border-color: #55aafa;
+  background: #203e5d;
+}
+
+:global([data-theme='dark']) .saveArea {
+  background: #203e5d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,874 @@
+.page {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0 0.15rem 0.8rem;
+  color: var(--admin-ink);
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  min-height: 4.65rem;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.75rem;
+  overflow: hidden;
+  border: 1px solid #d3eafa;
+  border-radius: 0.55rem;
+  background-color: #e4f4ff;
+  background-position: center 58%;
+  background-size: cover;
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(241 249 255 / 95%) 0%,
+    rgb(239 248 255 / 91%) 58%,
+    rgb(232 246 255 / 20%) 100%
+  );
+  content: '';
+}
+
+.heroIcon,
+.heroCopy,
+.hero > img {
+  position: relative;
+  z-index: 1;
+}
+
+.heroIcon {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: 0 0 2.65rem;
+  place-items: center;
+  color: #0869ce;
+}
+
+.heroIcon svg {
+  width: 2.35rem;
+  height: 2.35rem;
+  stroke-width: 2.5;
+}
+
+.heroCopy {
+  min-width: 0;
+}
+
+.hero h1 {
+  margin: 0;
+  color: #08499b;
+  font-size: clamp(1.05rem, 1.7vw, 1.4rem);
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.hero p {
+  margin: 0.18rem 0 0;
+  color: #15589e;
+  font-size: 0.62rem;
+}
+
+.hero > img {
+  position: absolute;
+  right: 0.5rem;
+  bottom: -3.3rem;
+  width: 15rem;
+  height: 9rem;
+  object-fit: cover;
+  object-position: 8% 45%;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.layout {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(13.8rem, 17rem);
+  align-items: start;
+  gap: 0.65rem;
+}
+
+.primaryColumn,
+.sidebar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.filters {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(12rem, 1.25fr) auto;
+  align-items: end;
+  gap: 0.55rem;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid #d5eafa;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 93%);
+}
+
+.filters > label,
+.dateRange label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filters > label > span,
+.dateRange legend {
+  padding: 0;
+  color: #315d91;
+  font-size: 0.54rem;
+  font-weight: 800;
+}
+
+.filters select,
+.dateRange input {
+  width: 100%;
+  min-width: 0;
+  height: 1.9rem;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid #cfe1f3;
+  border-radius: 0.35rem;
+  color: #16529a;
+  background: #fbfdff;
+  font: inherit;
+  font-size: 0.57rem;
+}
+
+.dateRange {
+  display: flex;
+  min-width: 0;
+  align-items: end;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.dateRange legend {
+  margin-bottom: 0.25rem;
+}
+
+.dateRange label {
+  flex: 1;
+}
+
+.dateRange input {
+  padding-inline: 0.3rem;
+  font-size: 0.52rem;
+}
+
+.dateRange > span {
+  padding-bottom: 0.5rem;
+  color: #6685a9;
+  font-size: 0.6rem;
+}
+
+.resetButton {
+  height: 1.9rem;
+  padding: 0 0.45rem;
+  border: 0;
+  color: #5177a2;
+  background: transparent;
+  font: inherit;
+  font-size: 0.54rem;
+  cursor: pointer;
+}
+
+.activityListPanel,
+.sidePanel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #d3e8f9;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 95%);
+  box-shadow: 0 0.12rem 0.4rem rgb(35 89 139 / 4%);
+}
+
+.listHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.05rem 0.15rem 0.45rem;
+}
+
+.listHeading h2 {
+  margin: 0;
+  color: #0757ad;
+  font-size: 0.75rem;
+  font-weight: 950;
+}
+
+.listHeading > span {
+  color: #6485af;
+  font-size: 0.54rem;
+  text-align: right;
+}
+
+.activityList {
+  overflow: hidden;
+  border: 1px solid #d3e8f9;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 95%);
+}
+
+.activityRow {
+  display: grid;
+  min-width: 0;
+  grid-template-columns:
+    2.9rem minmax(9rem, 1.25fr) minmax(10rem, 1fr) minmax(5.7rem, 0.65fr)
+    5.5rem;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 4.55rem;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #e5f0f9;
+}
+
+.activityRow:last-child {
+  border-bottom: 0;
+}
+
+.activityIcon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.activityIcon svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  stroke-width: 2.1;
+}
+
+.blue {
+  color: #1685e9;
+  background: #e3f3ff;
+}
+
+.green {
+  color: #0ca783;
+  background: #ddf8ed;
+}
+
+.purple {
+  color: #914bea;
+  background: #f0e4ff;
+}
+
+.red {
+  color: #f15369;
+  background: #ffe1e6;
+}
+
+.teal {
+  color: #08a99a;
+  background: #d9f8f4;
+}
+
+.orange {
+  color: #df9810;
+  background: #fff1ce;
+}
+
+.activityDescription {
+  min-width: 0;
+  align-self: center;
+}
+
+.activityTitleLine {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.activityTitleLine h3 {
+  margin: 0;
+  color: #144d93;
+  font-size: 0.6rem;
+  font-weight: 950;
+}
+
+.subjectTag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.15rem 0.45rem;
+  border-radius: 1rem;
+  font-size: 0.46rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.activityDescription p {
+  display: -webkit-box;
+  margin: 0.24rem 0 0;
+  overflow: hidden;
+  color: #6585ad;
+  font-size: 0.52rem;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.assignee {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.35rem;
+  row-gap: 0.2rem;
+}
+
+.assignee > img {
+  width: 1.45rem;
+  height: 1.45rem;
+  grid-row: span 2;
+  border: 1px solid #d6eaf9;
+  border-radius: 50%;
+  background: #e8f6ff;
+  object-fit: cover;
+  object-position: 75% 50%;
+}
+
+.assignee > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.assignee strong {
+  overflow: hidden;
+  color: #164d94;
+  font-size: 0.52rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assignee small {
+  color: #7793b3;
+  font-size: 0.48rem;
+}
+
+.dueDate {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.dueDate svg {
+  width: 0.72rem;
+  height: 0.72rem;
+  color: #1264bb;
+}
+
+.statusTag {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.27rem;
+  padding: 0.27rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.48rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.statusTag > span:first-child {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.Completed {
+  color: #0b9a72;
+  background: #daf8eb;
+}
+
+.Completed > span:first-child {
+  border: 0;
+  background: currentColor;
+}
+
+.InProgress {
+  color: #bb7700;
+  background: #fff0c7;
+}
+
+.NotStarted {
+  color: #1476d0;
+  background: #e0f1ff;
+}
+
+.viewButton {
+  display: inline-flex;
+  min-height: 1.85rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid #b8dafa;
+  border-radius: 0.45rem;
+  color: #0874d6;
+  background: #fff;
+  font: inherit;
+  font-size: 0.5rem;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.viewButton:hover {
+  color: #fff;
+  background: #1685e9;
+}
+
+.viewButton > span {
+  font-size: 0.8rem;
+}
+
+.emptyState {
+  margin: 0;
+  padding: 2rem 1rem;
+  color: #6485af;
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.sidePanel {
+  padding: 0.55rem;
+}
+
+.sidePanel h2 {
+  margin: 0 0 0.5rem;
+  color: #0757ad;
+  font-size: 0.74rem;
+  font-weight: 950;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.summaryCard {
+  display: flex;
+  min-height: 4.35rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 0.45rem;
+}
+
+.summaryCard svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 2.3;
+}
+
+.summaryCard > span {
+  font-size: 0.5rem;
+}
+
+.summaryCard strong {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.summaryCard.blue {
+  color: #0874d6;
+  background: #e3f3ff;
+}
+
+.summaryCard.green {
+  color: #0a9a72;
+  background: #e1f8ee;
+}
+
+.summaryCard.orange {
+  color: #df9410;
+  background: #fff4dc;
+}
+
+.summaryCard.purple {
+  color: #8950e4;
+  background: #f1e9ff;
+}
+
+.quickActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.quickActions button {
+  display: flex;
+  min-height: 2.1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid #1685e9;
+  border-radius: 0.4rem;
+  font: inherit;
+  font-size: 0.54rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.quickActions svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.primaryAction {
+  color: #fff;
+  background: #1685e9;
+}
+
+.primaryAction:hover {
+  background: #0757ad;
+}
+
+.secondaryAction {
+  color: #0874d6;
+  background: #fff;
+}
+
+.secondaryAction:hover {
+  background: #edf7ff;
+}
+
+.reminders {
+  position: relative;
+  min-height: 13.5rem;
+  padding-bottom: 5.7rem;
+}
+
+.reminders h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.reminders h2 svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+.reminders ul {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1rem;
+  color: #285b93;
+  font-size: 0.57rem;
+  line-height: 1.45;
+}
+
+.reminders li::marker {
+  color: #157fe0;
+}
+
+.reminders > img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 5.7rem;
+  object-fit: cover;
+  object-position: left 43%;
+  opacity: 0.95;
+  mask-image: linear-gradient(to bottom, transparent, #000 25%);
+}
+
+.dialogBackdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(7 38 76 / 48%);
+}
+
+.dialog {
+  position: relative;
+  width: min(100%, 27rem);
+  padding: 1.4rem;
+  border: 1px solid #d4e9fa;
+  border-radius: 0.8rem;
+  background: #fff;
+  box-shadow: 0 1rem 2.5rem rgb(10 37 71 / 25%);
+}
+
+.dialog .activityIcon {
+  margin-bottom: 0.65rem;
+}
+
+.dialog h2 {
+  margin: 0.55rem 0 0.4rem;
+  color: #104d95;
+  font-size: 1rem;
+}
+
+.dialog > p {
+  color: #627fa3;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.dialog dl {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.dialog dl div {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: 0.5rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid #edf3f9;
+  font-size: 0.66rem;
+}
+
+.dialog dt {
+  color: #6785a8;
+}
+
+.dialog dd {
+  margin: 0;
+  color: #174e94;
+  font-weight: 800;
+}
+
+.dialog .previewNote {
+  margin-bottom: 0;
+  font-size: 0.58rem;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #4b6e95;
+  background: #f1f7fc;
+  cursor: pointer;
+}
+
+.closeButton svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.page button:focus-visible,
+.page select:focus-visible,
+.page input:focus-visible {
+  outline: 3px solid #78baff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1060px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 14rem);
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dateRange {
+    grid-column: span 1;
+  }
+
+  .activityRow {
+    grid-template-columns:
+      2.5rem minmax(8rem, 1.1fr) minmax(8.5rem, 0.9fr)
+      minmax(5.5rem, 0.65fr) 5rem;
+    gap: 0.4rem;
+  }
+
+  .activityIcon {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .activityRow {
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  }
+
+  .assignee {
+    grid-column: 2;
+  }
+
+  .statusTag {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .viewButton {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .activityDescription {
+    grid-column: 2;
+  }
+
+  .activityIcon {
+    grid-row: span 2;
+  }
+
+  .sidebar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .reminders {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    min-height: 4.2rem;
+    padding: 0.45rem;
+  }
+
+  .heroIcon {
+    width: 2rem;
+    height: 2rem;
+    flex-basis: 2rem;
+  }
+
+  .heroIcon svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .hero p {
+    max-width: 20rem;
+    font-size: 0.54rem;
+    line-height: 1.4;
+  }
+
+  .hero > img {
+    right: -2.8rem;
+    opacity: 0.45;
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    padding: 0.5rem;
+  }
+
+  .dateRange {
+    grid-column: 1 / -1;
+  }
+
+  .resetButton {
+    justify-self: end;
+  }
+
+  .activityRow {
+    grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+    gap: 0.35rem;
+    padding: 0.5rem 0.4rem;
+  }
+
+  .activityIcon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .activityIcon svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .activityTitleLine h3 {
+    font-size: 0.57rem;
+  }
+
+  .subjectTag {
+    font-size: 0.42rem;
+  }
+
+  .activityDescription p {
+    font-size: 0.49rem;
+  }
+
+  .statusTag {
+    font-size: 0.43rem;
+    padding-inline: 0.35rem;
+  }
+
+  .viewButton {
+    font-size: 0.47rem;
+    padding-inline: 0.3rem;
+  }
+
+  .sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reminders {
+    grid-column: 1 / -1;
+  }
+
+  .listHeading h2 {
+    font-size: 0.67rem;
+  }
+}

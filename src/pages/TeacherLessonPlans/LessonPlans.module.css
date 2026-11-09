@@ -1,0 +1,1190 @@
+.page {
+  width: 100%;
+  min-width: 0;
+  color: var(--admin-ink);
+}
+
+.pageHeader,
+.heading,
+.detailHeading,
+.libraryPanel > header,
+.detailFooter,
+.cardActions,
+.dialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.pageHeader {
+  min-height: 3.1rem;
+  margin-bottom: 0.65rem;
+}
+
+.heading {
+  min-width: 0;
+  justify-content: flex-start;
+  gap: 0.7rem;
+}
+
+.headingIcon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 2.5rem;
+  place-items: center;
+  border-radius: 0.5rem;
+  color: #1683ec;
+  background: #e2f1ff;
+}
+
+.headingIcon svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.heading h1 {
+  margin: 0;
+  color: #10458f;
+  font-size: 1.2rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.heading p {
+  margin: 0.2rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.61rem;
+}
+
+.createButton,
+.cardActions button,
+.detailFooter > button {
+  display: inline-flex;
+  min-height: 1.9rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 0;
+  border-radius: 0.42rem;
+  color: #fff;
+  background: #2185e8;
+  font: inherit;
+  font-size: 0.56rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.createButton {
+  min-height: 2.15rem;
+  padding-inline: 0.75rem;
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+
+.createButton svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.createButton:hover,
+.detailFooter > button:hover {
+  background: #126dc5;
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.65rem;
+}
+
+.summaryCard {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border: 1px solid #dceaf8;
+  border-radius: 0.58rem;
+  background: #fff;
+  box-shadow: 0 0.15rem 0.4rem rgb(39 105 170 / 5%);
+}
+
+.summaryCardIcon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border-radius: 0.48rem;
+  color: #1676cf;
+  background: #e7f3ff;
+}
+
+.summaryCardIcon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.summaryCard > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 0.12rem;
+}
+
+.summaryCard strong {
+  color: #10458f;
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.summaryCard small {
+  overflow: hidden;
+  color: #6685a8;
+  font-size: 0.52rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin: 0 0 0.55rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #cde9dc;
+  border-radius: 0.45rem;
+  color: #147b5e;
+  background: #effbf6;
+  font-size: 0.58rem;
+}
+
+.errorNotice {
+  margin: 0 0 0.55rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #f0c5c5;
+  border-radius: 0.45rem;
+  color: #a32929;
+  background: #fff2f2;
+  font-size: 0.58rem;
+}
+
+.notice button,
+.dialog > header button {
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+.notice button svg,
+.dialog > header button svg {
+  display: block;
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1.5fr) repeat(5, minmax(6rem, 0.9fr));
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+
+.searchFilter,
+.filters select {
+  display: flex;
+  min-width: 0;
+  height: 2rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.55rem;
+  border: 1px solid #dceaf8;
+  border-radius: 0.48rem;
+  color: #3278c8;
+  background: #fff;
+}
+
+.searchFilter svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: 0 0 0.85rem;
+}
+
+.searchFilter input,
+.filters select {
+  width: 100%;
+  min-width: 0;
+  color: #174b96;
+  font: inherit;
+  font-size: 0.56rem;
+}
+
+.searchFilter input {
+  border: 0;
+  outline: 0;
+}
+
+.searchFilter input::placeholder {
+  color: #8aa4c2;
+}
+
+.filters select {
+  appearance: auto;
+}
+
+.workspace {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 1fr);
+  align-items: start;
+  gap: 0.7rem;
+}
+
+.lessonColumn,
+.rightColumn {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sectionTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid #e2edf8;
+}
+
+.sectionTabs button {
+  display: inline-flex;
+  min-height: 1.95rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  padding: 0.35rem 0.65rem;
+  border: 0;
+  border-radius: 0.42rem;
+  color: #287ac5;
+  background: #e6f3ff;
+  font: inherit;
+  font-size: 0.55rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.sectionTabs button:nth-child(2) {
+  background: #e9f5ff;
+}
+
+.sectionTabs button:nth-child(3) {
+  color: #6850d9;
+  background: #f0edff;
+}
+
+.sectionTabs .activeSectionTab {
+  color: #fff !important;
+  background: #2185e8 !important;
+}
+
+.sectionTabs button > span:first-child {
+  font-size: 0.85rem;
+}
+
+.sectionTabs > button > svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.count {
+  display: grid;
+  min-width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border-radius: 999px;
+  color: inherit;
+  background: rgb(255 255 255 / 35%);
+  font-size: 0.49rem;
+}
+
+.sectionHeading {
+  margin: -0.15rem 0 0;
+  padding-top: 0.1rem;
+  color: #10458f;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.lessonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.lessonCard {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 0.48rem;
+  border: 1px solid #dceaf8;
+  border-radius: 0.58rem;
+  background: #fff;
+  box-shadow: 0 0.15rem 0.4rem rgb(39 105 170 / 5%);
+}
+
+.selectedLesson {
+  border-color: #b7d9fb;
+  box-shadow:
+    0 0 0 1px rgb(36 136 237 / 12%),
+    0 0.15rem 0.4rem rgb(39 105 170 / 5%);
+}
+
+.lessonSelect {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lessonStatus {
+  display: inline-flex;
+  min-height: 1rem;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.22rem;
+  padding: 0.14rem 0.45rem;
+  border-radius: 999px;
+  color: #078f79;
+  background: #d8f6ee;
+  font-size: 0.47rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.lessonStatus[data-status='For Review'],
+.lessonStatus[data-status='Upcoming'] {
+  color: #1871bd;
+  background: #e0f0ff;
+}
+
+.lessonStatus[data-status='Draft'] {
+  color: #a96700;
+  background: #fff1d4;
+}
+
+.lessonStatus[data-status='In Progress'] {
+  color: #6743d5;
+  background: #eee8ff;
+}
+
+.completedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12rem;
+  margin-left: 0.25rem;
+  color: #11734f;
+}
+
+.completedBadge svg {
+  width: 0.58rem;
+  height: 0.58rem;
+}
+
+.lessonArt {
+  display: block;
+  height: 4.8rem;
+  overflow: hidden;
+  border-radius: 0.38rem;
+  background: #e5f4ff;
+}
+
+.lessonArt img,
+.summaryArt img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lessonTitle {
+  display: -webkit-box;
+  min-height: 1.35rem;
+  overflow: hidden;
+  color: #174b96;
+  font-size: 0.55rem;
+  font-weight: 900;
+  line-height: 1.2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.lessonMeta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  color: #5680b3;
+  font-size: 0.46rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lessonMeta > span:first-child {
+  color: #3886cc;
+}
+
+.lessonMeta svg {
+  width: 0.62rem;
+  height: 0.62rem;
+  flex: 0 0 0.62rem;
+}
+
+.cardActions {
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+.cardActions button:first-child {
+  min-width: 0;
+  flex: 1;
+  color: #1476cf;
+  background: #e4f2ff;
+  font-size: 0.5rem;
+}
+
+.cardActions button:first-child:hover {
+  background: #d3eaff;
+}
+
+.cardActions button:last-child {
+  width: 1.55rem;
+  flex: 0 0 1.55rem;
+  padding-inline: 0;
+  border: 1px solid #d4e5f6;
+  color: #2581d6;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.cardActions button svg {
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+.rightColumn {
+  gap: 0.6rem;
+}
+
+.libraryPanel,
+.detailPanel {
+  min-width: 0;
+  padding: 0.6rem;
+  border: 1px solid #dceaf8;
+  border-radius: 0.58rem;
+  background: #fff;
+  box-shadow: 0 0.15rem 0.45rem rgb(39 105 170 / 5%);
+}
+
+.libraryPanel > header {
+  margin-bottom: 0.5rem;
+}
+
+.libraryPanel h2,
+.detailHeading h2 {
+  margin: 0;
+  color: #10458f;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.libraryPanel > header button,
+.detailHeading button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  padding: 0;
+  border: 0;
+  color: #1676d0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.49rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.libraryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.libraryTile,
+.materialCard {
+  display: flex;
+  min-width: 0;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem;
+  border: 1px solid transparent;
+  border-radius: 0.45rem;
+  color: #174b96;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.libraryTile:hover,
+.materialCard:hover {
+  border-color: #bddafa;
+  filter: saturate(1.08);
+}
+
+.libraryTile > span:first-child,
+.materialCard > span:first-child {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: 0 0 1.55rem;
+  place-items: center;
+  border-radius: 0.35rem;
+  background: rgb(255 255 255 / 64%);
+  font-size: 1rem;
+}
+
+.libraryTile > span:first-child svg,
+.materialCard > span:first-child svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.libraryTile > span:last-child,
+.materialCard > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.libraryTile strong,
+.materialCard strong {
+  overflow: hidden;
+  font-size: 0.47rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.libraryTile small,
+.materialCard small {
+  color: #5e82aa;
+  font-size: 0.43rem;
+}
+
+.blue {
+  color: #176fc7;
+  background: #e3f1ff;
+}
+
+.green {
+  color: #118b65;
+  background: #e3f7ed;
+}
+
+.pink {
+  color: #bb4969;
+  background: #ffebf0;
+}
+
+.purple {
+  color: #704fd1;
+  background: #f0ebff;
+}
+
+.yellow {
+  color: #a96b00;
+  background: #fff4d9;
+}
+
+.teal {
+  color: #138e9a;
+  background: #e0f8f6;
+}
+
+.detailPanel {
+  padding-bottom: 0.55rem;
+}
+
+.detailHeading {
+  margin: 0 0 0.48rem;
+}
+
+.lessonSummary {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem;
+  border-radius: 0.42rem;
+  background: #eff7ff;
+}
+
+.summaryArt {
+  height: 3.65rem;
+  overflow: hidden;
+  border-radius: 0.35rem;
+}
+
+.summaryCopy {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+  color: #5680b3;
+  font-size: 0.44rem;
+}
+
+.summaryCopy > span {
+  display: flex;
+  align-items: center;
+  gap: 0.16rem;
+}
+
+.summaryCopy svg {
+  width: 0.62rem;
+  height: 0.62rem;
+  flex: 0 0 0.62rem;
+}
+
+.summaryCopy strong {
+  overflow: hidden;
+  color: #174b96;
+  font-size: 0.58rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lessonSummary > .lessonStatus {
+  align-self: start;
+  font-size: 0.42rem;
+}
+
+.detailTabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0.25rem 0 0;
+  border-bottom: 1px solid #e5eef8;
+}
+
+.detailTabs button {
+  min-width: 0;
+  min-height: 1.75rem;
+  padding: 0.25rem 0.1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #6d8db9;
+  background: transparent;
+  font: inherit;
+  font-size: 0.47rem;
+  cursor: pointer;
+}
+
+.detailTabs .activeDetailTab {
+  border-bottom-color: #2387ec;
+  color: #176fc7;
+  font-weight: 900;
+}
+
+.detailContent {
+  min-height: 8.4rem;
+  padding: 0.45rem 0.2rem;
+  color: #315f99;
+  font-size: 0.48rem;
+  line-height: 1.4;
+}
+
+.overviewGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(6rem, 0.8fr);
+  gap: 0.5rem;
+}
+
+.overviewGrid > aside {
+  padding-left: 0.5rem;
+  border-left: 1px solid #e5eef8;
+}
+
+.overviewGrid h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0 0 0.23rem;
+  color: #174b96;
+  font-size: 0.52rem;
+  font-weight: 900;
+}
+
+.overviewGrid h3 svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.overviewGrid h3:not(:first-child) {
+  margin-top: 0.5rem;
+}
+
+.overviewGrid p {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0.12rem 0 0.3rem;
+}
+
+.overviewGrid p svg {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+.overviewGrid ul,
+.overviewGrid ol,
+.detailList {
+  display: grid;
+  gap: 0.18rem;
+  margin: 0;
+  padding-left: 0.9rem;
+}
+
+.detailFooter {
+  padding-top: 0.42rem;
+  border-top: 1px solid #e5eef8;
+}
+
+.detailFooter > span {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #5680b3;
+  font-size: 0.45rem;
+}
+
+.detailFooter svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.detailFooter > button {
+  min-height: 1.75rem;
+  padding-inline: 0.55rem;
+  font-size: 0.48rem;
+}
+
+.detailActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.detailActions button {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #cbdff2;
+  border-radius: 0.4rem;
+  color: #176fc7;
+  background: #fff;
+  font: inherit;
+  font-size: 0.48rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.detailActions button:last-child {
+  border-color: #2185e8;
+  color: #fff;
+  background: #2185e8;
+}
+
+.detailActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.detailActions svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.materialGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.materialCard {
+  min-height: 4.2rem;
+}
+
+.materialCard > span:first-child {
+  width: 2rem;
+  height: 2rem;
+  flex-basis: 2rem;
+  font-size: 1.2rem;
+}
+
+.emptyState {
+  padding: 1.6rem 0.8rem;
+  border: 1px dashed #cbdff2;
+  border-radius: 0.55rem;
+  color: var(--admin-muted);
+  background: #fff;
+  font-size: 0.64rem;
+  text-align: center;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.page button:focus-visible,
+.page input:focus-visible,
+.page select:focus-visible {
+  outline: 3px solid var(--color-sunny-yellow);
+  outline-offset: 2px;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(10 35 70 / 46%);
+}
+
+.dialog {
+  width: min(100%, 46rem);
+  max-height: min(90vh, 52rem);
+  overflow-y: auto;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 1rem 3rem rgb(10 35 70 / 25%);
+}
+
+.dialog > header {
+  margin-bottom: 0.8rem;
+}
+
+.dialog h2 {
+  margin: 0;
+  color: #10458f;
+  font-size: 1.05rem;
+}
+
+.dialog form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.dialog form > label {
+  display: grid;
+  grid-template-columns: minmax(8.5rem, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 0.28rem;
+  color: #315f99;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.dialog form > label > span {
+  min-width: 0;
+}
+
+.dialogWideField {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(8.5rem, 0.4fr) minmax(0, 1.6fr);
+}
+
+.dialog input,
+.dialog select,
+.dialog textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.2rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid #d4e3f2;
+  border-radius: 0.4rem;
+  color: #174b96;
+  background: #fff;
+  font: inherit;
+  font-size: 0.68rem;
+}
+
+.dialog textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+.dialog input:disabled,
+.dialog select:disabled,
+.dialog textarea:disabled,
+.dialogActions button:disabled,
+.createButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.dialog form > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 0.58rem;
+}
+
+.dialogActions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.dialogActions button {
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #cbdff2;
+  border-radius: 0.4rem;
+  color: #315f99;
+  background: #fff;
+  font: inherit;
+  font-size: 0.63rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.dialogActions button[type='submit'] {
+  border-color: #2185e8;
+  color: #fff;
+  background: #2185e8;
+}
+
+@media (max-width: 1120px) {
+  .filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .summaryCards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rightColumn {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+@media (max-width: 850px) {
+  .filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lessonGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summaryCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rightColumn {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .pageHeader {
+    align-items: flex-start;
+  }
+
+  .heading h1 {
+    font-size: 1rem;
+  }
+
+  .heading p {
+    max-width: 15rem;
+    font-size: 0.56rem;
+  }
+
+  .createButton {
+    min-height: 1.95rem;
+    padding-inline: 0.48rem;
+    font-size: 0.52rem;
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .summaryCards {
+    gap: 0.4rem;
+  }
+
+  .summaryCard {
+    padding: 0.5rem;
+  }
+
+  .summaryCard small {
+    font-size: 0.48rem;
+  }
+
+  .searchFilter {
+    grid-column: 1 / -1;
+  }
+
+  .filters select,
+  .searchFilter {
+    height: 1.95rem;
+    font-size: 0.53rem;
+  }
+
+  .lessonGrid {
+    gap: 0.4rem;
+  }
+
+  .lessonArt {
+    height: 5.4rem;
+  }
+
+  .lessonTitle {
+    font-size: 0.58rem;
+  }
+
+  .lessonMeta {
+    font-size: 0.47rem;
+  }
+
+  .rightColumn {
+    display: flex;
+  }
+
+  .dialogBackdrop {
+    padding: 0.6rem;
+  }
+
+  .dialog {
+    width: 100%;
+    max-height: 92vh;
+  }
+
+  .dialog form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dialog form > label {
+    grid-column: auto;
+    grid-template-columns: minmax(8.5rem, 0.65fr) minmax(0, 1.35fr);
+  }
+
+  .dialog form > .dialogWideField {
+    grid-template-columns: minmax(8.5rem, 0.65fr) minmax(0, 1.35fr);
+  }
+
+  .dialog form > p,
+  .dialogActions {
+    grid-column: auto;
+  }
+
+  .libraryGrid,
+  .materialGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 390px) {
+  .detailFooter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .detailActions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .detailActions button {
+    flex: 1 1 auto;
+  }
+
+  .dialog form > label,
+  .dialog form > .dialogWideField {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 390px) {
+  .heading {
+    gap: 0.4rem;
+  }
+
+  .headingIcon {
+    width: 2.1rem;
+    height: 2.1rem;
+    flex-basis: 2.1rem;
+  }
+
+  .headingIcon svg {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+
+  .createButton {
+    gap: 0.2rem;
+    padding-inline: 0.35rem;
+    font-size: 0.48rem;
+  }
+
+  .lessonSummary {
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+  }
+
+  .lessonSummary > .lessonStatus {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+  }
+}

@@ -1,0 +1,756 @@
+.page {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+  color: var(--admin-ink);
+}
+
+.publicPage {
+  width: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0 clamp(1rem, 3vw, 2.5rem) 2rem;
+  background:
+    radial-gradient(circle at top left, rgb(207 233 255 / 35%), transparent 24rem),
+    #f4f9ff;
+}
+
+.publicPage > :not(.brandBar) {
+  width: min(100%, 88rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.brandBar {
+  display: flex;
+  width: min(100%, 88rem);
+  min-height: 4.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 auto;
+  border-bottom: 1px solid #dbeaf9;
+}
+
+.brand {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+  color: #0b4f9e;
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.brand img {
+  width: 9.5rem;
+  height: 3.2rem;
+  object-fit: contain;
+}
+
+.loginLink {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.48rem 0.75rem;
+  border: 1px solid #bfdaf6;
+  border-radius: 0.5rem;
+  color: #1c6fc1;
+  background: #fff;
+  font-size: 0.65rem;
+  text-decoration: none;
+}
+
+.loginLink strong {
+  color: #0f6cc9;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+}
+
+.breadcrumb a,
+.backLink {
+  color: var(--admin-blue-dark);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.backLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.breadcrumb [aria-current='page'] {
+  color: var(--admin-ink);
+  font-weight: 700;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  color: var(--admin-ink);
+  font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.pageHeader p {
+  margin: 0.3rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.titleBlock {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.titleIcon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 2.75rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #0876d9;
+  background: #e4f2ff;
+}
+
+.titleIcon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.backLink {
+  flex: 0 0 auto;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.backendNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--admin-border);
+  border-left: 3px solid var(--admin-blue);
+  border-radius: 0.65rem;
+  color: var(--admin-ink);
+  background: var(--admin-surface-soft);
+}
+
+.backendNotice svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 1.15rem;
+  color: var(--admin-blue-dark);
+}
+
+.backendNotice p {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 0.9rem;
+}
+
+.sectionCard {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.8rem;
+  background: var(--color-white);
+  box-shadow: var(--admin-panel-shadow);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.sectionCard:focus-within {
+  border-color: color-mix(in srgb, var(--admin-blue) 35%, white);
+  box-shadow: var(--admin-panel-shadow-hover);
+}
+
+.sectionHeader {
+  display: grid;
+  grid-template-columns: 1.75rem 2.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.55rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.sectionNumber {
+  color: var(--admin-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.sectionIcon {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border-radius: 0.7rem;
+  color: var(--admin-blue-dark);
+  background: var(--admin-surface-soft);
+}
+
+.sectionIcon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  color: var(--admin-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.sectionHeader p {
+  margin: 0.18rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.66rem;
+  line-height: 1.35;
+}
+
+.sectionBody {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding-top: 0.9rem;
+}
+
+.fieldGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 0.75rem 0.85rem;
+}
+
+.field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.label {
+  color: var(--admin-ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.requiredMark {
+  margin-left: 0.16rem;
+  color: var(--admin-required);
+}
+
+.fieldHint {
+  color: var(--admin-muted);
+  font-size: 0.61rem;
+  line-height: 1.4;
+}
+
+.credentialsNotice {
+  margin: 0.8rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.66rem;
+  line-height: 1.5;
+}
+
+.field input:not([type='checkbox']),
+.field select,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.55rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--admin-border-input);
+  border-radius: 0.5rem;
+  outline: 0;
+  color: var(--admin-ink);
+  background: var(--color-white);
+  font: inherit;
+  font-size: 0.7rem;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--admin-placeholder);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--admin-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--admin-blue) 15%, transparent);
+}
+
+.field input:read-only {
+  color: var(--admin-muted-strong);
+  background: var(--admin-readonly-surface);
+}
+
+.field select {
+  cursor: pointer;
+}
+
+.field textarea {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+.field input[type='file'] {
+  min-height: 2.65rem;
+  padding: 0.35rem;
+  color: var(--admin-muted);
+  font-size: 0.63rem;
+}
+
+.field input[type='file']::file-selector-button {
+  min-height: 1.8rem;
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.55rem;
+  border: 0;
+  border-radius: 0.35rem;
+  color: var(--admin-blue-dark);
+  background: var(--admin-surface-soft);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.photoControl {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.photoPreview {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  flex: 0 0 2.8rem;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 50%;
+  color: var(--admin-muted);
+  background: var(--admin-subtle-surface);
+}
+
+.photoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photoPreview svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.photoControl input {
+  flex: 1;
+}
+
+.fieldError {
+  color: var(--admin-error);
+  font-size: 0.63rem;
+  line-height: 1.4;
+}
+
+.inputWithAction {
+  display: flex;
+  min-width: 0;
+  gap: 0.35rem;
+}
+
+.inputWithAction button {
+  flex: 0 0 auto;
+  padding: 0 0.55rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.45rem;
+  color: var(--admin-blue-dark);
+  background: var(--admin-surface-soft);
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.inputWithAction button:hover {
+  background: var(--admin-surface-hover);
+}
+
+.inputWithToggle {
+  position: relative;
+  min-width: 0;
+}
+
+.field .inputWithToggle input:not([type='checkbox']) {
+  padding-right: 2.5rem;
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  transform: translateY(-50%);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--admin-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.passwordToggle:hover {
+  color: var(--admin-blue-dark);
+  background: var(--admin-surface-soft);
+}
+
+.passwordToggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.fullWidthField {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: var(--admin-ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.checkboxRow input {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+  margin: 0.05rem 0 0;
+  accent-color: var(--admin-blue);
+}
+
+.disabledFields {
+  opacity: 0.58;
+}
+
+.disabledFields input:disabled,
+.disabledFields select:disabled,
+.disabledFields textarea:disabled {
+  cursor: not-allowed;
+}
+
+.formMessage {
+  min-height: 0;
+  color: var(--admin-error);
+  font-size: 0.73rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.formMessage:empty {
+  display: none;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 0.85rem 0 0.25rem;
+  border-top: 1px solid var(--admin-border);
+}
+
+.formActions .primaryButton,
+.formActions .secondaryButton {
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.55rem;
+  font-size: 0.72rem;
+}
+
+.formActions .secondaryButton {
+  border: 1px solid var(--admin-button-border);
+  color: var(--admin-blue-dark);
+  background: var(--color-white);
+}
+
+.formActions .secondaryButton:hover {
+  background: var(--admin-page-surface);
+}
+
+.formActions .primaryButton {
+  background: var(--admin-blue);
+}
+
+.formActions .primaryButton:hover {
+  background: var(--admin-blue-dark);
+}
+
+.publicPage .form {
+  gap: 0.75rem;
+}
+
+.publicPage .cardGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.publicPage .cardGrid > .sectionCard:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.publicPage .sectionCard {
+  padding: 0;
+  overflow: hidden;
+  border-color: #dbeaf9;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.2rem 0.8rem rgb(28 83 153 / 4%);
+}
+
+.publicPage .sectionHeader {
+  min-height: 3.3rem;
+  padding: 0.55rem 0.85rem;
+  border-bottom-color: #edf3fb;
+  background: linear-gradient(110deg, #edf6ff, #f8fbff);
+}
+
+.publicPage .sectionNumber {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #456fa9;
+  background: #fff;
+}
+
+.publicPage .sectionIcon {
+  border-radius: 50%;
+  background: linear-gradient(140deg, #e1f1ff, #f5faff);
+}
+
+.publicPage .sectionHeader h2 {
+  color: #0b4f9e;
+  font-size: 0.82rem;
+}
+
+.publicPage .sectionHeader p {
+  color: #6d8db9;
+}
+
+.publicPage .sectionBody {
+  padding: 0.75rem 0.85rem 0.9rem;
+}
+
+.publicPage .fieldGrid {
+  gap: 0.65rem 0.8rem;
+}
+
+.publicPage .field input:not([type='checkbox']),
+.publicPage .field select,
+.publicPage .field textarea {
+  min-height: 2.4rem;
+  border-color: #d8e6f4;
+  border-radius: 0.45rem;
+}
+
+.publicPage .backendNotice {
+  margin-top: -0.3rem;
+  border-color: #d8e7f4;
+  border-left-color: #0b56a8;
+  background: #edf5fe;
+}
+
+.publicPage .formActions {
+  align-items: center;
+  border-top-color: #e2edf8;
+}
+
+.publicPage .formActions .secondaryButton:first-child {
+  margin-right: auto;
+}
+
+.page :is(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--admin-blue) 45%, white);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1100px) {
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .publicPage .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .publicPage .cardGrid > .sectionCard:nth-child(3) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    gap: 0.8rem;
+  }
+
+  .publicPage {
+    padding: 0 0.8rem 2rem;
+  }
+
+  .brandBar {
+    min-height: 3.8rem;
+  }
+
+  .pageHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .cardGrid {
+    gap: 0.75rem;
+  }
+
+  .sectionCard {
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .brand {
+    gap: 0.35rem;
+    font-size: 0.58rem;
+  }
+
+  .brand img {
+    width: 7.5rem;
+    height: 2.7rem;
+  }
+
+  .loginLink {
+    gap: 0.25rem;
+    padding: 0.42rem 0.5rem;
+    font-size: 0.58rem;
+  }
+
+  .breadcrumb {
+    gap: 0.35rem;
+    font-size: 0.63rem;
+  }
+
+  .pageHeader p {
+    font-size: 0.72rem;
+  }
+
+  .backendNotice {
+    padding: 0.7rem;
+  }
+
+  .backendNotice p {
+    font-size: 0.65rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns: 1.5rem 2.25rem minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+
+  .sectionIcon {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .sectionHeader h2 {
+    font-size: 0.82rem;
+  }
+
+  .sectionBody {
+    gap: 0.7rem;
+  }
+
+  .fieldGrid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .formActions .primaryButton,
+  .formActions .secondaryButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sectionCard,
+  .field input,
+  .field select,
+  .field textarea,
+  .inputWithAction button {
+    transition: none;
+  }
+}

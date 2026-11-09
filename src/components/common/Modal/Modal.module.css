@@ -1,0 +1,48 @@
+.backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgb(13 38 68 / 55%);
+}
+
+.modal {
+  width: min(40rem, 100%);
+  max-height: min(90dvh, 56rem);
+  padding: var(--space-5);
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-dialog);
+}
+
+.modal > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.modal header button {
+  width: var(--control-height);
+  min-width: var(--control-height);
+  height: var(--control-height);
+  min-height: var(--control-height);
+  border: 0;
+  border-radius: 50%;
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  font: inherit;
+  font-size: var(--font-size-xl);
+  cursor: pointer;
+}

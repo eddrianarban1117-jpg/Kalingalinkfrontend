@@ -1,0 +1,22 @@
+.logo {
+  display: block;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.default {
+  width: var(--logo-size-sidebar);
+  height: var(--logo-size-sidebar);
+}
+
+.sidebar {
+  width: var(--role-sidebar-logo-width);
+  max-width: 100%;
+  height: auto;
+}
+
+.login {
+  width: var(--role-sidebar-logo-width);
+  max-width: 100%;
+  height: auto;
+}

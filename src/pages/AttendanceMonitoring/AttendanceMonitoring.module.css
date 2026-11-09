@@ -1,0 +1,1067 @@
+.page {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.1rem 0 0.35rem;
+  color: var(--admin-ink);
+}
+
+.pageHeader {
+  display: flex;
+  min-height: 3.3rem;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.titleIcon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 3rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #1888ec;
+  background: #d8f0ff;
+}
+
+.titleIcon svg {
+  width: 1.65rem;
+  height: 1.65rem;
+  stroke-width: 2.1;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  color: #103f91;
+  font-size: clamp(1.25rem, 1.8vw, 1.65rem);
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.pageHeader p {
+  margin: 0.2rem 0 0;
+  color: #7596c2;
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.statCard {
+  --tone: #258fe8;
+  --tint: #eaf7ff;
+  display: flex;
+  min-width: 0;
+  min-height: 5.25rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--tone) 15%, white);
+  border-radius: 0.65rem;
+  background: linear-gradient(125deg, var(--tint), #fff);
+}
+
+.teal {
+  --tone: #17b99c;
+  --tint: #e6faf5;
+}
+
+.gold {
+  --tone: #efa800;
+  --tint: #fff7df;
+}
+
+.pink {
+  --tone: #ef4f82;
+  --tint: #fff0f4;
+}
+
+.statIcon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 18%, white);
+}
+
+.statIcon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.statCard > div {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.statCard > div > span {
+  overflow: hidden;
+  color: #2468b7;
+  font-size: 0.61rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statCard > div > strong {
+  color: #103f91;
+  font-size: 1.45rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.statCard small {
+  color: #6f91b8;
+  font-size: 0.48rem;
+  font-weight: 500;
+}
+
+.statArrow {
+  display: grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  flex: 0 0 1.45rem;
+  align-self: flex-end;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 17%, white);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.topGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1.75fr) minmax(14rem, 1fr);
+  gap: 0.65rem;
+}
+
+.lowerGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 2fr) minmax(14rem, 0.75fr);
+  align-items: start;
+  gap: 0.65rem;
+}
+
+.panel {
+  min-width: 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.65rem;
+  background: #fff;
+  box-shadow: var(--admin-panel-shadow);
+}
+
+.panelHeader {
+  display: flex;
+  min-height: 1.2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  margin-bottom: 0.35rem;
+}
+
+.panelHeader h2 {
+  margin: 0;
+  color: #103f91;
+  font-size: 0.73rem;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.periodSelect {
+  display: flex;
+  height: 1.65rem;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0 0.4rem;
+  border: 1px solid #e2edf8;
+  border-radius: 999px;
+  color: #2783dc;
+  font-size: 0.52rem;
+}
+
+.periodSelect svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.periodSelect svg:last-child {
+  width: 0.65rem;
+  height: 0.65rem;
+  transform: rotate(90deg);
+}
+
+.periodSelect select {
+  max-width: 6.5rem;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.chartLegend {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.9rem;
+  margin: 0 0 0.2rem;
+  color: #4773a6;
+  font-size: 0.49rem;
+}
+
+.chartLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.chartLegend i {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+}
+
+.childrenDot {
+  background: #278ff2;
+}
+
+.teachersDot {
+  background: #26bda9;
+}
+
+.chart {
+  display: flex;
+  height: 7.6rem;
+  gap: 0.4rem;
+}
+
+.yAxis {
+  display: flex;
+  width: 1.25rem;
+  flex: 0 0 1.25rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.05rem 0 1.15rem;
+  color: #6d91bd;
+  font-size: 0.49rem;
+  text-align: right;
+}
+
+.chartBody {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.gridLines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.gridLines span {
+  height: 1px;
+  background: #e8f0f8;
+}
+
+.lineChart {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.dayLabels {
+  position: absolute;
+  inset: auto 0 -0.95rem;
+  display: flex;
+  justify-content: space-between;
+  color: #527aa9;
+  font-size: 0.47rem;
+}
+
+.rateContent {
+  display: flex;
+  min-height: 7.6rem;
+  align-items: center;
+  justify-content: space-around;
+  gap: 0.45rem;
+}
+
+.rateDonut {
+  position: relative;
+  display: grid;
+  width: 6.3rem;
+  height: 6.3rem;
+  flex: 0 0 6.3rem;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(#27bca7 0deg 328deg, #fa7ca2 328deg 360deg);
+}
+
+.rateDonut::before {
+  position: absolute;
+  width: 4.15rem;
+  height: 4.15rem;
+  border-radius: 50%;
+  background: #fff;
+  content: '';
+}
+
+.rateDonut > span {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #658ab6;
+  font-size: 0.5rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.rateDonut strong {
+  color: #103f91;
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.rateLegend {
+  display: flex;
+  min-width: 6.6rem;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #2f69a9;
+  font-size: 0.52rem;
+}
+
+.rateLegend li {
+  display: grid;
+  grid-template-columns: 0.55rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.rateLegend i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.rateLegend strong {
+  grid-column: 2;
+  color: #6689b4;
+  font-size: 0.48rem;
+  font-weight: 500;
+}
+
+.presentDot,
+.legendOnTime {
+  background: #27bca7;
+}
+
+.absentDot,
+.legendAbsent {
+  background: #fa668f;
+}
+
+.recordsPanel {
+  padding-bottom: 0.5rem;
+}
+
+.recordTools {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.recordSearch {
+  display: flex;
+  width: 10.5rem;
+  height: 1.7rem;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0 0.45rem;
+  border: 1px solid #e5eff9;
+  border-radius: 999px;
+  color: #4384c7;
+  background: #f5f9fe;
+}
+
+.recordSearch svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+}
+
+.recordSearch input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--admin-ink);
+  background: transparent;
+  font: inherit;
+  font-size: 0.51rem;
+}
+
+.recordSearch input::placeholder {
+  color: #7e9fc6;
+}
+
+.filterIcon {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border: 1px solid #e2edf8;
+  border-radius: 0.35rem;
+  color: #4384c7;
+}
+
+.filterIcon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.attendanceTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: left;
+}
+
+.attendanceTable th {
+  height: 1.65rem;
+  padding: 0 0.3rem;
+  color: #315f9b;
+  background: #f3f8fe;
+  font-size: 0.49rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.attendanceTable th:first-child {
+  width: 24%;
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.attendanceTable th:nth-child(2) {
+  width: 12%;
+}
+
+.attendanceTable th:nth-child(3) {
+  width: 24%;
+}
+
+.attendanceTable th:nth-child(4) {
+  width: 17%;
+}
+
+.attendanceTable th:nth-child(5) {
+  width: 15%;
+}
+
+.attendanceTable th:last-child {
+  width: 8%;
+  border-radius: 0 0.25rem 0.25rem 0;
+  text-align: center;
+}
+
+.attendanceTable td {
+  height: 2.05rem;
+  padding: 0 0.3rem;
+  border-bottom: 1px solid #edf3f9;
+  color: #6789b6;
+  font-size: 0.49rem;
+  white-space: nowrap;
+}
+
+.attendanceTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.attendanceTable td:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attendanceTable td:first-child strong {
+  color: #194985;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.personAvatar {
+  display: inline-grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+  place-items: center;
+  border: 1px solid #e1effb;
+  border-radius: 50%;
+  color: #e85b91;
+  background: #ffe5ef;
+}
+
+.personAvatar svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentColor;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.23rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.48rem;
+  line-height: 1;
+}
+
+.statusPresent {
+  color: #0f9c83;
+  background: #dcf8ef;
+}
+
+.statusAbsent {
+  color: #ce4169;
+  background: #ffe1e9;
+}
+
+.statusLate {
+  color: #b78100;
+  background: #fff3d5;
+}
+
+.moreButton {
+  border: 0;
+  color: #126be0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08rem;
+  cursor: pointer;
+}
+
+.emptyState {
+  height: 4rem !important;
+  color: var(--admin-muted) !important;
+  text-align: center !important;
+}
+
+.tableFooter {
+  display: flex;
+  min-height: 1.85rem;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.4rem;
+  color: #7797bf;
+  font-size: 0.5rem;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.pagination button,
+.calendarMonth button {
+  display: grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  border: 1px solid #dfebf7;
+  border-radius: 0.35rem;
+  color: #4184c5;
+  background: #fff;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.pagination button[aria-current='page'] {
+  border-color: #2489e9;
+  color: #fff;
+  background: #2489e9;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sideColumn {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.calendarPanel {
+  padding: 0.55rem 0.65rem;
+}
+
+.calendarPanel .panelHeader {
+  margin-bottom: 0.2rem;
+}
+
+.calendarMonth {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+  color: #285d9e;
+  font-size: 0.57rem;
+}
+
+.calendarMonth button {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0;
+  font-size: 0.85rem;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  text-align: center;
+}
+
+.weekday {
+  padding: 0.15rem 0;
+  color: #6689b3;
+  font-size: 0.48rem;
+}
+
+.calendarDay {
+  display: flex;
+  min-height: 1.22rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.08rem;
+  color: #3370b3;
+  font-size: 0.48rem;
+}
+
+.calendarDay > span:first-child {
+  display: grid;
+  width: 1.05rem;
+  height: 1.05rem;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.calendarDay .selectedDay {
+  color: #fff;
+  background: #258fe8;
+}
+
+.calendarDay i,
+.calendarLegend i {
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 50%;
+}
+
+.markerontime {
+  background: #28bea6;
+}
+
+.markerlate {
+  background: #ffbf38;
+}
+
+.markerabsent {
+  background: #f15a84;
+}
+
+.calendarLegend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.2rem;
+  margin-top: 0.3rem;
+  color: #6b8db6;
+  font-size: 0.43rem;
+}
+
+.calendarLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+}
+
+.legendLate {
+  background: #ffbf38;
+}
+
+.legendNoRecord {
+  background: #c9d8e9;
+}
+
+.quickList {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickItem {
+  display: flex;
+  min-width: 0;
+  min-height: 2.1rem;
+  align-items: center;
+  gap: 0.4rem;
+  border-top: 1px solid #eff4f9;
+}
+
+.quickItem:first-child {
+  border-top: 0;
+}
+
+.quickIcon {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: 0 0 1.65rem;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.quickIcon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.quickteal {
+  color: #13aa92;
+  background: #ddf8ef;
+}
+
+.quickgold {
+  color: #dca000;
+  background: #fff1cc;
+}
+
+.quickpink {
+  color: #e85081;
+  background: #ffe4ed;
+}
+
+.quickblue {
+  color: #258fe8;
+  background: #e1f3ff;
+}
+
+.quickpurple {
+  color: #7863dc;
+  background: #eeeaff;
+}
+
+.quickText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.quickText strong {
+  overflow: hidden;
+  color: #17478e;
+  font-size: 0.51rem;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quickText > span {
+  overflow: hidden;
+  color: #7895ba;
+  font-size: 0.45rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quickItem time {
+  align-self: flex-start;
+  padding-top: 0.2rem;
+  color: #7d9abf;
+  font-size: 0.43rem;
+  white-space: nowrap;
+}
+
+.demoNotice {
+  margin: 0;
+  color: #708fb6;
+  font-size: 0.53rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.page button:focus-visible,
+.page input:focus-visible,
+.page select:focus-visible {
+  outline: 2px solid #f0a500;
+  outline-offset: 2px;
+}
+
+@media (min-width: 1500px) {
+  .panel {
+    padding: 0.8rem 0.9rem;
+  }
+
+  .chart {
+    height: 9.3rem;
+  }
+
+  .attendanceTable td {
+    height: 2.3rem;
+  }
+}
+
+@media (max-width: 1050px) {
+  .topGrid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(13rem, 1fr);
+  }
+
+  .lowerGrid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(13rem, 0.8fr);
+  }
+
+  .attendanceTable {
+    min-width: 36rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .topGrid,
+  .lowerGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .quickPanel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    gap: 0.55rem;
+  }
+
+  .pageHeader {
+    align-items: flex-start;
+  }
+
+  .titleIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-basis: 2.5rem;
+  }
+
+  .pageHeader h1 {
+    font-size: 1.1rem;
+  }
+
+  .pageHeader p {
+    font-size: 0.62rem;
+    line-height: 1.35;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .statCard {
+    min-height: 4.5rem;
+    gap: 0.4rem;
+    padding: 0.45rem;
+  }
+
+  .statIcon {
+    width: 2rem;
+    height: 2rem;
+    flex-basis: 2rem;
+  }
+
+  .statCard > div > span {
+    font-size: 0.52rem;
+  }
+
+  .statCard > div > strong {
+    font-size: 1.2rem;
+  }
+
+  .statArrow {
+    display: none;
+  }
+
+  .panel {
+    padding: 0.55rem;
+  }
+
+  .chart {
+    height: 7rem;
+  }
+
+  .panelHeader h2 {
+    font-size: 0.68rem;
+  }
+
+  .rateContent {
+    min-height: 7rem;
+  }
+
+  .recordSearch {
+    width: min(10rem, 48vw);
+  }
+
+  .attendanceTable {
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  .attendanceTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .attendanceTable tbody {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .attendanceTable tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0.35rem;
+    border: 1px solid #edf3f9;
+    border-radius: 0.45rem;
+  }
+
+  .attendanceTable td,
+  .attendanceTable td:first-child {
+    display: flex;
+    min-width: 0;
+    height: auto;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.3rem 0.15rem;
+    border: 0;
+    overflow: visible;
+    font-size: 0.52rem;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .attendanceTable td:first-child {
+    grid-column: 1 / -1;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #edf3f9;
+    font-weight: 700;
+  }
+
+  .attendanceTable td:not(:first-child)::before {
+    flex: 0 0 auto;
+    color: #315f9b;
+    font-size: 0.48rem;
+    font-weight: 700;
+    content: attr(data-label) ':';
+  }
+
+  .attendanceTable td:first-child strong {
+    overflow-wrap: anywhere;
+  }
+
+  .attendanceTable td:last-child {
+    justify-content: flex-start;
+  }
+
+  .attendanceTable .emptyState {
+    grid-column: 1 / -1;
+    justify-content: center;
+    height: 4rem;
+  }
+
+  .tableFooter {
+    align-items: center;
+    font-size: 0.47rem;
+  }
+
+  .pagination {
+    gap: 0.1rem;
+  }
+
+  .pagination button {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+
+  .sideColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .quickPanel {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

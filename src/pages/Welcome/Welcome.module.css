@@ -1,0 +1,32 @@
+.page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 2rem 1.25rem;
+  background-color: var(--color-white);
+}
+
+.content {
+  display: flex;
+  width: min(100%, 32rem);
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.logo {
+  display: block;
+  width: min(100%, 17rem);
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .content {
+    gap: 2rem;
+  }
+
+  .logo {
+    width: min(100%, 15rem);
+  }
+}

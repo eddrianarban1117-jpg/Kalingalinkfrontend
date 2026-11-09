@@ -1,0 +1,147 @@
+@import './variables.css';
+
+:root {
+  font-family: var(--font-family-body);
+  font-size: 93.75%;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100dvh;
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-body);
+  overflow-x: clip;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+main,
+section,
+article,
+aside,
+form,
+figure {
+  min-width: 0;
+}
+
+body :where(p, li, td, th, dt, dd) {
+  font-size: var(--font-size-sm) !important;
+  line-height: var(--line-height-body);
+  overflow-wrap: anywhere;
+}
+
+body
+  :where(
+    small,
+    span,
+    strong,
+    b,
+    label,
+    button,
+    a,
+    input,
+    select,
+    textarea,
+    summary,
+    legend,
+    figcaption,
+    caption
+  ) {
+  font-size: var(--font-size-xs) !important;
+  line-height: var(--line-height-body);
+  overflow-wrap: anywhere;
+}
+
+body :where(h1, h2, h3, h4) {
+  line-height: var(--line-height-heading);
+  overflow-wrap: anywhere;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-height: max(44px, var(--control-height)) !important;
+  min-width: max(44px, var(--control-height)) !important;
+}
+
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  min-height: max(44px, var(--control-height));
+}
+
+img,
+svg,
+iframe,
+video,
+canvas {
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+:focus-visible {
+  outline: 3px solid #1685ed;
+  outline-offset: 2px;
+}
+
+*,
+*::before,
+*::after {
+  animation: none !important;
+  scroll-behavior: auto !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    min-width: 320px;
+  }
+
+  img,
+  iframe,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+}
