@@ -6,6 +6,7 @@
   place-items: center;
   padding: var(--space-4);
   background: rgb(13 38 68 / 55%);
+  animation: motion-modal-backdrop 180ms ease-out both;
 }
 
 .modal {
@@ -18,6 +19,25 @@
   color: var(--color-text);
   background: var(--color-surface);
   box-shadow: var(--shadow-dialog);
+  animation: motion-dialog-enter var(--motion-duration-standard, 200ms)
+    var(--motion-ease-standard, ease-out) both;
+}
+
+@keyframes motion-modal-backdrop {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .modal {
+    animation: none;
+  }
 }
 
 .modal > header {

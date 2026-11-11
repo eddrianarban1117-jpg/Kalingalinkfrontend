@@ -16,6 +16,8 @@
 
 .button:hover {
   background-color: var(--color-primary-dark);
+  box-shadow: 0 0.3rem 0.8rem rgb(11 86 168 / 18%);
+  transform: translateY(-1px);
 }
 
 .button:focus-visible {
@@ -24,11 +26,16 @@
 }
 
 .button:active {
-  transform: translateY(1px);
+  transform: translateY(0) scale(0.98);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition: none;
+  }
+
+  .button:hover,
+  .button:active {
+    transform: none;
   }
 }

@@ -1,0 +1,126 @@
+:root {
+  --motion-duration-fast: 140ms;
+  --motion-duration-standard: 200ms;
+  --motion-duration-page: 280ms;
+  --motion-ease-standard: cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+
+@keyframes motion-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes motion-notice-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-motion-page][data-motion-active='true'] {
+  animation: motion-page-enter var(--motion-duration-page)
+    var(--motion-ease-standard) both;
+}
+
+button:not(:disabled),
+[role='button']:not([aria-disabled='true']) {
+  transition:
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-standard) var(--motion-ease-standard),
+    background-color var(--motion-duration-standard) var(--motion-ease-standard),
+    color var(--motion-duration-standard) var(--motion-ease-standard),
+    border-color var(--motion-duration-standard) var(--motion-ease-standard);
+}
+
+button:not(:disabled):active,
+[role='button']:not([aria-disabled='true']):active {
+  transform: scale(0.98);
+}
+
+a[href] {
+  transition:
+    color var(--motion-duration-standard) var(--motion-ease-standard),
+    background-color var(--motion-duration-standard) var(--motion-ease-standard);
+}
+
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  transition:
+    border-color var(--motion-duration-standard) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-standard) var(--motion-ease-standard),
+    background-color var(--motion-duration-standard) var(--motion-ease-standard);
+}
+
+input:not([type='checkbox']):not([type='radio']):focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgb(35 135 236 / 15%);
+}
+
+table tbody tr {
+  transition: background-color var(--motion-duration-standard)
+    var(--motion-ease-standard);
+}
+
+table tbody tr:hover {
+  background-color: var(--color-surface-muted);
+}
+
+[role='dialog'] {
+  animation: motion-dialog-enter var(--motion-duration-standard)
+    var(--motion-ease-standard) both;
+}
+
+[role='menu'],
+[role='listbox'] {
+  transform-origin: top right;
+  animation: motion-dialog-enter var(--motion-duration-fast)
+    var(--motion-ease-standard) both;
+}
+
+[role='alert'],
+[role='status'] {
+  animation: motion-notice-enter var(--motion-duration-standard)
+    var(--motion-ease-standard) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion-page],
+  [role='dialog'],
+  [role='menu'],
+  [role='listbox'],
+  [role='alert'],
+  [role='status'] {
+    animation: none;
+  }
+
+  button:not(:disabled):active,
+  [role='button']:not([aria-disabled='true']):active {
+    transform: none;
+  }
+}

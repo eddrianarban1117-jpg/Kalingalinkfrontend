@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { PageTransition } from '../components/animations/PageTransition';
 import { routePaths } from '../constants/app-constants';
 import { Login } from '../pages/Login/Login';
 import { AccountChoice } from '../pages/AccountChoice/AccountChoice';
@@ -24,6 +25,7 @@ import { EventsPage } from '../pages/Events/EventsPage';
 
 export function AppRoutes() {
   return (
+    <PageTransition>
     <Routes>
       <Route path={routePaths.welcome} element={<GuestOnlyRoute><Welcome /></GuestOnlyRoute>} />
       <Route path={routePaths.accountChoice} element={<GuestOnlyRoute><AccountChoice /></GuestOnlyRoute>} />
@@ -195,5 +197,6 @@ export function AppRoutes() {
       />
       <Route path="*" element={<Navigate to={routePaths.welcome} replace />} />
     </Routes>
+    </PageTransition>
   );
 }

@@ -20,10 +20,23 @@
   color: var(--color-text);
   background: var(--color-surface);
   font: inherit;
+  transition:
+    border-color var(--motion-duration-standard, 200ms) ease,
+    box-shadow var(--motion-duration-standard, 200ms) ease;
+}
+
+.field input:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(35 135 236 / 15%);
 }
 
 .field input[aria-invalid='true'] {
   border-color: var(--color-danger);
+}
+
+.error {
+  animation: motion-notice-enter var(--motion-duration-fast, 140ms) ease-out
+    both;
 }
 
 .hint,
