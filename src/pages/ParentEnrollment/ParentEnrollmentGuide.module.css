@@ -1,0 +1,548 @@
+.guide {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+}
+
+.panelShell {
+  display: grid;
+  grid-template-rows: 1fr;
+  margin-bottom: 0.1rem;
+  opacity: 1;
+  transition:
+    grid-template-rows 220ms ease,
+    margin-bottom 220ms ease,
+    opacity 180ms ease,
+    visibility 180ms ease;
+  visibility: visible;
+}
+
+.panelClosed {
+  grid-template-rows: 0fr;
+  margin-bottom: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition-delay: 0s, 0s, 0s, 180ms;
+}
+
+.panel {
+  --guide-surface: #fff;
+  --guide-surface-soft: #f2f8ff;
+  --guide-border: #d3e6f8;
+  --guide-title: #104c91;
+  --guide-text: #345b83;
+  --guide-muted: #6684a5;
+  --guide-accent: #147de1;
+  --guide-accent-soft: #e7f3ff;
+  --guide-shadow: 0 0.45rem 1.4rem rgb(24 76 129 / 10%);
+
+  min-height: 0;
+  overflow: hidden;
+  padding: clamp(0.75rem, 2vw, 1.15rem);
+  border: 1px solid var(--guide-border);
+  border-radius: 0.9rem;
+  color: var(--guide-text);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgb(183 222 255 / 27%),
+      transparent 14rem
+    ),
+    var(--guide-surface);
+  box-shadow: var(--guide-shadow);
+}
+
+.panelOpen .panel {
+  animation: panel-enter 240ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+}
+
+.header {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.mascotFrame {
+  display: grid;
+  width: clamp(3.8rem, 8vw, 5.3rem);
+  height: clamp(3.8rem, 8vw, 5.3rem);
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: visible;
+}
+
+.mascotFrame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: kali-float 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.identityCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.identityCopy strong {
+  color: var(--guide-title);
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.identityCopy small {
+  color: var(--guide-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.headerActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.languagePicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--guide-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.languagePicker select {
+  min-width: 6rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 1.7rem 0.35rem 0.55rem;
+  border: 1px solid var(--guide-border);
+  border-radius: 0.5rem;
+  color: var(--guide-title);
+  background-color: var(--guide-surface);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.languagePicker select:focus-visible {
+  border-color: var(--guide-accent);
+  outline: 3px solid rgb(20 125 225 / 18%);
+  outline-offset: 1px;
+}
+
+.closeButton {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 2.35rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--guide-muted);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.closeButton:hover {
+  color: var(--guide-title);
+  background: var(--guide-accent-soft);
+  transform: rotate(5deg);
+}
+
+.closeButton svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.welcome,
+.instruction {
+  min-width: 0;
+  padding: 0.45rem 0.25rem 0.1rem clamp(4.45rem, 9vw, 6rem);
+  opacity: 0;
+  transform: translateY(0.3rem);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.contentVisible {
+  opacity: 1;
+  transform: translateY(0);
+  animation: content-enter 180ms ease both;
+}
+
+.welcome p,
+.instruction > p {
+  margin: 0;
+  color: var(--guide-text);
+  font-size: 0.93rem;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.welcome p {
+  max-width: 58rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  min-height: 2.65rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--guide-accent);
+  border-radius: 0.55rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.primaryButton {
+  color: #fff;
+  background: linear-gradient(110deg, #1689ed, #0864cc);
+  box-shadow: 0 0.25rem 0.65rem rgb(13 108 208 / 22%);
+}
+
+.primaryButton:hover {
+  border-color: #0756ae;
+  background: linear-gradient(110deg, #0879dc, #0756ae);
+  box-shadow: 0 0.35rem 0.8rem rgb(13 108 208 / 28%);
+  transform: translateY(-1px);
+}
+
+.secondaryButton {
+  color: var(--guide-title);
+  background: var(--guide-surface);
+}
+
+.secondaryButton:hover {
+  background: var(--guide-accent-soft);
+  transform: translateY(-1px);
+}
+
+.primaryButton:active,
+.secondaryButton:active {
+  transform: scale(0.98);
+}
+
+.primaryButton svg,
+.secondaryButton svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.instruction {
+  padding-top: 0.25rem;
+}
+
+.stepHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.45rem;
+  color: var(--guide-accent);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.progressTrack {
+  display: block;
+  width: min(100%, 14rem);
+  height: 0.35rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--guide-accent-soft);
+}
+
+.progressValue {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1ba4eb, #116cd6);
+  transition: width 200ms ease;
+}
+
+.instruction h2 {
+  margin: 0 0 0.35rem;
+  color: var(--guide-title);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.stepActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.floatingButton {
+  position: fixed;
+  z-index: 30;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  place-items: center;
+  padding: 0.15rem;
+  overflow: hidden;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #bce3ff, #f1f8ff);
+  box-shadow: 0 0.4rem 1.25rem rgb(9 59 111 / 28%);
+  cursor: pointer;
+  animation: float-button 3.8s ease-in-out infinite;
+  transition:
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.floatingButton:hover {
+  box-shadow: 0 0.55rem 1.5rem rgb(9 59 111 / 36%);
+  transform: translateY(-3px) scale(1.04);
+}
+
+.floatingButton img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:global([data-theme='dark']) .panel {
+  --guide-surface: #131f32;
+  --guide-surface-soft: #18263b;
+  --guide-border: #263a57;
+  --guide-title: #f1f5ff;
+  --guide-text: #c4d2e7;
+  --guide-muted: #a8b9d4;
+  --guide-accent: #1683f8;
+  --guide-accent-soft: #203b5c;
+  --guide-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 28%);
+}
+
+:global([data-theme='dark']) .panel {
+  border-color: var(--guide-border);
+  color: var(--guide-text);
+  background-color: var(--guide-surface);
+}
+
+:global([data-theme='dark']) .languagePicker select,
+:global([data-theme='dark']) .secondaryButton {
+  border-color: var(--guide-border);
+  color: var(--guide-title);
+  background-color: var(--guide-surface-soft);
+}
+
+:global([data-theme='dark']) .secondaryButton:hover {
+  background-color: var(--guide-accent-soft);
+}
+
+@keyframes kali-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-0.3rem) scale(1.012);
+  }
+}
+
+@keyframes float-button {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.25rem;
+  }
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 620px) {
+  .panel {
+    padding: 0.65rem;
+    border-radius: 0.7rem;
+  }
+
+  .header {
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .mascotFrame {
+    width: 3.35rem;
+    height: 3.35rem;
+  }
+
+  .identity {
+    gap: 0.4rem;
+  }
+
+  .identityCopy strong {
+    font-size: 1rem;
+  }
+
+  .identityCopy small {
+    font-size: 0.68rem;
+  }
+
+  .headerActions {
+    gap: 0.15rem;
+  }
+
+  .languagePicker {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    font-size: 0.65rem;
+  }
+
+  .languagePicker select {
+    min-width: 5.3rem;
+    min-height: 2rem;
+    padding: 0.25rem 1.3rem 0.25rem 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .closeButton {
+    width: 2rem;
+    height: 2rem;
+    flex-basis: 2rem;
+  }
+
+  .welcome,
+  .instruction {
+    padding: 0.4rem 0.15rem 0.1rem;
+  }
+
+  .welcome {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .welcome p,
+  .instruction > p {
+    font-size: 0.86rem;
+  }
+
+  .welcome .primaryButton {
+    align-self: flex-end;
+  }
+
+  .instruction h2 {
+    font-size: 0.94rem;
+  }
+
+  .stepActions button {
+    min-height: 2.45rem;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .floatingButton {
+    right: max(0.75rem, env(safe-area-inset-right));
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    width: 3.9rem;
+    height: 3.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panelShell,
+  .panelOpen .panel,
+  .mascotFrame img,
+  .floatingButton,
+  .welcome,
+  .instruction,
+  .contentVisible,
+  .progressValue,
+  .primaryButton,
+  .secondaryButton,
+  .closeButton {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .welcome,
+  .instruction {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -11,6 +11,7 @@ import femalePanel from '../../../femalepanel.png';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { requiredCdcNames, routePaths } from '../../constants/app-constants';
+import { ParentEnrollmentGuide } from './ParentEnrollmentGuide';
 import styles from './ParentEnrollment.module.css';
 
 const steps = ['Child Information', 'Review & Submit'];
@@ -758,8 +759,7 @@ export function ParentEnrollment() {
     }
     if (loadingCdcs || cdcs.length === 0) {
       setSubmitError(
-        cdcError ||
-          'No registered Child Development Centers are available.',
+        cdcError || 'No registered Child Development Centers are available.',
       );
       return false;
     }
@@ -994,6 +994,7 @@ export function ParentEnrollment() {
 
   return (
     <main aria-label="Apply for enrollment" className={styles.page}>
+      <ParentEnrollmentGuide />
       <section
         aria-label="Apply for Enrollment"
         className={styles.hero}
