@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 import kali from '../../../kali.png';
 import {
   parentEnrollmentGuideContent,
@@ -35,7 +41,21 @@ export function ParentEnrollmentGuide() {
   const [step, setStep] = useState<number | null>(null);
   const [open, setOpen] = useState(true);
   const [contentVisible, setContentVisible] = useState(true);
+  const [mascotPosition, setMascotPosition] = useState<{
+    left: number;
+    top: number;
+  } | null>(null);
   const contentTimer = useRef<number | null>(null);
+  const mascotRef = useRef<HTMLButtonElement | null>(null);
+  const dragStart = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    left: number;
+    top: number;
+    moved: boolean;
+  } | null>(null);
+  const suppressMascotClick = useRef(false);
   const content = parentEnrollmentGuideContent[language];
   const onFinalStep = step === content.instructions.length - 1;
 
@@ -47,6 +67,32 @@ export function ParentEnrollmentGuide() {
     },
     [],
   );
+
+  useEffect(() => {
+    function keepMascotInViewport() {
+      const mascot = mascotRef.current;
+      if (!mascot) return;
+
+      const { width, height } = mascot.getBoundingClientRect();
+      setMascotPosition((current) =>
+        current
+          ? {
+              left: Math.max(
+                0,
+                Math.min(window.innerWidth - width, current.left),
+              ),
+              top: Math.max(
+                0,
+                Math.min(window.innerHeight - height, current.top),
+              ),
+            }
+          : null,
+      );
+    }
+
+    window.addEventListener('resize', keepMascotInViewport);
+    return () => window.removeEventListener('resize', keepMascotInViewport);
+  }, []);
 
   function transitionContent(update: () => void) {
     if (contentTimer.current !== null) {
@@ -73,6 +119,84 @@ export function ParentEnrollmentGuide() {
     setOpen(true);
   }
 
+  function handleMascotPointerDown(event: PointerEvent<HTMLButtonElement>) {
+    if (event.button !== 0) return;
+    suppressMascotClick.current = false;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    dragStart.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      left: bounds.left,
+      top: bounds.top,
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handleMascotPointerMove(event: PointerEvent<HTMLButtonElement>) {
+    const start = dragStart.current;
+    if (!start || start.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - start.startX;
+    const deltaY = event.clientY - start.startY;
+    if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) start.moved = true;
+    if (!start.moved) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setMascotPosition({
+      left: Math.max(
+        0,
+        Math.min(window.innerWidth - bounds.width, start.left + deltaX),
+      ),
+      top: Math.max(
+        0,
+        Math.min(window.innerHeight - bounds.height, start.top + deltaY),
+      ),
+    });
+  }
+
+  function handleMascotPointerUp(event: PointerEvent<HTMLButtonElement>) {
+    if (dragStart.current?.pointerId !== event.pointerId) return;
+    suppressMascotClick.current = dragStart.current.moved;
+    dragStart.current = null;
+  }
+
+  function handleMascotPointerCancel(event: PointerEvent<HTMLButtonElement>) {
+    if (dragStart.current?.pointerId !== event.pointerId) return;
+    dragStart.current = null;
+    suppressMascotClick.current = false;
+  }
+
+  function handleMascotKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    const movement: Record<string, [number, number]> = {
+      ArrowLeft: [-20, 0],
+      ArrowRight: [20, 0],
+      ArrowUp: [0, -20],
+      ArrowDown: [0, 20],
+    };
+    const delta = movement[event.key];
+    if (!delta) return;
+
+    event.preventDefault();
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setMascotPosition((current) => ({
+      left: Math.max(
+        0,
+        Math.min(
+          window.innerWidth - bounds.width,
+          (current?.left ?? bounds.left) + delta[0],
+        ),
+      ),
+      top: Math.max(
+        0,
+        Math.min(
+          window.innerHeight - bounds.height,
+          (current?.top ?? bounds.top) + delta[1],
+        ),
+      ),
+    }));
+  }
+
   return (
     <div className={styles.guide}>
       <section
@@ -86,9 +210,6 @@ export function ParentEnrollmentGuide() {
         <div className={styles.panel}>
           <header className={styles.header}>
             <div className={styles.identity}>
-              <span className={styles.mascotFrame}>
-                <img alt={content.mascotAlt} src={kali} />
-              </span>
               <span className={styles.identityCopy}>
                 <strong id="kali-guide-title">Kali</strong>
                 <small>{content.enrollmentGuide}</small>
@@ -204,18 +325,40 @@ export function ParentEnrollmentGuide() {
         </div>
       </section>
 
-      {!open && (
-        <button
-          aria-controls="kali-enrollment-guide"
-          aria-expanded={false}
-          aria-label={content.reopen}
-          className={styles.floatingButton}
-          onClick={reopenGuide}
-          type="button"
-        >
-          <img alt="" src={kali} />
-        </button>
-      )}
+      <button
+        aria-controls="kali-enrollment-guide"
+        aria-expanded={open}
+        aria-label={open ? content.close : content.reopen}
+        aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
+        className={styles.floatingButton}
+        onClick={() => {
+          if (suppressMascotClick.current) {
+            suppressMascotClick.current = false;
+            return;
+          }
+          if (open) closeGuide();
+          else reopenGuide();
+        }}
+        onKeyDown={handleMascotKeyDown}
+        onPointerCancel={handleMascotPointerCancel}
+        onPointerDown={handleMascotPointerDown}
+        onPointerMove={handleMascotPointerMove}
+        onPointerUp={handleMascotPointerUp}
+        style={
+          mascotPosition
+            ? {
+                bottom: 'auto',
+                left: mascotPosition.left,
+                right: 'auto',
+                top: mascotPosition.top,
+              }
+            : undefined
+        }
+        ref={mascotRef}
+        type="button"
+      >
+        <img alt={content.mascotAlt} draggable={false} src={kali} />
+      </button>
     </div>
   );
 }
