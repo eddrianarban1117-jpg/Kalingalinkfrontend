@@ -143,10 +143,13 @@
 .childIdentity > img {
   width: clamp(5rem, 9vw, 7.5rem);
   height: clamp(5rem, 9vw, 7.5rem);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
   border: 3px solid #d8efff;
   border-radius: 50%;
   background: #e3f4ff;
   object-fit: cover;
+  object-position: center;
 }
 
 .childIdentity h2 {

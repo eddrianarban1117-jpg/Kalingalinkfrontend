@@ -1103,12 +1103,11 @@
 .parentIdentity > span {
   width: 6rem;
   height: 6rem;
+  aspect-ratio: 1;
   flex: 0 0 6rem;
   border: 3px solid #d7edfc;
   border-radius: 50%;
   background: #e2f3ff;
-  object-fit: cover;
-  object-position: 13% 38%;
 }
 
 .parentIdentity > div {
@@ -1389,13 +1388,16 @@
 }
 
 .profileHero img {
+  display: block;
   width: 5rem;
   height: 5rem;
+  aspect-ratio: 1;
+  flex: 0 0 5rem;
   border: 2px solid #d9efff;
   border-radius: 50%;
   background: #e5f5ff;
   object-fit: cover;
-  object-position: 13% 38%;
+  object-position: center;
 }
 
 .profileHero h2 {
