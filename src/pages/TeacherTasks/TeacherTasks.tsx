@@ -421,7 +421,6 @@ export function TeacherTasks({ globalSearch }: { globalSearch: string }) {
                     </td>
                     <th className={styles.taskName} scope="row">
                       <strong>{task.title}</strong>
-                      <small>{task.description}</small>
                     </th>
                     <td>
                       <span
