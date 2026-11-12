@@ -186,13 +186,19 @@ function StudentIdFront({ student }: { student: StudentIdDetails }) {
           )}
           <h2>{student.name}</h2>
           <p>
+            <span>Full Name</span>
+            <strong>{student.name || 'Not provided'}</strong>
+          </p>
+          <p>
             <span>First Name</span>
             <strong>{student.firstName || 'Not provided'}</strong>
           </p>
-          <p>
-            <span>Middle Name</span>
-            <strong>{student.middleName || 'Not provided'}</strong>
-          </p>
+          {student.middleName.trim() && (
+            <p>
+              <span>Middle Name</span>
+              <strong>{student.middleName}</strong>
+            </p>
+          )}
           <p>
             <span>Last Name</span>
             <strong>{student.lastName || 'Not provided'}</strong>
@@ -284,6 +290,8 @@ export function StudentIdViewer({ student, onClose }: StudentIdViewerProps) {
   const [qrCode, setQrCode] = useState('');
   const [qrError, setQrError] = useState('');
   const [closing, setClosing] = useState(false);
+  const [logoReady, setLogoReady] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const closeTimer = useRef<number | null>(null);
   const isClosing = useRef(false);
   const closeAction = useRef<() => void>(() => {});
@@ -344,6 +352,17 @@ export function StudentIdViewer({ student, onClose }: StudentIdViewerProps) {
   function handleClose() {
     closeAction.current();
   }
+
+  function handlePrint() {
+    if (!qrCode || !logoReady) return;
+    window.print();
+  }
+
+  const printError = qrError
+    ? 'The verification QR code could not be generated. Printing is unavailable.'
+    : logoError
+      ? 'The KalingaLink logo could not be loaded. Printing is unavailable.'
+      : '';
 
   return (
     <div
@@ -433,18 +452,45 @@ export function StudentIdViewer({ student, onClose }: StudentIdViewerProps) {
             </button>
             <button
               className={styles.secondaryAction}
+              disabled={!qrCode || !logoReady}
               type="button"
-              onClick={() => window.print()}
+              onClick={handlePrint}
             >
-              <PrintIcon /> Print
+              <PrintIcon />
+              {printError
+                ? 'Print unavailable'
+                : qrCode && logoReady
+                  ? 'Print'
+                  : 'Preparing…'}
             </button>
           </div>
+          {printError && (
+            <p className={styles.preparationError} role="alert">
+              {printError}
+            </p>
+          )}
         </div>
 
         <div className={styles.printLayout}>
-          <StudentIdFront student={student} />
+          <div className={styles.printFront}>
+            <StudentIdFront student={student} />
+          </div>
           <StudentIdBack student={student} qrCode={qrCode} qrError={qrError} />
         </div>
+        <img
+          alt=""
+          aria-hidden="true"
+          className={styles.printLogoPreload}
+          src={logo}
+          onLoad={() => {
+            setLogoReady(true);
+            setLogoError(false);
+          }}
+          onError={() => {
+            setLogoError(true);
+            console.error('KalingaLink logo could not be loaded for printing.');
+          }}
+        />
       </section>
     </div>
   );

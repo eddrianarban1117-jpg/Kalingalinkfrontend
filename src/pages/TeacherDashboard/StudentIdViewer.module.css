@@ -66,7 +66,7 @@
   height: 2.6rem;
   flex: 0 0 2.6rem;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 0.6rem;
   color: #0867d8;
   background: #e8f3ff;
 }
@@ -179,6 +179,7 @@
   display: flex;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid #c9def8;
@@ -217,6 +218,7 @@
   border-radius: 100% 0 0;
   border-top: 0.55cqi solid #ffca1c;
   background: #0781e6;
+  box-shadow: 0 -0.5cqi 0 #20b96e;
   transform: rotate(-2deg);
 }
 
@@ -347,7 +349,7 @@
 .frontCode {
   position: absolute;
   z-index: 1;
-  right: 4cqi;
+  left: 4cqi;
   bottom: 3cqi;
   color: #fff;
   font-size: 1.8cqi;
@@ -375,6 +377,7 @@
   height: 18%;
   border-top: 0.55cqi solid #fbc51d;
   background: #087be0;
+  box-shadow: 0 -0.5cqi 0 #20b96e;
   transform: rotate(-1.5deg);
 }
 
@@ -392,8 +395,8 @@
 }
 
 .backBrand .brand img {
-  width: 24cqi;
-  max-height: 13cqi;
+  width: 34cqi;
+  max-height: 16cqi;
 }
 
 .backBrand .brand strong {
@@ -535,6 +538,25 @@
   transform: scale(0.97);
 }
 
+.viewerActions button:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+.viewerActions button:disabled:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.preparationError {
+  margin: -0.5rem 0 0;
+  color: #a42637;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 .viewerActions button svg {
   width: 1.35rem;
   height: 1.35rem;
@@ -556,6 +578,15 @@
 
 .printLayout {
   display: none;
+}
+
+.printLogoPreload {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .viewer :is(button):focus-visible {
@@ -673,7 +704,15 @@
 @media print {
   @page {
     size: landscape;
-    margin: 10mm;
+    margin: 0;
+  }
+
+  :global(html),
+  :global(body) {
+    width: 100%;
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   :global(body *),
@@ -718,16 +757,22 @@
   .printLayout {
     display: flex !important;
     width: 100%;
-    align-items: flex-start;
+    min-height: 100vh;
+    box-sizing: border-box;
+    align-items: center;
     justify-content: center;
-    gap: 10mm;
-    padding-top: 15mm;
+    gap: 4mm;
+    margin: 0;
+    padding: 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .printLayout .idCard {
     width: 85.6mm;
-    height: 54mm;
+    height: 53.98mm;
     flex: 0 0 85.6mm;
+    box-sizing: border-box;
     border: 0.3mm solid #b6d2f3;
     border-radius: 3mm;
     box-shadow: none;
@@ -738,6 +783,18 @@
   .printLayout .idCard::before,
   .printLayout .idCard::after {
     visibility: visible !important;
+  }
+
+  .printFront {
+    width: 85.6mm;
+    height: 53.98mm;
+    flex: 0 0 85.6mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .printLogoPreload {
+    display: none !important;
   }
 }
 
