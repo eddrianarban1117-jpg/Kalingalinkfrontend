@@ -36,9 +36,27 @@ function ArrowIcon({ direction }: { direction: 'left' | 'right' }) {
   );
 }
 
+function CompletionIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="m5 12 4 4L19 6"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.2"
+      />
+    </svg>
+  );
+}
+
+function isGuideLanguage(value: string): value is GuideLanguage {
+  return value === 'en' || value === 'tl';
+}
+
 export function ParentEnrollmentGuide() {
   const [language, setLanguage] = useState<GuideLanguage>('en');
-  const [step, setStep] = useState<number | null>(null);
+  const [step, setStep] = useState(0);
   const [open, setOpen] = useState(true);
   const [contentVisible, setContentVisible] = useState(true);
   const [mascotPosition, setMascotPosition] = useState<{
@@ -57,7 +75,8 @@ export function ParentEnrollmentGuide() {
   } | null>(null);
   const suppressMascotClick = useRef(false);
   const content = parentEnrollmentGuideContent[language];
-  const onFinalStep = step === content.instructions.length - 1;
+  const activeStep = content.steps[step] ?? content.steps[0];
+  const isFinalStep = step === content.steps.length - 1;
 
   useEffect(
     () => () => {
@@ -69,29 +88,44 @@ export function ParentEnrollmentGuide() {
   );
 
   useEffect(() => {
-    function keepMascotInViewport() {
-      const mascot = mascotRef.current;
-      if (!mascot) return;
+    let resizeFrame: number | null = null;
 
-      const { width, height } = mascot.getBoundingClientRect();
-      setMascotPosition((current) =>
-        current
-          ? {
-              left: Math.max(
-                0,
-                Math.min(window.innerWidth - width, current.left),
-              ),
-              top: Math.max(
-                0,
-                Math.min(window.innerHeight - height, current.top),
-              ),
-            }
-          : null,
-      );
+    function keepMascotInViewport() {
+      if (resizeFrame !== null) {
+        window.cancelAnimationFrame(resizeFrame);
+      }
+
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = null;
+        const mascot = mascotRef.current;
+        if (!mascot) return;
+
+        const { width, height } = mascot.getBoundingClientRect();
+        const viewportWidth = document.documentElement.clientWidth;
+        setMascotPosition((current) =>
+          current
+            ? {
+                left: Math.max(
+                  0,
+                  Math.min(viewportWidth - width - 8, current.left),
+                ),
+                top: Math.max(
+                  0,
+                  Math.min(window.innerHeight - height - 8, current.top),
+                ),
+              }
+            : null,
+        );
+      });
     }
 
     window.addEventListener('resize', keepMascotInViewport);
-    return () => window.removeEventListener('resize', keepMascotInViewport);
+    return () => {
+      window.removeEventListener('resize', keepMascotInViewport);
+      if (resizeFrame !== null) {
+        window.cancelAnimationFrame(resizeFrame);
+      }
+    };
   }, []);
 
   function transitionContent(update: () => void) {
@@ -106,17 +140,21 @@ export function ParentEnrollmentGuide() {
     }, 100);
   }
 
-  function changeLanguage(nextLanguage: GuideLanguage) {
-    if (nextLanguage === language) return;
-    transitionContent(() => setLanguage(nextLanguage));
+  function navigateToStep(nextStep: number) {
+    if (nextStep < 0 || nextStep >= content.steps.length || nextStep === step) {
+      return;
+    }
+    transitionContent(() => setStep(nextStep));
+  }
+
+  function changeLanguage(value: string) {
+    if (!isGuideLanguage(value) || value === language) return;
+    transitionContent(() => setLanguage(value));
   }
 
   function closeGuide() {
+    mascotRef.current?.focus();
     setOpen(false);
-  }
-
-  function reopenGuide() {
-    setOpen(true);
   }
 
   function handleMascotPointerDown(event: PointerEvent<HTMLButtonElement>) {
@@ -146,11 +184,14 @@ export function ParentEnrollmentGuide() {
     setMascotPosition({
       left: Math.max(
         0,
-        Math.min(window.innerWidth - bounds.width, start.left + deltaX),
+        Math.min(
+          document.documentElement.clientWidth - bounds.width - 8,
+          start.left + deltaX,
+        ),
       ),
       top: Math.max(
         0,
-        Math.min(window.innerHeight - bounds.height, start.top + deltaY),
+        Math.min(window.innerHeight - bounds.height - 8, start.top + deltaY),
       ),
     });
   }
@@ -183,18 +224,27 @@ export function ParentEnrollmentGuide() {
       left: Math.max(
         0,
         Math.min(
-          window.innerWidth - bounds.width,
+          document.documentElement.clientWidth - bounds.width - 8,
           (current?.left ?? bounds.left) + delta[0],
         ),
       ),
       top: Math.max(
         0,
         Math.min(
-          window.innerHeight - bounds.height,
+          window.innerHeight - bounds.height - 8,
           (current?.top ?? bounds.top) + delta[1],
         ),
       ),
     }));
+  }
+
+  function toggleGuide() {
+    if (suppressMascotClick.current) {
+      suppressMascotClick.current = false;
+      return;
+    }
+    if (open) closeGuide();
+    else setOpen(true);
   }
 
   return (
@@ -210,19 +260,15 @@ export function ParentEnrollmentGuide() {
         <div className={styles.panel}>
           <header className={styles.header}>
             <div className={styles.identity}>
-              <span className={styles.identityCopy}>
-                <strong id="kali-guide-title">Kali</strong>
-                <small>{content.enrollmentGuide}</small>
-              </span>
+              <strong id="kali-guide-title">Kali</strong>
+              <span>{content.enrollmentGuide}</span>
             </div>
             <div className={styles.headerActions}>
               <label className={styles.languagePicker}>
                 <span>{content.language}</span>
                 <select
                   aria-label={content.language}
-                  onChange={(event) =>
-                    changeLanguage(event.target.value as GuideLanguage)
-                  }
+                  onChange={(event) => changeLanguage(event.target.value)}
                   value={language}
                 >
                   <option value="en">English</option>
@@ -230,9 +276,9 @@ export function ParentEnrollmentGuide() {
                 </select>
               </label>
               <button
-                aria-label={content.close}
                 aria-controls="kali-enrollment-guide"
-                aria-expanded={true}
+                aria-expanded={open}
+                aria-label={content.close}
                 className={styles.closeButton}
                 onClick={closeGuide}
                 type="button"
@@ -249,79 +295,45 @@ export function ParentEnrollmentGuide() {
             </div>
           </header>
 
-          {step === null ? (
-            <div
-              className={`${styles.welcome} ${contentVisible ? styles.contentVisible : ''}`}
-              key={`welcome-${language}`}
+          <div className={styles.stepStage}>
+            <button
+              aria-label={content.previous}
+              className={styles.navigationButton}
+              disabled={step === 0 || !contentVisible}
+              onClick={() => navigateToStep(step - 1)}
+              type="button"
             >
-              <p>{content.welcome}</p>
-              <button
-                className={styles.primaryButton}
-                onClick={() => transitionContent(() => setStep(0))}
-                type="button"
-              >
-                {content.start}
-                <ArrowIcon direction="right" />
-              </button>
-            </div>
-          ) : (
+              <ArrowIcon direction="left" />
+            </button>
+
             <div
               className={`${styles.instruction} ${contentVisible ? styles.contentVisible : ''}`}
               key={`${language}-${step}`}
             >
-              <div className={styles.stepHeading}>
-                <span>
-                  {content.step} {step + 1} {language === 'en' ? 'of' : 'sa'}{' '}
-                  {content.instructions.length}
-                </span>
-                <span className={styles.progressTrack}>
-                  <span
-                    className={styles.progressValue}
-                    style={{
-                      width: `${((step + 1) / content.instructions.length) * 100}%`,
-                    }}
-                  />
-                </span>
-              </div>
-              <h2>{content.stepTitles[step]}</h2>
-              <p>{content.instructions[step]}</p>
-              <nav
-                aria-label={content.stepNavigation}
-                className={styles.stepActions}
-              >
-                {step > 0 ? (
-                  <button
-                    className={styles.secondaryButton}
-                    onClick={() => transitionContent(() => setStep(step - 1))}
-                    type="button"
-                  >
-                    <ArrowIcon direction="left" />
-                    {content.previous}
-                  </button>
-                ) : (
-                  <span aria-hidden="true" />
-                )}
-                {onFinalStep ? (
-                  <button
-                    className={styles.primaryButton}
-                    onClick={closeGuide}
-                    type="button"
-                  >
-                    {content.completion}
-                  </button>
-                ) : (
-                  <button
-                    className={styles.primaryButton}
-                    onClick={() => transitionContent(() => setStep(step + 1))}
-                    type="button"
-                  >
-                    {content.next}
-                    <ArrowIcon direction="right" />
-                  </button>
-                )}
-              </nav>
+              <span className={styles.stepCount}>
+                {content.step} {step + 1} {content.of} {content.steps.length}
+              </span>
+              <h2>{activeStep.title}</h2>
+              <p>{activeStep.instruction}</p>
             </div>
-          )}
+
+            <button
+              aria-label={isFinalStep ? content.completion : content.next}
+              className={`${styles.navigationButton} ${styles.nextButton}`}
+              disabled={!contentVisible}
+              onClick={() => {
+                if (isFinalStep) closeGuide();
+                else navigateToStep(step + 1);
+              }}
+              type="button"
+            >
+              {isFinalStep ? (
+                <CompletionIcon />
+              ) : (
+                <ArrowIcon direction="right" />
+              )}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -330,15 +342,8 @@ export function ParentEnrollmentGuide() {
         aria-expanded={open}
         aria-label={open ? content.close : content.reopen}
         aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
-        className={styles.floatingButton}
-        onClick={() => {
-          if (suppressMascotClick.current) {
-            suppressMascotClick.current = false;
-            return;
-          }
-          if (open) closeGuide();
-          else reopenGuide();
-        }}
+        className={`${styles.floatingButton} ${open ? styles.mascotOpen : ''}`}
+        onClick={toggleGuide}
         onKeyDown={handleMascotKeyDown}
         onPointerCancel={handleMascotPointerCancel}
         onPointerDown={handleMascotPointerDown}
@@ -349,6 +354,7 @@ export function ParentEnrollmentGuide() {
             ? {
                 bottom: 'auto',
                 left: mascotPosition.left,
+                position: 'fixed',
                 right: 'auto',
                 top: mascotPosition.top,
               }

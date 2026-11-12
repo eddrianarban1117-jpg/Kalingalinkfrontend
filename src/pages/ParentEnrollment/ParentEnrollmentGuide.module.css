@@ -1,17 +1,17 @@
 .guide {
   position: relative;
   z-index: 4;
-  width: 100%;
+  width: min(100%, 43rem);
+  margin: 0 auto 0.25rem;
+  padding-bottom: 1.75rem;
 }
 
 .panelShell {
   display: grid;
   grid-template-rows: 1fr;
-  margin-bottom: 0.1rem;
   opacity: 1;
   transition:
     grid-template-rows 220ms ease,
-    margin-bottom 220ms ease,
     opacity 180ms ease,
     visibility 180ms ease;
   visibility: visible;
@@ -19,41 +19,55 @@
 
 .panelClosed {
   grid-template-rows: 0fr;
-  margin-bottom: 0;
   opacity: 0;
   visibility: hidden;
-  transition-delay: 0s, 0s, 0s, 180ms;
+  transition-delay: 0s, 0s, 180ms;
 }
 
 .panel {
-  --guide-surface: #fff;
+  --guide-surface: rgb(255 255 255 / 96%);
   --guide-surface-soft: #f2f8ff;
-  --guide-border: #d3e6f8;
+  --guide-border: #b6d6f4;
   --guide-title: #104c91;
   --guide-text: #345b83;
   --guide-muted: #6684a5;
   --guide-accent: #147de1;
   --guide-accent-soft: #e7f3ff;
-  --guide-shadow: 0 0.45rem 1.4rem rgb(24 76 129 / 10%);
+  --guide-shadow: 0 0.55rem 1.6rem rgb(24 76 129 / 16%);
 
+  position: relative;
   min-height: 0;
-  overflow: hidden;
-  padding: clamp(0.75rem, 2vw, 1.15rem);
+  padding: clamp(0.75rem, 2vw, 1.05rem);
+  overflow: visible;
   border: 1px solid var(--guide-border);
-  border-radius: 0.9rem;
+  border-radius: 1rem;
   color: var(--guide-text);
   background:
     radial-gradient(
       circle at 100% 0%,
-      rgb(183 222 255 / 27%),
+      rgb(183 222 255 / 24%),
       transparent 14rem
     ),
     var(--guide-surface);
   box-shadow: var(--guide-shadow);
+  transition:
+    background-color 240ms ease,
+    color 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease;
 }
 
-.panelOpen .panel {
-  animation: panel-enter 240ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+.panel::after {
+  position: absolute;
+  right: 2rem;
+  bottom: -0.48rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-right: 1px solid var(--guide-border);
+  border-bottom: 1px solid var(--guide-border);
+  background: var(--guide-surface);
+  content: '';
+  transform: rotate(45deg);
 }
 
 .header {
@@ -62,32 +76,27 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  padding: 0 0.25rem 0.65rem;
+  border-bottom: 1px solid rgb(116 161 204 / 18%);
 }
 
 .identity {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.identityCopy {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 0.1rem;
 }
 
-.identityCopy strong {
+.identity strong {
   color: var(--guide-title);
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 900;
   line-height: 1.1;
 }
 
-.identityCopy small {
+.identity span {
   color: var(--guide-muted);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 700;
 }
 
@@ -95,7 +104,7 @@
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.45rem;
 }
 
 .languagePicker {
@@ -103,20 +112,20 @@
   align-items: center;
   gap: 0.35rem;
   color: var(--guide-muted);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 750;
 }
 
 .languagePicker select {
-  min-width: 6rem;
-  min-height: 2.25rem;
-  padding: 0.35rem 1.7rem 0.35rem 0.55rem;
+  min-width: 5.7rem;
+  min-height: 2.1rem;
+  padding: 0.3rem 1.45rem 0.3rem 0.5rem;
   border: 1px solid var(--guide-border);
-  border-radius: 0.5rem;
+  border-radius: 0.55rem;
   color: var(--guide-title);
   background-color: var(--guide-surface);
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   cursor: pointer;
   transition:
     border-color 150ms ease,
@@ -132,9 +141,9 @@
 
 .closeButton {
   display: grid;
-  width: 2.35rem;
-  height: 2.35rem;
-  flex: 0 0 2.35rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: 0 0 2.1rem;
   place-items: center;
   padding: 0;
   border: 1px solid transparent;
@@ -155,159 +164,131 @@
 }
 
 .closeButton svg {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
-.welcome,
+.stepStage {
+  position: relative;
+  display: grid;
+  min-height: 7.8rem;
+  align-items: center;
+  padding: 0.75rem 3.4rem 0.85rem;
+}
+
 .instruction {
   min-width: 0;
-  padding: 0.45rem 0.25rem 0.1rem clamp(4.45rem, 9vw, 6rem);
+  padding-right: clamp(3.8rem, 12vw, 6.1rem);
   opacity: 0;
-  transform: translateY(0.3rem);
+  transform: translateY(0.25rem);
   transition:
-    opacity 150ms ease,
-    transform 150ms ease;
+    opacity 130ms ease,
+    transform 130ms ease;
 }
 
 .contentVisible {
   opacity: 1;
   transform: translateY(0);
-  animation: content-enter 180ms ease both;
+  animation: content-enter 190ms ease both;
 }
 
-.welcome p,
-.instruction > p {
-  margin: 0;
-  color: var(--guide-text);
-  font-size: 0.93rem;
-  line-height: 1.55;
-  white-space: pre-line;
-}
-
-.welcome {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.welcome p {
-  max-width: 58rem;
-}
-
-.primaryButton,
-.secondaryButton {
-  display: inline-flex;
-  min-height: 2.65rem;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 0.55rem 0.95rem;
-  border: 1px solid var(--guide-accent);
-  border-radius: 0.55rem;
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 850;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
-}
-
-.primaryButton {
-  color: #fff;
-  background: linear-gradient(110deg, #1689ed, #0864cc);
-  box-shadow: 0 0.25rem 0.65rem rgb(13 108 208 / 22%);
-}
-
-.primaryButton:hover {
-  border-color: #0756ae;
-  background: linear-gradient(110deg, #0879dc, #0756ae);
-  box-shadow: 0 0.35rem 0.8rem rgb(13 108 208 / 28%);
-  transform: translateY(-1px);
-}
-
-.secondaryButton {
-  color: var(--guide-title);
-  background: var(--guide-surface);
-}
-
-.secondaryButton:hover {
-  background: var(--guide-accent-soft);
-  transform: translateY(-1px);
-}
-
-.primaryButton:active,
-.secondaryButton:active {
-  transform: scale(0.98);
-}
-
-.primaryButton svg,
-.secondaryButton svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.instruction {
-  padding-top: 0.25rem;
-}
-
-.stepHeading {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 0.45rem;
+.stepCount {
+  display: block;
+  margin-bottom: 0.28rem;
   color: var(--guide-accent);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 850;
-}
-
-.progressTrack {
-  display: block;
-  width: min(100%, 14rem);
-  height: 0.35rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--guide-accent-soft);
-}
-
-.progressValue {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #1ba4eb, #116cd6);
-  transition: width 200ms ease;
+  letter-spacing: 0.015em;
 }
 
 .instruction h2 {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.3rem;
   color: var(--guide-title);
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1.06rem);
   font-weight: 900;
+  line-height: 1.25;
 }
 
-.stepActions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.65rem;
-  margin-top: 0.75rem;
+.instruction p {
+  max-width: 38rem;
+  margin: 0;
+  color: var(--guide-text);
+  font-size: clamp(0.86rem, 1.5vw, 0.94rem);
+  line-height: 1.45;
+}
+
+.navigationButton {
+  position: absolute;
+  z-index: 6;
+  top: 50%;
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #9dc5ec;
+  border-radius: 50%;
+  color: var(--guide-title);
+  background: var(--guide-surface);
+  box-shadow: 0 0.18rem 0.55rem rgb(20 80 139 / 12%);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.navigationButton:first-child {
+  left: 0.45rem;
+}
+
+.nextButton {
+  right: 0.45rem;
+}
+
+.navigationButton:hover:not(:disabled) {
+  border-color: var(--guide-accent);
+  color: #fff;
+  background: var(--guide-accent);
+  box-shadow: 0 0.28rem 0.75rem rgb(20 125 225 / 25%);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.navigationButton:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.navigationButton:disabled {
+  border-color: #d3e2f0;
+  color: #9aafc4;
+  background: #f2f6fa;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.navigationButton:focus-visible,
+.closeButton:focus-visible,
+.floatingButton:focus-visible {
+  outline: 3px solid rgb(20 125 225 / 40%);
+  outline-offset: 3px;
+}
+
+.navigationButton svg {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .floatingButton {
-  position: fixed;
-  z-index: 30;
-  right: max(1rem, env(safe-area-inset-right));
-  bottom: max(1rem, env(safe-area-inset-bottom));
+  position: absolute;
+  z-index: 2;
+  right: -0.8rem;
+  bottom: 0;
   display: grid;
-  width: clamp(7rem, 13vw, 10rem);
-  height: clamp(6rem, 11vw, 8.5rem);
+  width: clamp(5.5rem, 11vw, 7.5rem);
+  height: clamp(5.8rem, 12vw, 8rem);
   place-items: center;
   padding: 0;
   border: 0;
@@ -319,17 +300,11 @@
 }
 
 .floatingButton:hover {
-  filter: drop-shadow(0 0.4rem 0.8rem rgb(9 59 111 / 25%));
+  filter: drop-shadow(0 0.3rem 0.55rem rgb(9 59 111 / 23%));
 }
 
 .floatingButton:active {
   cursor: grabbing;
-}
-
-.floatingButton:focus-visible {
-  border-radius: 1rem;
-  outline: 3px solid #1683f8;
-  outline-offset: 3px;
 }
 
 .floatingButton img {
@@ -342,44 +317,28 @@
   will-change: transform;
 }
 
-.visuallyHidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.mascotOpen img {
+  animation:
+    kali-enter 420ms ease-out both,
+    kali-float 4s 420ms ease-in-out infinite;
 }
 
 :global([data-theme='dark']) .panel {
-  --guide-surface: #131f32;
+  --guide-surface: rgb(19 31 50 / 96%);
   --guide-surface-soft: #18263b;
-  --guide-border: #263a57;
+  --guide-border: #345373;
   --guide-title: #f1f5ff;
   --guide-text: #c4d2e7;
   --guide-muted: #a8b9d4;
   --guide-accent: #1683f8;
   --guide-accent-soft: #203b5c;
-  --guide-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 28%);
+  --guide-shadow: 0 0.55rem 1.6rem rgb(0 0 0 / 30%);
 }
 
-:global([data-theme='dark']) .panel {
-  border-color: var(--guide-border);
-  color: var(--guide-text);
-  background-color: var(--guide-surface);
-}
-
-:global([data-theme='dark']) .languagePicker select,
-:global([data-theme='dark']) .secondaryButton {
-  border-color: var(--guide-border);
-  color: var(--guide-title);
-  background-color: var(--guide-surface-soft);
-}
-
-:global([data-theme='dark']) .secondaryButton:hover {
-  background-color: var(--guide-accent-soft);
+:global([data-theme='dark']) .navigationButton:disabled {
+  border-color: #354a63;
+  color: #8195b5;
+  background: #18263b;
 }
 
 @keyframes kali-float {
@@ -387,26 +346,32 @@
   100% {
     transform: translateY(0) scale(1);
   }
+  25% {
+    transform: translateY(-0.2rem) scale(1.008);
+  }
   50% {
-    transform: translateY(-0.3rem) scale(1.012);
+    transform: translateY(-0.38rem) scale(1.015);
+  }
+  75% {
+    transform: translateY(-0.2rem) scale(1.008);
   }
 }
 
-@keyframes panel-enter {
+@keyframes kali-enter {
   from {
     opacity: 0;
-    transform: translateY(0.4rem);
+    transform: translateY(0.7rem) scale(0.94);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes content-enter {
   from {
     opacity: 0;
-    transform: translateY(0.25rem);
+    transform: translateY(0.2rem);
   }
   to {
     opacity: 1;
@@ -415,26 +380,28 @@
 }
 
 @media (max-width: 620px) {
+  .guide {
+    width: 100%;
+    margin-bottom: 0.1rem;
+    padding-bottom: 1.45rem;
+  }
+
   .panel {
-    padding: 0.65rem;
-    border-radius: 0.7rem;
+    padding: 0.7rem;
+    border-radius: 0.85rem;
   }
 
   .header {
-    align-items: flex-start;
     gap: 0.35rem;
+    padding: 0 0.15rem 0.55rem;
   }
 
-  .identity {
-    gap: 0.4rem;
+  .identity strong {
+    font-size: 0.98rem;
   }
 
-  .identityCopy strong {
-    font-size: 1rem;
-  }
-
-  .identityCopy small {
-    font-size: 0.68rem;
+  .identity span {
+    font-size: 0.66rem;
   }
 
   .headerActions {
@@ -444,79 +411,85 @@
   .languagePicker {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.1rem;
-    font-size: 0.65rem;
+    gap: 0.08rem;
+    font-size: 0.62rem;
   }
 
   .languagePicker select {
-    min-width: 5.3rem;
-    min-height: 2rem;
-    padding: 0.25rem 1.3rem 0.25rem 0.4rem;
-    font-size: 0.7rem;
+    min-width: 5rem;
+    min-height: 1.9rem;
+    padding: 0.2rem 1.2rem 0.2rem 0.4rem;
+    font-size: 0.68rem;
   }
 
   .closeButton {
-    width: 2rem;
-    height: 2rem;
-    flex-basis: 2rem;
+    width: 1.9rem;
+    height: 1.9rem;
+    flex-basis: 1.9rem;
   }
 
-  .welcome,
+  .stepStage {
+    min-height: 7rem;
+    padding: 0.7rem 2.45rem 1.1rem 3.7rem;
+  }
+
   .instruction {
-    padding: 0.4rem 0.15rem 0.1rem;
+    padding-right: clamp(3.2rem, 16vw, 4.2rem);
   }
 
-  .welcome {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 0.65rem;
-  }
-
-  .welcome p,
-  .instruction > p {
-    font-size: 0.86rem;
-  }
-
-  .welcome .primaryButton {
-    align-self: flex-end;
+  .stepCount {
+    font-size: 0.66rem;
   }
 
   .instruction h2 {
-    font-size: 0.94rem;
+    font-size: 0.92rem;
   }
 
-  .stepActions button {
-    min-height: 2.45rem;
-    padding: 0.45rem 0.65rem;
-    font-size: 0.78rem;
+  .instruction p {
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+
+  .navigationButton {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .navigationButton:first-child {
+    left: 0.25rem;
+  }
+
+  .nextButton {
+    right: 0.25rem;
+  }
+
+  .navigationButton svg {
+    width: 0.95rem;
+    height: 0.95rem;
   }
 
   .floatingButton {
-    right: max(0.75rem, env(safe-area-inset-right));
-    bottom: max(0.75rem, env(safe-area-inset-bottom));
-    width: clamp(6rem, 22vw, 7.5rem);
-    height: clamp(5.5rem, 20vw, 7rem);
+    right: -0.55rem;
+    width: clamp(4.5rem, 22vw, 5.7rem);
+    height: clamp(4.7rem, 23vw, 6rem);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .panelShell,
-  .panelOpen .panel,
   .floatingButton,
   .floatingButton img,
-  .welcome,
+  .mascotOpen img,
   .instruction,
   .contentVisible,
-  .progressValue,
-  .primaryButton,
-  .secondaryButton,
+  .navigationButton,
   .closeButton {
     animation: none !important;
     transition: none !important;
   }
 
-  .welcome,
-  .instruction {
+  .instruction,
+  .contentVisible {
     opacity: 1;
     transform: none;
   }
