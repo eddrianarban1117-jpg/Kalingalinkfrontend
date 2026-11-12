@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import styles from './TeacherManagement.module.css';
 
@@ -519,7 +520,7 @@ export function TeacherManagement() {
           </span>
           <div>
             <span>Total Teachers</span>
-            <strong>{stats?.total?.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+            <strong>{stats?.total?.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -531,7 +532,7 @@ export function TeacherManagement() {
           </span>
           <div>
             <span>Pending Review</span>
-            <strong>{stats?.pending_review?.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+            <strong>{stats?.pending_review?.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -543,7 +544,7 @@ export function TeacherManagement() {
           </span>
           <div>
             <span>Approved</span>
-            <strong>{stats?.approved?.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+            <strong>{stats?.approved?.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -555,7 +556,7 @@ export function TeacherManagement() {
           </span>
           <div>
             <span>Rejected</span>
-            <strong>{stats?.rejected?.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+            <strong>{stats?.rejected?.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -669,7 +670,7 @@ export function TeacherManagement() {
               </thead>
               <tbody>
                 {loading && teachers.length === 0 && (
-                  <tr><td className={styles.emptyState} colSpan={7}>Loading teacher records…</td></tr>
+                  <tr><td className={styles.emptyState} colSpan={7}><BouncingDots label="Loading teacher records" /></td></tr>
                 )}
                 {!loading && error && teachers.length === 0 && (
                   <tr><td className={styles.emptyState} colSpan={7} role="alert">{error}</td></tr>
@@ -773,7 +774,7 @@ export function TeacherManagement() {
             <h2>Teacher Review</h2>
           </div>
           {reviewLoading ? (
-            <p className={styles.sideState}>Loading teacher details…</p>
+            <p className={styles.sideState}><BouncingDots label="Loading teacher details" /></p>
           ) : !selectedTeacher ? (
             <p className={styles.sideState}>
               Select Review or View from the directory to inspect a teacher account.
@@ -852,7 +853,7 @@ export function TeacherManagement() {
                           onClick={() => void downloadTeacherDocument(document)}
                           type="button"
                         >
-                          {downloadingDocumentId === document.id ? 'Downloading…' : 'Download'}
+                          {downloadingDocumentId === document.id ? <BouncingDots label="Downloading document" size="small" inline /> : 'Download'}
                         </button>
                       </li>
                     ))}

@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './ParentDashboard.module.css';
@@ -1022,7 +1023,7 @@ export function ParentDashboard() {
                 icon="children"
                 title="My Children"
                 count={
-                  dashboardLoading ? '—' : String(dashboardData.children.length)
+                  dashboardLoading ? <BouncingDots label="Loading child count" size="small" inline /> : String(dashboardData.children.length)
                 }
                 action="View child profiles"
                 tone="blue"
@@ -1033,7 +1034,7 @@ export function ParentDashboard() {
                 title="Upcoming Activities"
                 count={
                   dashboardLoading
-                    ? '—'
+                    ? <BouncingDots label="Loading activity count" size="small" inline />
                     : String(dashboardData.upcoming_activity_count)
                 }
                 action="View activities"
@@ -1045,7 +1046,7 @@ export function ParentDashboard() {
                 title="Enrollment Status"
                 count={
                   dashboardLoading
-                    ? '—'
+                    ? <BouncingDots label="Loading enrollment count" size="small" inline />
                     : String(dashboardData.enrollment_count)
                 }
                 action="View status"
@@ -1056,7 +1057,7 @@ export function ParentDashboard() {
                 icon="bell"
                 title="Announcements"
                 count={
-                  announcementsLoading ? '—' : String(announcementFeed.length)
+                  announcementsLoading ? <BouncingDots label="Loading announcement count" size="small" inline /> : String(announcementFeed.length)
                 }
                 action="View announcements"
                 tone="red"
@@ -1097,7 +1098,7 @@ export function ParentDashboard() {
                     )}
                     {dashboardLoading && dashboardChildren.length === 0 && (
                       <p className={styles.localNote}>
-                        Loading child profiles...
+                        <BouncingDots label="Loading child profiles" />
                       </p>
                     )}
                   </div>
@@ -1121,7 +1122,7 @@ export function ParentDashboard() {
                       )}
                       {dashboardLoading && filteredActivities.length === 0 && (
                         <p className={styles.localNote}>
-                          Loading assignments...
+                          <BouncingDots label="Loading assignments" />
                         </p>
                       )}
                     </div>
@@ -1187,7 +1188,7 @@ export function ParentDashboard() {
                     ))}
                     {announcementsLoading && (
                       <p className={styles.localNote}>
-                        Loading announcements...
+                        <BouncingDots label="Loading announcements" />
                       </p>
                     )}
                     {!filteredAnnouncements.length &&
@@ -1669,7 +1670,7 @@ function Stat({
 }: {
   icon: string;
   title: string;
-  count: string;
+  count: ReactNode;
   action: string;
   tone: string;
   onClick: () => void;

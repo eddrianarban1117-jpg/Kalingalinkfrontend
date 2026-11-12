@@ -6,6 +6,7 @@ import {
   type FormEvent,
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './LearningActivities.module.css';
 
@@ -600,7 +601,7 @@ export function LearningActivities({ globalSearch }: { globalSearch: string }) {
 
           {loading ? (
             <p aria-live="polite" className={styles.emptyState}>
-              Loading learning activities…
+              <BouncingDots label="Loading learning activities" />
             </p>
           ) : visibleActivities.length ? (
             <div className={styles.activityGrid}>

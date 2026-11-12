@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import childrenBanner from '../../assets/images/children-banner.png';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { EnrollmentApplicationDetails } from '../EnrollmentManagement/EnrollmentApplicationDetails';
 import styles from './TeacherEnrollmentPage.module.css';
 
@@ -460,7 +461,7 @@ export function TeacherEnrollmentPage() {
           {loadError
             ? 'Connection issue'
             : loading
-              ? 'Loading applications'
+              ? <BouncingDots label="Loading applications" size="small" inline />
               : 'Auto-refreshes every 15 seconds'}
         </span>
       </header>
@@ -596,7 +597,7 @@ export function TeacherEnrollmentPage() {
           </header>
           {loading && (
             <p aria-live="polite" className={styles.emptyState}>
-              Loading applications…
+              <BouncingDots label="Loading applications" />
             </p>
           )}
           {loadError && (

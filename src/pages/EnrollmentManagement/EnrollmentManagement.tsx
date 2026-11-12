@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { EnrollmentApplicationDetails } from './EnrollmentApplicationDetails';
 import styles from './EnrollmentManagement.module.css';
 
@@ -144,7 +145,7 @@ function relativeTime(value: string) {
 }
 
 function formatMetric(value: number | undefined, loading: boolean) {
-  if (loading) return '…';
+  if (loading) return <BouncingDots size="small" inline />;
   return value === undefined ? '—' : value.toLocaleString();
 }
 
@@ -734,7 +735,7 @@ export function EnrollmentManagement() {
               </span>
             </div>
             {overviewLoading && (
-              <p className={styles.chartMessage}>Loading enrollment data…</p>
+              <p className={styles.chartMessage}><BouncingDots label="Loading enrollment data" /></p>
             )}
             {!overviewLoading && !overview && overviewError && (
               <p className={styles.chartMessage}>{overviewError}</p>
@@ -839,7 +840,7 @@ export function EnrollmentManagement() {
                   {loading && (
                     <tr>
                       <td className={styles.emptyState} colSpan={8}>
-                        Loading applications…
+                        <BouncingDots label="Loading applications" />
                       </td>
                     </tr>
                   )}
@@ -920,7 +921,7 @@ export function EnrollmentManagement() {
               <h2 id="gender-title">Enrollment by Gender</h2>
             </div>
             {overviewLoading && (
-              <p className={styles.chartMessage}>Loading enrolled children…</p>
+              <p className={styles.chartMessage}><BouncingDots label="Loading enrolled children" /></p>
             )}
             {!overviewLoading && overview && (
               <GenderChart
@@ -940,7 +941,7 @@ export function EnrollmentManagement() {
               <h2 id="age-title">Enrollment by Age Group</h2>
             </div>
             {overviewLoading && (
-              <p className={styles.chartMessage}>Loading enrolled children…</p>
+              <p className={styles.chartMessage}><BouncingDots label="Loading enrolled children" /></p>
             )}
             {!overviewLoading && !overview && overviewError && (
               <p className={styles.chartMessage}>{overviewError}</p>
@@ -1003,7 +1004,7 @@ export function EnrollmentManagement() {
             <div className={styles.activities}>
               {overviewLoading ? (
                 <p className={styles.chartMessage}>
-                  Loading recent applications…
+                  <BouncingDots label="Loading recent applications" />
                 </p>
               ) : activities.length ? (
                 activities.map((activity, index) => {

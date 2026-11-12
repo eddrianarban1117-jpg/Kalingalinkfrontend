@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './LessonPlans.module.css';
 
@@ -815,7 +816,7 @@ export function LessonPlans({ globalSearch }: { globalSearch: string }) {
               ) : (
                 <p className={styles.emptyState}>
                   {loading
-                    ? 'Loading lesson plan materials…'
+                    ? <BouncingDots label="Loading lesson plan materials" />
                     : 'No materials have been added to your lesson plans yet.'}
                 </p>
               )}
@@ -837,7 +838,7 @@ export function LessonPlans({ globalSearch }: { globalSearch: string }) {
             <>
               <h2 className={styles.sectionHeading}>{section}</h2>
               {loading ? (
-                <p className={styles.emptyState}>Loading lesson plans…</p>
+                <p className={styles.emptyState}><BouncingDots label="Loading lesson plans" /></p>
               ) : filteredLessons.length ? (
                 <div className={styles.lessonGrid}>
                   {filteredLessons.map((lesson) => (
@@ -975,7 +976,7 @@ export function LessonPlans({ globalSearch }: { globalSearch: string }) {
               </div>
             ) : (
               <p className={styles.emptyState}>
-                {loading ? 'Loading materials…' : 'No saved materials yet.'}
+                {loading ? <BouncingDots label="Loading materials" /> : 'No saved materials yet.'}
               </p>
             )}
           </section>

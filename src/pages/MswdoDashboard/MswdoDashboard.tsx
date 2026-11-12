@@ -13,6 +13,7 @@ import { Avatar } from '../../components/common/Avatar/Avatar';
 import { Logo } from '../../components/common/Logo/Logo';
 import { LogoutConfirmation } from '../../components/common/LogoutConfirmation/LogoutConfirmation';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
 
 type IconName =
@@ -557,7 +558,7 @@ export function MswdoDashboard({
                   </div>
                   <strong className={styles.summaryValue}>
                     {dashboardLoading
-                      ? '…'
+                      ? <BouncingDots label={`Loading ${card.label.toLowerCase()}`} size="small" inline />
                       : dashboardData
                         ? dashboardData.stats[card.key].toLocaleString()
                         : '—'}
@@ -642,7 +643,7 @@ export function MswdoDashboard({
                   </div>
                   <div className={styles.centerList}>
                     {dashboardLoading ? (
-                      <p className={styles.dataState}>Loading centers…</p>
+                      <p className={styles.dataState}><BouncingDots label="Loading centers" /></p>
                     ) : dashboardError ? (
                       <p className={styles.dataState} role="alert">
                         {dashboardError}
@@ -713,7 +714,7 @@ export function MswdoDashboard({
                   <div className={styles.activityList}>
                     {dashboardLoading ? (
                       <p className={styles.dataState}>
-                        Loading recent activity…
+                        <BouncingDots label="Loading recent activity" />
                       </p>
                     ) : dashboardError ? (
                       <p className={styles.dataState} role="alert">

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from '../ChildrenRecords/ChildrenRecords.module.css';
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
@@ -436,7 +437,7 @@ export function EnrollmentApplicationDetails({
           <button aria-label="Close child details" className={styles.closeDetails} onClick={onClose} type="button"><Icon name="close" /></button>
         </header>
         <div className={styles.detailBody}>
-          {loading && <p className={styles.detailState}>Loading child details…</p>}
+          {loading && <p className={styles.detailState}><BouncingDots label="Loading child details" /></p>}
           {error && <p className={styles.detailError} role="alert">{error}</p>}
           {child && application && (
             <>

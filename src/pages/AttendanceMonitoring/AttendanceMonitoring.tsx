@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from './AttendanceMonitoring.module.css';
 
 type AttendanceStatus = 'Present' | 'Absent' | 'Late' | 'Excused';
@@ -640,7 +641,7 @@ export function AttendanceMonitoring() {
                 {loading && (
                   <tr>
                     <td className={styles.emptyState} colSpan={6}>
-                      Loading attendance records...
+                      <BouncingDots label="Loading attendance records" />
                     </td>
                   </tr>
                 )}

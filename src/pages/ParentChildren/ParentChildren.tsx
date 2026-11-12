@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './ParentChildren.module.css';
@@ -474,7 +475,7 @@ export function ParentChildren({ search }: { search: string }) {
 
       <div className={styles.toolbar}>
         <span>
-          {loading ? 'Loading child profiles…' : `${filteredProfiles.length} ${
+          {loading ? <BouncingDots label="Loading child profiles" size="small" inline /> : `${filteredProfiles.length} ${
             filteredProfiles.length === 1 ? 'child profile' : 'child profiles'
           }`}
         </span>

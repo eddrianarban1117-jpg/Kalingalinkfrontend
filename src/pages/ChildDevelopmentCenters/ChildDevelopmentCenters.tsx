@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import L from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { requiredCdcNames } from '../../constants/app-constants';
 import styles from './ChildDevelopmentCenters.module.css';
 import 'leaflet/dist/leaflet.css';
@@ -723,7 +724,7 @@ export function ChildDevelopmentCenters() {
             {error && <p className={styles.errorState} role="alert">{error}</p>}
             {notice && <p className={styles.successState} role="status">{notice}</p>}
             {loadingTransfers ? (
-              <p className={styles.sideState}>Loading applications and transfer history…</p>
+              <p className={styles.sideState}><BouncingDots label="Loading applications and transfer history" /></p>
             ) : (
               <>
                 <section aria-labelledby="affected-applications-title" className={styles.transferSection}>
@@ -831,7 +832,7 @@ export function ChildDevelopmentCenters() {
           </span>
           <div>
             <span>Total CDCs</span>
-            <strong>{loading ? '…' : stats.total_centers.toLocaleString()}</strong>
+            <strong>{loading ? <BouncingDots size="small" inline /> : stats.total_centers.toLocaleString()}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -843,7 +844,7 @@ export function ChildDevelopmentCenters() {
           </span>
           <div>
             <span>Total Children</span>
-            <strong>{loading ? '…' : stats.total_children.toLocaleString()}</strong>
+            <strong>{loading ? <BouncingDots size="small" inline /> : stats.total_children.toLocaleString()}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -855,7 +856,7 @@ export function ChildDevelopmentCenters() {
           </span>
           <div>
             <span>Total Teachers</span>
-            <strong>{loading ? '…' : stats.total_teachers.toLocaleString()}</strong>
+            <strong>{loading ? <BouncingDots size="small" inline /> : stats.total_teachers.toLocaleString()}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -871,7 +872,7 @@ export function ChildDevelopmentCenters() {
               <br />
               (Active)
             </span>
-            <strong>{loading ? '…' : stats.operating_centers.toLocaleString()}</strong>
+            <strong>{loading ? <BouncingDots size="small" inline /> : stats.operating_centers.toLocaleString()}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -946,7 +947,7 @@ export function ChildDevelopmentCenters() {
                 {loading ? (
                   <tr>
                     <td className={styles.emptyState} colSpan={8}>
-                      Loading centers…
+                      <BouncingDots label="Loading centers" />
                     </td>
                   </tr>
                 ) : error && centers.length === 0 ? (
@@ -1140,9 +1141,9 @@ export function ChildDevelopmentCenters() {
                 </Marker>
               ))}
             </MapContainer>
-            {loading && <p className={styles.mapMessage}>Loading CDC records…</p>}
+            {loading && <p className={styles.mapMessage}><BouncingDots label="Loading CDC records" /></p>}
             {!loading && geocoding && (
-              <p className={styles.mapMessage}>Checking recorded addresses…</p>
+              <p className={styles.mapMessage}><BouncingDots label="Checking recorded addresses" /></p>
             )}
             {!loading && !geocoding && !mappedCenters.length && (
               <p className={styles.mapMessage}>
@@ -1192,17 +1193,17 @@ export function ChildDevelopmentCenters() {
                 }}
               >
                 <span>
-                  <strong>{loading ? '…' : stats.total_centers}</strong>Total CDCs
+                  <strong>{loading ? <BouncingDots size="small" inline /> : stats.total_centers}</strong>Total CDCs
                 </span>
               </div>
               <ul className={styles.statusLegend}>
                 <li>
                   <i className={styles.legendActive} />
-                  Active<strong>{loading ? '…' : stats.operating_centers}</strong>
+                  Active<strong>{loading ? <BouncingDots size="small" inline /> : stats.operating_centers}</strong>
                 </li>
                 <li>
                   <i className={styles.legendInactive} />
-                  Inactive<strong>{loading ? '…' : stats.inactive_centers}</strong>
+                  Inactive<strong>{loading ? <BouncingDots size="small" inline /> : stats.inactive_centers}</strong>
                 </li>
               </ul>
             </div>
@@ -1216,7 +1217,7 @@ export function ChildDevelopmentCenters() {
             </div>
             <div className={styles.activities}>
               {loading ? (
-                <p className={styles.sideState}>Loading recent activity…</p>
+                <p className={styles.sideState}><BouncingDots label="Loading recent activity" /></p>
               ) : activities.length ? activities.map((activity, index) => (
                 <article
                   className={styles.activity}

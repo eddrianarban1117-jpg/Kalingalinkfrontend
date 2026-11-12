@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from './ChildrenProgress.module.css';
 
 type DomainStatus = 'On Track' | 'Needs Support' | 'Needs Attention';
@@ -305,7 +306,7 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
       return (
         <p className={styles.emptyStudents}>
           {loading
-            ? 'Loading progress records…'
+            ? <BouncingDots label="Loading progress records" />
             : 'No student is available for this selection.'}
         </p>
       );
@@ -543,7 +544,7 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
               </button>
             ))}
             {loading ? (
-              <p className={styles.emptyStudents}>Loading students…</p>
+              <p className={styles.emptyStudents}><BouncingDots label="Loading students" /></p>
             ) : filteredStudents.length === 0 && (
               <p className={styles.emptyStudents}>
                 {students.length === 0
@@ -611,7 +612,7 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
           <section className={styles.profilePanel}>
             <p className={styles.emptyStudents}>
               {loading
-                ? 'Loading progress…'
+                ? <BouncingDots label="Loading progress" />
                 : 'Select an enrolled student to view recorded progress.'}
             </p>
           </section>

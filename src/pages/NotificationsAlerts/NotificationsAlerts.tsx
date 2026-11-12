@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { EventNotifications, type AdminPublishedAnnouncement } from '../EventNotifications/EventNotifications';
 import styles from './NotificationsAlerts.module.css';
 
@@ -239,7 +240,7 @@ export function NotificationsAlerts() {
               ] as const).map(([label, count, tone, detail]) => (
                 <article className={`${styles.statCard} ${styles[tone]}`} key={label}>
                   <span className={styles.statIcon}><Icon name={label === 'Published' ? 'check' : label === 'Scheduled' ? 'calendar' : 'announcement'} /></span>
-                  <span className={styles.statText}><span>{label}</span><strong>{loading ? '—' : count}</strong><small>{detail}</small></span>
+                  <span className={styles.statText}><span>{label}</span><strong>{loading ? <BouncingDots size="small" inline /> : count}</strong><small>{detail}</small></span>
                 </article>
               ))}
             </section>

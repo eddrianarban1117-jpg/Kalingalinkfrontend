@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import childrenBanner from '../../assets/images/children-banner.png';
 import femalePanel from '../../../femalepanel.png';
 import styles from './ParentActivities.module.css';
@@ -463,13 +464,13 @@ export function ParentActivities({ search }: { search: string }) {
               <h2 id="activity-list-heading">Activities / Assignments List</h2>
               <span>
                 {loading
-                  ? 'Loading activities...'
+                  ? <BouncingDots label="Loading activities" size="small" inline />
                   : `${filteredActivities.length} of ${activities.length} activities / assignments`}
               </span>
             </header>
             <div className={styles.activityList} ref={listRef}>
               {loadError && <p className={styles.emptyState} role="alert">{loadError}</p>}
-              {!loadError && loading && <p className={styles.emptyState}>Loading your child’s activities...</p>}
+              {!loadError && loading && <p className={styles.emptyState}><BouncingDots label="Loading your child’s activities" /></p>}
               {!loadError && !loading && filteredActivities.length ? (
                 filteredActivities.map((activity) => (
                   <article className={styles.activityRow} key={activity.id}>
@@ -539,13 +540,13 @@ export function ParentActivities({ search }: { search: string }) {
               <SummaryCard
                 icon="activity"
                 label="Total Activities"
-                count={loading ? '—' : activities.length}
+                count={loading ? <BouncingDots label="Loading activity count" size="small" inline /> : activities.length}
                 tone="blue"
               />
               <SummaryCard
                 icon="check"
                 label="Completed"
-                count={loading ? '—' :
+                count={loading ? <BouncingDots label="Loading completed activity count" size="small" inline /> :
                   activities.filter(({ status }) => status === 'Completed')
                     .length
                 }
@@ -554,7 +555,7 @@ export function ParentActivities({ search }: { search: string }) {
               <SummaryCard
                 icon="clock"
                 label="In Progress"
-                count={loading ? '—' :
+                count={loading ? <BouncingDots label="Loading in-progress activity count" size="small" inline /> :
                   activities.filter(({ status }) => status === 'In Progress')
                     .length
                 }
@@ -563,7 +564,7 @@ export function ParentActivities({ search }: { search: string }) {
               <SummaryCard
                 icon="close"
                 label="Not Started"
-                count={loading ? '—' :
+                count={loading ? <BouncingDots label="Loading not-started activity count" size="small" inline /> :
                   activities.filter(({ status }) => status === 'Not Started')
                     .length
                 }
@@ -719,7 +720,7 @@ function SummaryCard({
 }: {
   icon: string;
   label: string;
-  count: number | string;
+  count: ReactNode;
   tone: string;
 }) {
   return (

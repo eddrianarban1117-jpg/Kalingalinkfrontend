@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import { EventNotifications } from '../EventNotifications/EventNotifications';
 import childrenBanner from '../../assets/images/children-banner.png';
@@ -828,7 +829,7 @@ export function ParentApplicationStatus({
                 {loading && (
                   <tr>
                     <td className={styles.emptyState} colSpan={6}>
-                      Loading your applications…
+                      <BouncingDots label="Loading your applications" />
                     </td>
                   </tr>
                 )}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from './ChildrenRecords.module.css';
 
 const ageOptions = ['0–2 years', '3–4 years', '5–6 years', '7–12 years', '13+ years'];
@@ -293,7 +294,7 @@ export function ChildrenRecords() {
           </span>
           <div>
             <span>Total Children</span>
-            <strong>{stats ? stats.total.toLocaleString() : loading ? '…' : '—'}</strong>
+            <strong>{stats ? stats.total.toLocaleString() : loading ? <BouncingDots size="small" inline /> : '—'}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -306,7 +307,7 @@ export function ChildrenRecords() {
           <div>
             <span>Male</span>
             <strong>
-              {stats ? stats.male.toLocaleString() : loading ? '…' : '—'}{' '}
+              {stats ? stats.male.toLocaleString() : loading ? <BouncingDots size="small" inline /> : '—'}{' '}
               {stats && <small>({stats.total ? Math.round(stats.male / stats.total * 100) : 0}%)</small>}
             </strong>
           </div>
@@ -321,7 +322,7 @@ export function ChildrenRecords() {
           <div>
             <span>Female</span>
             <strong>
-              {stats ? stats.female.toLocaleString() : loading ? '…' : '—'}{' '}
+              {stats ? stats.female.toLocaleString() : loading ? <BouncingDots size="small" inline /> : '—'}{' '}
               {stats && <small>({stats.total ? Math.round(stats.female / stats.total * 100) : 0}%)</small>}
             </strong>
           </div>
@@ -335,7 +336,7 @@ export function ChildrenRecords() {
           </span>
           <div>
             <span>Pending Enrollment</span>
-            <strong>{stats ? stats.pending.toLocaleString() : loading ? '…' : '—'}</strong>
+            <strong>{stats ? stats.pending.toLocaleString() : loading ? <BouncingDots size="small" inline /> : '—'}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
             ›
@@ -439,7 +440,7 @@ export function ChildrenRecords() {
               </thead>
               <tbody>
                   {loading && children.length === 0 && (
-                  <tr><td className={styles.emptyState} colSpan={6}>Loading children records…</td></tr>
+                  <tr><td className={styles.emptyState} colSpan={6}><BouncingDots label="Loading children records" /></td></tr>
                 )}
                 {!loading && error && children.length === 0 && (
                   <tr><td className={styles.emptyState} colSpan={6} role="alert">{error}</td></tr>
@@ -548,7 +549,7 @@ export function ChildrenRecords() {
                 role="img"
               >
                 <span>
-                  <strong>{loading ? '…' : total.toLocaleString()}</strong>Total Children
+                  <strong>{loading ? <BouncingDots size="small" inline /> : total.toLocaleString()}</strong>Total Children
                 </span>
               </div>
               <ul className={styles.legend}>
@@ -574,21 +575,21 @@ export function ChildrenRecords() {
                 <span className={`${styles.genderIcon} ${styles.blue}`}>
                   <Icon name="child" />
                 </span>
-                <strong>{stats?.male.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+                <strong>{stats?.male.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
                 <span>Male ({stats ? percent(stats.male) : 0}%)</span>
               </article>
               <article>
                 <span className={`${styles.genderIcon} ${styles.pink}`}>
                   <Icon name="female" />
                 </span>
-                <strong>{stats?.female.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+                <strong>{stats?.female.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
                 <span>Female ({stats ? percent(stats.female) : 0}%)</span>
               </article>
               <article>
                 <span className={`${styles.genderIcon} ${styles.purple}`}>
                   <Icon name="user" />
                 </span>
-                <strong>{stats?.other.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+                <strong>{stats?.other.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
                 <span>Other / unspecified ({stats ? percent(stats.other) : 0}%)</span>
               </article>
             </div>
@@ -603,7 +604,7 @@ export function ChildrenRecords() {
             </div>
             <div className={styles.recentList}>
               {loading && recentChildren.length === 0 ? (
-                <p className={styles.sideState}>Loading recent children…</p>
+                <p className={styles.sideState}><BouncingDots label="Loading recent children" /></p>
               ) : recentChildren.length ? recentChildren.map((child, index) => (
                 <article className={styles.recentChild} key={child.id}>
                   <span

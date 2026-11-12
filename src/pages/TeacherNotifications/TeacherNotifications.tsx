@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { notificationsUpdatedEvent } from '../../hooks/useNotificationCount';
 import styles from './TeacherNotifications.module.css';
 
@@ -405,7 +406,7 @@ export function TeacherNotifications({
 
           <div aria-live="polite" className={styles.notificationList}>
             {loading ? (
-              <p className={styles.emptyState}>Loading notifications…</p>
+              <p className={styles.emptyState}><BouncingDots label="Loading notifications" /></p>
             ) : visibleNotifications.length ? (
               visibleNotifications.map((item) => {
                 const date = formatDate(item.createdAt);

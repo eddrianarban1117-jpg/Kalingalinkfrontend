@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import styles from './TeacherVerification.module.css';
 
@@ -323,7 +324,7 @@ export function TeacherVerification() {
       </header>
 
       {loading ? (
-        <p className={styles.state}>Loading your account details…</p>
+        <p className={styles.state}><BouncingDots label="Loading your account details" /></p>
       ) : error && !profile ? (
         <p className={styles.error} role="alert">{error}</p>
       ) : profile && values ? (

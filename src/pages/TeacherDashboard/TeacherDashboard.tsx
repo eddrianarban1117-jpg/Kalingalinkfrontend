@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import { useAuth } from '../../auth/AuthProvider';
 import { LearningActivities } from '../TeacherLearningActivities/LearningActivities';
@@ -1610,7 +1611,7 @@ export function TeacherDashboard() {
                             className={styles.noAttendanceStudents}
                             colSpan={6}
                           >
-                            Loading attendance…
+                            <BouncingDots label="Loading attendance" />
                           </td>
                         </tr>
                       )}
@@ -1852,7 +1853,7 @@ export function TeacherDashboard() {
                 <span className={styles.studentCount}>
                   Total Students:{' '}
                   <strong>
-                    {studentsLoading ? '…' : classStudents.length}
+                    {studentsLoading ? <BouncingDots label="Loading student count" size="small" inline /> : classStudents.length}
                   </strong>
                 </span>
               </header>
@@ -1930,7 +1931,7 @@ export function TeacherDashboard() {
                 ))}
                 {studentsLoading && (
                   <p aria-live="polite" className={styles.emptyStudents}>
-                    Loading student records…
+                    <BouncingDots label="Loading student records" />
                   </p>
                 )}
                 {studentsError && (
@@ -2304,7 +2305,7 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Total Students</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.total_students ??
-                      (dashboardLoading ? '…' : '—')}
+                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
                   </strong>
                   <span className={styles.statDetail}>
                     Enrolled in your class
@@ -2320,7 +2321,7 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Present Today</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.present_today ??
-                      (dashboardLoading ? '…' : '—')}
+                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
                   </strong>
                   <span className={styles.statDetail}>
                     {dashboardData
@@ -2338,7 +2339,7 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Learning Activities</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.learning_activities ??
-                      (dashboardLoading ? '…' : '—')}
+                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
                   </strong>
                   <span className={styles.statDetail}>Created this week</span>
                   <span aria-hidden="true" className={styles.statArrow}>
@@ -2352,7 +2353,7 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Pending Submissions</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.pending_submissions ??
-                      (dashboardLoading ? '…' : '—')}
+                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
                   </strong>
                   <span className={styles.statDetail}>From your tasks</span>
                   <span aria-hidden="true" className={styles.statArrow}>
@@ -2526,7 +2527,7 @@ export function TeacherDashboard() {
                       </li>
                     )}
                     {dashboardLoading && (
-                      <li className={styles.noResults}>Loading students…</li>
+                      <li className={styles.noResults}><BouncingDots label="Loading students" /></li>
                     )}
                   </ul>
                 </section>
@@ -2663,7 +2664,7 @@ export function TeacherDashboard() {
                     )}
                   {dashboardLoading && (
                     <li className={styles.noResults}>
-                      Loading upcoming activities…
+                      <BouncingDots label="Loading upcoming activities" />
                     </li>
                   )}
                   {dashboardError && (

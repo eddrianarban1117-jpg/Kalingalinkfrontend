@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import { notificationsUpdatedEvent } from '../../hooks/useNotificationCount';
 import styles from './EventNotifications.module.css';
@@ -666,7 +667,7 @@ export function EventNotifications({
               </button>
             </div>
             {adminView && actionError && <p className={styles.error} role="alert">{actionError}</p>}
-            {recipientLoading ? <p className={styles.empty}>Loading eligible recipients…</p> : recipientOptions && (
+            {recipientLoading ? <p className={styles.empty}><BouncingDots label="Loading eligible recipients" /></p> : recipientOptions && (
               <>
                 <div className={styles.composerFields}>
                   <label>Title *<input maxLength={180} onChange={(event) => setTitle(event.target.value)} required value={title} /></label>
@@ -748,7 +749,7 @@ export function EventNotifications({
             </label>
           </aside>
           <div aria-live="polite" className={styles.adminListPanel}>
-            {loading || (announcementsLoading && (adminFilter === 'all' || adminFilter === 'published')) ? <p className={styles.empty}>{loading ? 'Loading notifications…' : 'Loading published announcements…'}</p> : adminPageEntries.length === 0 ? (
+            {loading || (announcementsLoading && (adminFilter === 'all' || adminFilter === 'published')) ? <p className={styles.empty}><BouncingDots label={loading ? 'Loading notifications' : 'Loading published announcements'} /></p> : adminPageEntries.length === 0 ? (
               <p className={styles.empty}>{adminFilter === 'published' ? 'No published announcements are available.' : adminEntries.length === 0 ? 'No notifications yet.' : 'No notifications match this filter.'}</p>
             ) : (
               <ul className={styles.adminList}>
@@ -825,7 +826,7 @@ export function EventNotifications({
         </div>
 
         {loading ? (
-          <p className={styles.empty}>Loading notifications…</p>
+          <p className={styles.empty}><BouncingDots label="Loading notifications" /></p>
         ) : visibleNotifications.length === 0 ? (
           <p className={`${styles.empty} ${parentDashboard ? styles.parentEmpty : ''}`}>
             {notifications.length

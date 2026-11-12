@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { Icon } from '../../components/common/Icon/Icon';
 import styles from './EventsPage.module.css';
 
@@ -190,7 +191,7 @@ function EventPhotoImage({
       </div>
     );
   if (!imageUrl)
-    return <div aria-label="Loading photo" className={styles.imageLoading} />;
+    return <div className={styles.imageLoading}><BouncingDots label="Loading photo" size="small" /></div>;
   return (
     <img
       alt={photo.caption || 'Event album photo'}
@@ -687,7 +688,7 @@ export function EventsPage({ mode }: { mode: 'manage' | 'parent' }) {
               type="button"
             >
               <Icon name="refresh" />
-              {loading ? 'Refreshing…' : 'Refresh'}
+              {loading ? <BouncingDots label="Refreshing events" size="small" inline /> : 'Refresh'}
             </button>
           </section>
         </>
@@ -825,7 +826,7 @@ export function EventsPage({ mode }: { mode: 'manage' | 'parent' }) {
             Back to Events
           </button>
           {detailLoading && (
-            <p className={styles.emptyState}>Loading event details…</p>
+            <p className={styles.emptyState}><BouncingDots label="Loading event details" /></p>
           )}
           {selectedEvent && (
             <>
@@ -1176,7 +1177,7 @@ export function EventsPage({ mode }: { mode: 'manage' | 'parent' }) {
       ) : (
         <section aria-label="Events list" className={styles.eventsTablePanel}>
           {loading ? (
-            <p className={styles.emptyState}>Loading events…</p>
+            <p className={styles.emptyState}><BouncingDots label="Loading events" /></p>
           ) : events.length === 0 ? (
             <div className={styles.emptyTableState}>
               <Icon name="calendar" />

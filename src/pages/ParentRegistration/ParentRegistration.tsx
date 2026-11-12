@@ -213,7 +213,6 @@ export function ParentRegistration() {
           <header className={styles.topBar}>
             <div className={styles.brand}>
               <img src={logo} alt="KalingaLink" />
-              <span>Child Development Center</span>
             </div>
           </header>
           <section aria-live="polite" className={styles.card}>
@@ -252,7 +251,6 @@ export function ParentRegistration() {
         <header className={styles.topBar}>
           <div className={styles.brand}>
             <img src={logo} alt="KalingaLink" />
-            <span>Child Development Center</span>
           </div>
           <Link className={styles.loginLink} to={routePaths.login}>
             Already have an account? <strong>Log In</strong>

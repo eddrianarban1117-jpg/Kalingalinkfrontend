@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import childrenBanner from '../../assets/images/children-banner.png';
 import femalePanel from '../../../femalepanel.png';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import { requiredCdcNames, routePaths } from '../../constants/app-constants';
 import styles from './ParentEnrollment.module.css';
 
@@ -1308,8 +1309,8 @@ export function ParentEnrollment() {
                     </div>
                   </div>
                   {loadingCdcs && (
-                    <p aria-live="polite" className={styles.helperNote}>
-                      Loading Child Development Centers…
+                    <p className={styles.helperNote}>
+                      <BouncingDots label="Loading Child Development Centers" />
                     </p>
                   )}
                   {cdcError && (

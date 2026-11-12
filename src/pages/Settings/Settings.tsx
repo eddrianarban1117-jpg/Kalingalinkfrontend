@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { routePaths } from '../../constants/app-constants';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from './Settings.module.css';
 
 type Theme = 'light' | 'dark' | 'system';
@@ -694,7 +695,7 @@ export function Settings() {
             >
               <Icon name={statusType === 'error' ? 'alert' : 'check'} />
               {statusMessage || (loading
-                ? 'Loading your account settings…'
+                ? <BouncingDots label="Loading your account settings" />
                 : 'Changes are saved to your account when you select Save Changes.')}
             </p>
             <button

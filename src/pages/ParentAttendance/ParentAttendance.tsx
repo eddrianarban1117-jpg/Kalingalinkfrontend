@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './ParentAttendance.module.css';
 
@@ -487,7 +488,7 @@ export function ParentAttendance({ search }: { search: string }) {
                 </label>
               </div>
             </header>
-            {loading && <p aria-live="polite">Loading attendance records…</p>}
+            {loading && <p><BouncingDots label="Loading attendance records" /></p>}
             {loadError && <p aria-live="polite" role="alert">{loadError}</p>}
             <div className={styles.tableScroll}>
               <table>

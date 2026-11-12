@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from './ReportsAnalytics.module.css';
 
 type ReportData = {
@@ -390,8 +391,8 @@ export function ReportsAnalytics() {
             <span className={styles.statIcon}><Icon name={icon} /></span>
             <div>
               <span>{label}</span>
-              <strong>{value?.toLocaleString() ?? (loading ? '…' : '—')}</strong>
-              <small>{loading ? 'Loading database totals…' : 'Current database records'}</small>
+              <strong>{value?.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
+              <small>{loading ? <BouncingDots label="Loading database totals" size="small" inline /> : 'Current database records'}</small>
             </div>
             <span aria-hidden="true" className={styles.statArrow}>›</span>
           </article>
@@ -430,7 +431,7 @@ export function ReportsAnalytics() {
               Approvals
             </span>
           </div>
-          {loading && !data ? <p className={styles.chartState}>Loading enrollment history…</p> : <TrendChart trend={trend} />}
+          {loading && !data ? <p className={styles.chartState}><BouncingDots label="Loading enrollment history" /></p> : <TrendChart trend={trend} />}
         </section>
         <section
           aria-labelledby="cdc-enrollment-title"
@@ -439,7 +440,7 @@ export function ReportsAnalytics() {
           <div className={styles.panelHeader}>
             <h2 id="cdc-enrollment-title">Enrollment by CDC</h2>
           </div>
-          {loading && !data ? <p className={styles.chartState}>Loading center totals…</p> : !data?.centers.length ? <p className={styles.chartState}>No center enrollment data is available.</p> : <div
+          {loading && !data ? <p className={styles.chartState}><BouncingDots label="Loading center totals" /></p> : !data?.centers.length ? <p className={styles.chartState}>No center enrollment data is available.</p> : <div
             aria-label="Enrollment by child development center"
             className={styles.centerChart}
             role="img"
@@ -487,7 +488,7 @@ export function ReportsAnalytics() {
           <div className={styles.panelHeader}>
             <h2 id="age-group-title">Children by Age Group</h2>
           </div>
-          {loading && !data ? <p className={styles.chartState}>Loading age groups…</p> : <div className={styles.donutContent}>
+          {loading && !data ? <p className={styles.chartState}><BouncingDots label="Loading age groups" /></p> : <div className={styles.donutContent}>
             <div
               aria-label={`Enrolled children by age group; ${ageTotal} children`}
               className={styles.ageDonut}
@@ -515,7 +516,7 @@ export function ReportsAnalytics() {
           <div className={styles.panelHeader}>
             <h2 id="gender-title">Gender Distribution</h2>
           </div>
-          {loading && !data ? <p className={styles.chartState}>Loading gender totals…</p> : <div className={styles.donutContent}>
+          {loading && !data ? <p className={styles.chartState}><BouncingDots label="Loading gender totals" /></p> : <div className={styles.donutContent}>
             <div
               aria-label={`Enrolled children by gender; ${genderTotal} children`}
               className={styles.genderDonut}
@@ -547,7 +548,7 @@ export function ReportsAnalytics() {
           <div className={styles.panelHeader}>
             <h2 id="center-status-title">Center Status</h2>
           </div>
-          {loading && !data ? <p className={styles.chartState}>Loading center status…</p> : <div className={styles.donutContent}>
+          {loading && !data ? <p className={styles.chartState}><BouncingDots label="Loading center status" /></p> : <div className={styles.donutContent}>
             <div
               aria-label={`Center status: ${data?.center_status.active ?? 0} active and ${data?.center_status.inactive ?? 0} inactive`}
               className={styles.centerStatusDonut}
@@ -612,7 +613,7 @@ export function ReportsAnalytics() {
               </thead>
               <tbody>
                 {loading && exports.length === 0 && (
-                  <tr><td className={styles.emptyState} colSpan={5}>Loading report data…</td></tr>
+                  <tr><td className={styles.emptyState} colSpan={5}><BouncingDots label="Loading report data" /></td></tr>
                 )}
                 {filteredExports.map((report) => (
                   <tr key={report.name}>
@@ -665,7 +666,7 @@ export function ReportsAnalytics() {
             <h2 id="insights-title">Quick Insights</h2>
           </div>
           {loading && !data ? (
-            <p className={styles.chartState}>Loading insights…</p>
+            <p className={styles.chartState}><BouncingDots label="Loading insights" /></p>
           ) : insights.length ? (
             <div className={styles.insights}>
               {insights.map((item) => (

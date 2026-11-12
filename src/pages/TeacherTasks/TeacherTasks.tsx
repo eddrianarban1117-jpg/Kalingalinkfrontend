@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from './TeacherTasks.module.css';
 
 type TaskStatus =
@@ -393,7 +394,7 @@ export function TeacherTasks({ globalSearch }: { globalSearch: string }) {
                 {loading ? (
                   <tr>
                     <td className={styles.emptyRow} colSpan={7}>
-                      Loading tasks…
+                      <BouncingDots label="Loading tasks" />
                     </td>
                   </tr>
                 ) : visibleTasks.map((task, index) => {

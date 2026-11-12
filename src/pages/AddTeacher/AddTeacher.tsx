@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button/Button';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import logo from '../../../logo2.png';
 import {
   accountStatusOptions,
@@ -354,7 +355,6 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
             to={routePaths.welcome}
           >
             <img src={logo} alt="KalingaLink" />
-            <span>Child Development Center</span>
           </Link>
           <Link className={styles.loginLink} to={routePaths.login}>
             Already have an account? <strong>Log In</strong>
@@ -626,7 +626,7 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
                     </option>
                   ))}
                 </select>
-                {centersLoading && <span className={styles.fieldHint}>Loading centers…</span>}
+                {centersLoading && <BouncingDots className={styles.fieldHint} label="Loading centers" />}
                 {centersError && <span className={styles.fieldError} role="alert">{centersError}</span>}
                 {!centersLoading && !centersError && activeCenters.length === 0 && (
                   <span className={styles.fieldHint}>No registered centers are available.</span>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import teacherArtwork from '../../../femalepanel.png';
 import { ListGridToggle } from '../../components/common/ListGridToggle/ListGridToggle';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import type { AnnouncementFeedItem } from '../../hooks/useAnnouncementFeed';
 import { EventNotifications } from '../EventNotifications/EventNotifications';
 import styles from './ParentAnnouncements.module.css';
@@ -275,7 +276,7 @@ export function ParentAnnouncements({
 
       {error && <p role="alert" className={styles.emptyState}>{error}</p>}
       {attachmentError && <p role="alert" className={styles.emptyState}>{attachmentError}</p>}
-      {loading && <p className={styles.emptyState}>Loading announcements…</p>}
+      {loading && <p className={styles.emptyState}><BouncingDots label="Loading announcements" /></p>}
 
       <div className={styles.announcementsGrid}>
         <section aria-label="Announcement list" className={styles.listPanel}>

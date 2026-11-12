@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import styles from './TeacherProfile.module.css';
 import { Avatar } from '../../components/common/Avatar/Avatar';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 
 type ProfileSection =
   | 'Personal Information'
@@ -496,7 +497,7 @@ export function TeacherProfile() {
               />
             </div>
             {loading ? (
-              <p className={styles.profileState}>Loading profile…</p>
+              <p className={styles.profileState}><BouncingDots label="Loading profile" /></p>
             ) : (
               <dl className={styles.personalDetails}>
                 {personalFields.map(renderField)}
@@ -517,7 +518,7 @@ export function TeacherProfile() {
             onEdit={startEditing}
           />
           {loading ? (
-            <p className={styles.profileState}>Loading profile…</p>
+            <p className={styles.profileState}><BouncingDots label="Loading profile" /></p>
           ) : (
             <dl className={styles.accountDetails}>
               {accountFields.map(renderField)}
@@ -537,7 +538,7 @@ export function TeacherProfile() {
             onEdit={startEditing}
           />
           {loading ? (
-            <p className={styles.profileState}>Loading profile…</p>
+            <p className={styles.profileState}><BouncingDots label="Loading profile" /></p>
           ) : (
             <dl className={styles.stackedDetails}>
               {professionalFields.map(renderField)}
@@ -557,7 +558,7 @@ export function TeacherProfile() {
             onEdit={startEditing}
           />
           {loading ? (
-            <p className={styles.profileState}>Loading profile…</p>
+            <p className={styles.profileState}><BouncingDots label="Loading profile" /></p>
           ) : (
             <dl className={styles.addressDetails}>
               {addressFields.map(renderField)}
@@ -575,7 +576,7 @@ export function TeacherProfile() {
             title="Additional Information"
           />
           {loading ? (
-            <p className={styles.profileState}>Loading profile…</p>
+            <p className={styles.profileState}><BouncingDots label="Loading profile" /></p>
           ) : (
             <div className={styles.additionalDetails}>
               <ProfileSummary

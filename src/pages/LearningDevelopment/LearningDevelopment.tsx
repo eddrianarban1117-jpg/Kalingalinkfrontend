@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import styles from './LearningDevelopment.module.css';
 
 type Program = {
@@ -391,7 +392,7 @@ export function LearningDevelopment() {
             <span className={styles.statIcon}><Icon name={icon} /></span>
             <div>
               <span>{label}</span>
-              <strong>{value?.toLocaleString() ?? (loading ? '…' : '—')}</strong>
+              <strong>{value?.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
             </div>
             <span aria-hidden="true" className={styles.statArrow}>›</span>
           </article>
@@ -420,7 +421,7 @@ export function LearningDevelopment() {
             <span><i className={styles.legendChildren} />Progress records</span>
           </div>
           {loading && !overview ? (
-            <p className={styles.sideState}>Loading progress history…</p>
+            <p className={styles.sideState}><BouncingDots label="Loading progress history" /></p>
           ) : (
             <ProgramOverview values={progress} />
           )}
@@ -430,7 +431,7 @@ export function LearningDevelopment() {
             <h2 id="participants-title">Learners by Gender</h2>
           </div>
           {loading && !overview ? (
-            <p className={styles.sideState}>Loading learner totals…</p>
+            <p className={styles.sideState}><BouncingDots label="Loading learner totals" /></p>
           ) : (
             <ParticipantChart gender={gender} />
           )}
@@ -487,7 +488,7 @@ export function LearningDevelopment() {
               </thead>
               <tbody>
                 {loading && programs.length === 0 && (
-                  <tr><td className={styles.emptyState} colSpan={7}>Loading learning programs…</td></tr>
+                  <tr><td className={styles.emptyState} colSpan={7}><BouncingDots label="Loading learning programs" /></td></tr>
                 )}
                 {!loading && error && programs.length === 0 && (
                   <tr><td className={styles.emptyState} colSpan={7} role="alert">{error}</td></tr>
@@ -548,7 +549,7 @@ export function LearningDevelopment() {
             <div className={styles.panelHeader}><h2 id="recent-progress-title">Latest Learner Progress</h2></div>
             <div className={styles.trainings}>
               {loading && !overview ? (
-                <p className={styles.sideState}>Loading recent progress…</p>
+                <p className={styles.sideState}><BouncingDots label="Loading recent progress" /></p>
               ) : overview?.recent_progress.length ? overview.recent_progress.map((record) => (
                 <article className={styles.training} key={record.id}>
                   <span className={styles.progressBadge}><Icon name="check" /></span>
@@ -567,7 +568,7 @@ export function LearningDevelopment() {
           <section aria-labelledby="status-title" className={`${styles.panel} ${styles.statusPanel}`}>
             <div className={styles.panelHeader}><h2 id="status-title">Program Status</h2></div>
             {loading && !overview ? (
-              <p className={styles.sideState}>Loading program totals…</p>
+              <p className={styles.sideState}><BouncingDots label="Loading program totals" /></p>
             ) : (
               <ProgramStatusChart
                 active={programs.filter((program) => program.status === 'active').length}
@@ -579,7 +580,7 @@ export function LearningDevelopment() {
             <div className={styles.panelHeader}><h2 id="activities-title">Programs with Most Progress</h2></div>
             <div className={styles.activities}>
               {loading && !overview ? (
-                <p className={styles.sideState}>Loading program activity…</p>
+                <p className={styles.sideState}><BouncingDots label="Loading program activity" /></p>
               ) : mostActivePrograms.length ? mostActivePrograms.map((program, index) => (
                 <article className={styles.activity} key={`program-${program.id}`}>
                   <span className={`${styles.activityIcon} ${styles.activityteal}`}><Icon name="check" /></span>

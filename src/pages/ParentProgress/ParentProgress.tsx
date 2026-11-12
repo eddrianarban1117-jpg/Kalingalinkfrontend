@@ -6,6 +6,7 @@ import {
   type CSSProperties,
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
+import { BouncingDots } from '../../components/animations/BouncingDots';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './ParentProgress.module.css';
 
@@ -266,7 +267,7 @@ export function ParentProgress({ search }: { search: string }) {
           </p>
         ) : loading ? (
           <p className={styles.emptyState} aria-live="polite">
-            Loading child progress…
+            <BouncingDots label="Loading child progress" />
           </p>
         ) : (
           <p className={styles.emptyState}>
