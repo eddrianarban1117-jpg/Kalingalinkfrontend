@@ -349,84 +349,127 @@
 }
 
 .tableWrap {
-  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .applicationTable {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
   text-align: left;
 }
 
 .applicationTable th {
-  height: 1.65rem;
-  padding: 0 0.3rem;
+  height: 1.8rem;
+  min-width: 0;
+  padding: 0 0.35rem;
+  overflow: hidden;
   color: #315f9b;
   background: #f3f8fe;
-  font-size: 0.5rem;
+  font-size: 0.6rem;
   font-weight: 700;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .applicationTable th:first-child {
-  width: 22%;
+  width: 20%;
   border-radius: 0.25rem 0 0 0.25rem;
 }
 
-.applicationTable th:nth-child(2),
+.applicationTable th:nth-child(2) {
+  width: 7%;
+  text-align: center;
+}
+
 .applicationTable th:nth-child(3) {
-  width: 9%;
+  width: 8%;
+  text-align: center;
 }
 
 .applicationTable th:nth-child(4) {
-  width: 16%;
+  width: 14%;
 }
 
 .applicationTable th:nth-child(5) {
-  width: 17%;
-}
-
-.applicationTable th:nth-child(6) {
   width: 15%;
 }
 
+.applicationTable th:nth-child(6) {
+  width: 13%;
+  text-align: center;
+}
+
+.applicationTable th:nth-child(7) {
+  width: 13%;
+  text-align: center;
+}
+
 .applicationTable th:last-child {
-  width: 8%;
+  width: 10%;
   border-radius: 0 0.25rem 0.25rem 0;
   text-align: center;
 }
 
 .applicationTable td {
-  height: 2.15rem;
-  padding: 0 0.3rem;
+  height: 2.35rem;
+  min-width: 0;
+  padding: 0 0.35rem;
+  overflow: hidden;
   border-bottom: 1px solid #edf3f9;
   color: #6789b6;
-  font-size: 0.51rem;
+  font-size: 0.6rem;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.applicationTable td:nth-child(2),
+.applicationTable td:nth-child(3),
+.applicationTable td:nth-child(6),
+.applicationTable td:nth-child(7),
+.applicationTable td:last-child {
+  text-align: center;
 }
 
 .applicationTable tbody tr:last-child td {
   border-bottom: 0;
 }
 
-.applicationTable td:first-child {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.childNameCell {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.applicationTable td:first-child strong {
+.childNameCell strong {
+  display: block;
+  min-width: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
   color: #194985;
   font-weight: 600;
-  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.applicationTable td:nth-child(5) > span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .childAvatar {
   display: inline-grid;
   width: 1.5rem;
   height: 1.5rem;
-  margin-right: 0.35rem;
-  vertical-align: middle;
+  flex: 0 0 1.5rem;
   place-items: center;
   border-radius: 50%;
   color: #e84a91;
@@ -455,11 +498,27 @@
 }
 
 .status {
-  display: inline-block;
-  padding: 0.23rem 0.5rem;
+  box-sizing: border-box;
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0.28rem 0.45rem;
   border-radius: 999px;
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.status > span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .statusApproved {
@@ -488,10 +547,42 @@
 }
 
 .more {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: min(100%, 3.25rem);
+  min-height: 1.55rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.35rem;
+  appearance: none;
+  border: 1px solid #cfe2fa;
+  border-radius: 0.35rem;
   color: #146bdc;
-  font-size: 0.75rem;
+  background: #eff7ff;
+  font: inherit;
+  font-size: 0.62rem;
   font-weight: 900;
-  letter-spacing: 0.08rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+}
+
+.more:hover {
+  border-color: #9dc8f6;
+  background: #e2f0ff;
+}
+
+.more:active {
+  transform: scale(0.97);
+}
+
+.more:focus-visible {
+  outline: 2px solid #2489e9;
+  outline-offset: 2px;
 }
 
 .emptyState {
@@ -501,17 +592,29 @@
 }
 
 .tableFooter {
-  display: flex;
+  display: grid;
   min-height: 1.85rem;
-  align-items: end;
-  justify-content: space-between;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
   gap: 0.45rem;
   color: #7797bf;
   font-size: 0.53rem;
+  white-space: nowrap;
+}
+
+.tableFooter > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tableFooter > span:nth-child(2) {
+  text-align: center;
 }
 
 .pagination {
   display: flex;
+  justify-self: end;
   align-items: center;
   gap: 0.2rem;
 }
@@ -847,8 +950,24 @@
     grid-template-columns: minmax(0, 1.5fr) minmax(14rem, 0.9fr);
   }
 
-  .applicationTable {
-    min-width: 42rem;
+  .applicationTable th,
+  .applicationTable td {
+    padding-right: 0.22rem;
+    padding-left: 0.22rem;
+  }
+
+  .applicationTable th {
+    font-size: 0.56rem;
+  }
+
+  .applicationTable td {
+    font-size: 0.56rem;
+  }
+
+  .childAvatar {
+    width: 1.3rem;
+    height: 1.3rem;
+    flex-basis: 1.3rem;
   }
 }
 
@@ -942,6 +1061,7 @@
   }
 
   .applicationTable {
+    width: 100%;
     min-width: 0;
     table-layout: auto;
   }
@@ -990,16 +1110,23 @@
     font-weight: 700;
   }
 
+  .childNameCell {
+    width: 100%;
+  }
+
+  .childNameCell strong {
+    overflow: visible;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
   .applicationTable td:not(:first-child)::before {
     flex: 0 0 auto;
     color: #315f9b;
     font-size: 0.48rem;
     font-weight: 700;
     content: attr(data-label) ':';
-  }
-
-  .applicationTable td:first-child strong {
-    overflow-wrap: anywhere;
   }
 
   .applicationTable td:last-child {
@@ -1013,7 +1140,27 @@
   }
 
   .tableFooter {
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
+  }
+
+  .tableFooter > span:first-child,
+  .pagination {
+    grid-row: 1;
+  }
+
+  .tableFooter > span:first-child {
+    grid-column: 1;
+  }
+
+  .tableFooter > span:nth-child(2) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .pagination {
+    grid-column: 2;
   }
 
   .pagination {

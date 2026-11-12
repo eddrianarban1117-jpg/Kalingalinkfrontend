@@ -3,12 +3,19 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { routePaths } from '../constants/app-constants';
+import {
+  applyThemePreference,
+  readThemePreference,
+  resolveTheme,
+  saveThemePreference,
+} from '../styles/theme';
 
 export type UserRole = 'admin' | 'teacher' | 'parent';
 
@@ -33,7 +40,7 @@ type ApiResult = {
   data?: { preferences?: Record<string, unknown> };
   user?: AuthUser;
   tokens?: { access_token?: string };
-}
+};
 
 async function requestFile(path: string, token?: string) {
   const headers = new Headers();
@@ -182,6 +189,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshPromise = useRef<Promise<string> | null>(null);
   const checkedPathRef = useRef<string | null>(null);
   const loadingPathRef = useRef<string | null>(null);
+  const userId = user?.id;
+
+  useLayoutEffect(() => {
+    if (!userId) {
+      delete document.documentElement.dataset.theme;
+      delete document.documentElement.dataset.themePreference;
+      return;
+    }
+
+    const preference = readThemePreference(userId);
+    applyThemePreference(preference ?? 'light');
+  }, [userId]);
 
   const refreshAccessToken = useCallback(() => {
     if (!refreshPromise.current) {
@@ -200,19 +219,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSessionMessage('');
         return refreshedToken;
       };
-      const pendingRefresh: Promise<string> = (navigator.locks
-        ? navigator.locks.request('kalingalink-auth-refresh', refresh)
-        : refresh()
-      ).catch((error: unknown) => {
-        if (error instanceof ApiRequestError && error.status === 401) {
-          setUser(null);
-          setAccessToken(null);
-          setSessionMessage(getSessionMessage(error));
-        }
-        throw error;
-      }).finally(() => {
-        refreshPromise.current = null;
-      });
+      const pendingRefresh: Promise<string> = (
+        navigator.locks
+          ? navigator.locks.request('kalingalink-auth-refresh', refresh)
+          : refresh()
+      )
+        .catch((error: unknown) => {
+          if (error instanceof ApiRequestError && error.status === 401) {
+            setUser(null);
+            setAccessToken(null);
+            setSessionMessage(getSessionMessage(error));
+          }
+          throw error;
+        })
+        .finally(() => {
+          refreshPromise.current = null;
+        });
       refreshPromise.current = pendingRefresh;
     }
     return refreshPromise.current;
@@ -267,27 +289,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [
-    location.pathname,
-    refreshAccessToken,
-    user,
-  ]);
+  }, [location.pathname, refreshAccessToken, user]);
 
   useEffect(() => {
     if (!user || !accessToken) return;
     let active = true;
     let media: MediaQueryList | null = null;
     let applyTheme: (() => void) | null = null;
+    const preferenceAtRequestStart =
+      document.documentElement.dataset.themePreference;
     void requestJson('/api/settings', {}, accessToken)
       .then((result: ApiResult) => {
         if (!active || !result.data?.preferences) return;
         const preferences = result.data.preferences;
         const theme = preferences.theme;
-        if (theme === 'light' || theme === 'dark' || theme === 'system') {
+        const themeChangedWhileLoading =
+          document.documentElement.dataset.themePreference !==
+          preferenceAtRequestStart;
+        if (
+          !themeChangedWhileLoading &&
+          (theme === 'light' || theme === 'dark' || theme === 'system')
+        ) {
           media = window.matchMedia('(prefers-color-scheme: dark)');
+          saveThemePreference(user.id, theme);
           applyTheme = () => {
-            document.documentElement.dataset.theme =
-              theme === 'system' ? (media?.matches ? 'dark' : 'light') : theme;
+            document.documentElement.dataset.theme = resolveTheme(
+              theme,
+              media?.matches ?? false,
+            );
+            document.documentElement.dataset.themePreference = theme;
           };
           applyTheme();
           if (theme === 'system') {
@@ -415,7 +445,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         return await requestFile(path, accessToken ?? undefined);
       } catch (error) {
-        if (!(error instanceof ApiRequestError) || error.status !== 401) throw error;
+        if (!(error instanceof ApiRequestError) || error.status !== 401)
+          throw error;
         const refreshedToken = await refreshAccessToken();
         return requestFile(path, refreshedToken);
       }

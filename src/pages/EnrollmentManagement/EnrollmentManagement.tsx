@@ -802,27 +802,48 @@ export function EnrollmentManagement() {
                     return (
                       <tr key={application.id}>
                         <td data-label="Child Name">
-                          <span
-                            className={`${styles.childAvatar} ${styles[`avatar${index % 4}`]}`}
-                          >
-                            <Icon name="user" />
-                          </span>
-                          <strong>{application.name}</strong>
+                          <div className={styles.childNameCell}>
+                            <span
+                              className={`${styles.childAvatar} ${styles[`avatar${index % 4}`]}`}
+                            >
+                              <Icon name="user" />
+                            </span>
+                            <strong title={application.name}>
+                              {application.name}
+                            </strong>
+                          </div>
                         </td>
                         <td data-label="Age">{application.age} years</td>
-                        <td data-label="Gender">{application.gender}</td>
-                        <td data-label="Requested CDC">{application.center}</td>
-                        <td data-label="Assigned Teacher">
-                          {application.assignedTeacherName || 'Not assigned'}
+                        <td data-label="Gender" title={application.gender}>
+                          {application.gender}
                         </td>
-                        <td data-label="Application Date">
+                        <td
+                          data-label="Requested CDC"
+                          title={application.center}
+                        >
+                          {application.center}
+                        </td>
+                        <td data-label="Assigned Teacher">
+                          <span
+                            title={
+                              application.assignedTeacherName || 'Not assigned'
+                            }
+                          >
+                            {application.assignedTeacherName || 'Not assigned'}
+                          </span>
+                        </td>
+                        <td
+                          data-label="Application Date"
+                          title={application.date}
+                        >
                           {application.date}
                         </td>
                         <td data-label="Status">
                           <span
                             className={`${styles.status} ${styles[statusClass]}`}
+                            title={application.status}
                           >
-                            {application.status}
+                            <span>{application.status}</span>
                           </span>
                         </td>
                         <td data-label="Actions">

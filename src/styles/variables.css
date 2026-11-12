@@ -83,29 +83,68 @@
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --bg: #111c2b;
-  --text: #f3f7fc;
-  --surface: #1c2a3b;
-  --border: #3a4b60;
-  --color-surface-muted: #26364a;
-  --color-text-muted: #cad5e2;
+  --color-primary: #1683f8;
+  --color-primary-dark: #0c5fc1;
+  --color-green: #20c997;
+  --color-sunny-yellow: #f5b942;
+  --color-navy-text: #f1f5ff;
+  --color-white: #f1f5ff;
+
+  --bg: #0b1220;
+  --text: #f1f5ff;
+  --surface: #131f32;
+  --border: #263a57;
+  --color-background: #0b1220;
+  --color-surface: #131f32;
+  --color-surface-muted: #18263b;
+  --color-border: #263a57;
+  --color-text: #f1f5ff;
+  --color-text-muted: #a8b9d4;
+  --color-success: #20c997;
+  --color-warning: #f5b942;
+  --color-danger: #f15b70;
+
+  --shadow-panel: 0 0.25rem 0.8rem rgb(0 0 0 / 22%);
+  --shadow-dialog: 0 1rem 3rem rgb(0 0 0 / 42%);
+
+  --admin-blue: #1683f8;
+  --admin-blue-dark: #0c5fc1;
+  --admin-ink: #f1f5ff;
+  --admin-muted: #a8b9d4;
+  --admin-border: #263a57;
+  --admin-surface-soft: #18263b;
+  --admin-surface-hover: #22334d;
+  --admin-border-input: #3a506e;
+  --admin-placeholder: #8195b5;
+  --admin-muted-strong: #a8b9d4;
+  --admin-readonly-surface: #18263b;
+  --admin-subtle-surface: #101827;
+  --admin-page-surface: #0b1220;
+  --admin-button-border: #3a506e;
+  --admin-required: #f15b70;
+  --admin-error: #f15b70;
+  --admin-panel-shadow: 0 0.25rem 0.8rem rgb(0 0 0 / 22%);
+  --admin-panel-shadow-hover: 0 0.35rem 1rem rgb(0 0 0 / 30%);
+
+  --theme-bg-primary: #0b1220;
+  --theme-bg-secondary: #101827;
+  --theme-bg-content: #111c2e;
+  --theme-surface: #131f32;
+  --theme-surface-raised: #18263b;
+  --theme-border: #263a57;
+  --theme-text-primary: #f1f5ff;
+  --theme-text-secondary: #a8b9d4;
+  --theme-text-muted: #8195b5;
+  --theme-accent: #1683f8;
+  --theme-success: #20c997;
+  --theme-warning: #f5b942;
+  --theme-danger: #f15b70;
+  --theme-purple: #a970f5;
+  --theme-sidebar-start: #071b3b;
+  --theme-sidebar-end: #103b78;
+
   --color-background: var(--bg);
   --color-text: var(--text);
   --color-surface: var(--surface);
   --color-border: var(--border);
-  --admin-ink: #e4eefb;
-  --admin-muted: #b6c7dc;
-  --admin-border: #3a4b60;
-  --admin-surface-soft: #26364a;
-  --admin-surface-hover: #30445d;
-  --admin-border-input: #50647d;
-  --admin-placeholder: #a8bbd0;
-  --admin-muted-strong: #c0d0e4;
-  --admin-readonly-surface: #253448;
-  --admin-subtle-surface: #202f42;
-  --admin-page-surface: #111c2b;
-  --admin-button-border: #50647d;
-  --admin-panel-shadow: 0 0.25rem 0.8rem rgb(0 0 0 / 20%);
-  --admin-panel-shadow-hover: 0 0.25rem 0.8rem rgb(0 0 0 / 30%);
-  --color-text-muted: #cad5e2;
 }

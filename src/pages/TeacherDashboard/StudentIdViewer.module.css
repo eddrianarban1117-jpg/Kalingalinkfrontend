@@ -281,7 +281,7 @@
   flex: 1;
   grid-template-columns: 31% minmax(0, 1fr);
   align-items: center;
-  gap: 4cqi;
+  gap: 2.8cqi;
   padding: 2cqi 7cqi 5cqi;
 }
 
@@ -309,19 +309,19 @@
 
 .nickname {
   display: inline-block;
-  margin-bottom: 1cqi;
-  padding: 0.9cqi 2.4cqi;
+  margin-bottom: 0.6cqi;
+  padding: 0.7cqi 2cqi;
   border-radius: 999px;
   color: #0c66c4;
   background: #e5f1ff;
-  font-size: 2.05cqi;
+  font-size: 2.25cqi;
   font-weight: 800;
 }
 
 .frontDetails h2 {
-  margin: 0 0 1.8cqi;
+  margin: 0 0 1cqi;
   color: #0c438f;
-  font-size: clamp(0.75rem, 4.1cqi, 2rem);
+  font-size: clamp(0.9rem, 4.6cqi, 2.15rem);
   font-weight: 900;
   line-height: 1.1;
   overflow-wrap: anywhere;
@@ -329,10 +329,10 @@
 
 .frontDetails p {
   display: grid;
-  grid-template-columns: 24cqi minmax(0, 1fr);
-  gap: 1.5cqi;
-  margin: 0 0 0.95cqi;
-  font-size: 2.1cqi;
+  grid-template-columns: 22cqi minmax(0, 1fr);
+  gap: 1cqi;
+  margin: 0 0 0.5cqi;
+  font-size: 2.4cqi;
   line-height: 1.2;
 }
 

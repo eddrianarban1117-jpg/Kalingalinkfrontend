@@ -1,8 +1,19 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { routePaths } from '../../constants/app-constants';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  applyThemePreference,
+  readThemePreference,
+  saveThemePreference,
+} from '../../styles/theme';
 import styles from './Settings.module.css';
 
 type Theme = 'light' | 'dark' | 'system';
@@ -231,7 +242,12 @@ function Icon({ name }: { name: string }) {
       return (
         <svg {...shared}>
           <circle cx="12" cy="12" r="9" fill="#0872ed" stroke="none" />
-          <path d="M12 11v5m0-8h.01" fill="none" stroke="#fff" strokeWidth="2.5" />
+          <path
+            d="M12 11v5m0-8h.01"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2.5"
+          />
         </svg>
       );
     case 'camera':
@@ -251,8 +267,17 @@ function Icon({ name }: { name: string }) {
     case 'shield':
       return (
         <svg {...shared}>
-          <path d="M12 3 19 6v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6z" fill="#0865e7" stroke="none" />
-          <path d="m9.5 12 1.7 1.7 3.5-3.5" fill="none" stroke="#fff" strokeWidth="2" />
+          <path
+            d="M12 3 19 6v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6z"
+            fill="#0865e7"
+            stroke="none"
+          />
+          <path
+            d="m9.5 12 1.7 1.7 3.5-3.5"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2"
+          />
         </svg>
       );
     default:
@@ -267,13 +292,18 @@ function Icon({ name }: { name: string }) {
 export function Settings() {
   const { request, download, user, updateUser } = useAuth();
   const navigate = useNavigate();
-  const [settings, setSettings] = useState(defaultSettings);
+  const [settings, setSettings] = useState(() => ({
+    ...defaultSettings,
+    theme: readThemePreference(user?.id) ?? defaultSettings.theme,
+  }));
   const [profile, setProfile] = useState<Profile>({
     first_name: user?.first_name ?? '',
     last_name: user?.last_name ?? '',
     email: user?.email ?? '',
   });
-  const [savedDashboard, setSavedDashboard] = useState(defaultSettings.defaultDashboard);
+  const [savedDashboard, setSavedDashboard] = useState(
+    defaultSettings.defaultDashboard,
+  );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -313,11 +343,12 @@ export function Settings() {
   const dateParts = Object.fromEntries(
     previewDateParts.map(({ type, value }) => [type, value]),
   );
-  const previewDate = settings.dateFormat === 'DD/MM/YYYY'
-    ? `${dateParts.day}/${dateParts.month}/${dateParts.year}`
-    : settings.dateFormat === 'YYYY-MM-DD'
-      ? `${dateParts.year}-${dateParts.month}-${dateParts.day}`
-      : `${dateParts.month}/${dateParts.day}/${dateParts.year}`;
+  const previewDate =
+    settings.dateFormat === 'DD/MM/YYYY'
+      ? `${dateParts.day}/${dateParts.month}/${dateParts.year}`
+      : settings.dateFormat === 'YYYY-MM-DD'
+        ? `${dateParts.year}-${dateParts.month}-${dateParts.day}`
+        : `${dateParts.month}/${dateParts.day}/${dateParts.year}`;
   const previewTime = new Intl.DateTimeFormat(locale, {
     timeZone,
     hour: '2-digit',
@@ -340,8 +371,16 @@ export function Settings() {
           ...(result.data.preferences.notifications ?? {}),
         },
       }));
+      if (
+        result.data.preferences.theme === 'light' ||
+        result.data.preferences.theme === 'dark' ||
+        result.data.preferences.theme === 'system'
+      ) {
+        saveThemePreference(user?.id, result.data.preferences.theme);
+      }
       setSavedDashboard(
-        result.data.preferences.defaultDashboard ?? defaultSettings.defaultDashboard,
+        result.data.preferences.defaultDashboard ??
+          defaultSettings.defaultDashboard,
       );
       updateUser({
         first_name: result.data.profile.first_name,
@@ -350,13 +389,15 @@ export function Settings() {
       });
     } catch (error) {
       setStatusType('error');
-      setStatusMessage(error instanceof Error
-        ? error.message
-        : 'Account settings could not be loaded.');
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : 'Account settings could not be loaded.',
+      );
     } finally {
       setLoading(false);
     }
-  }, [request, updateUser]);
+  }, [request, updateUser, user?.id]);
 
   useEffect(() => {
     void loadSettings();
@@ -379,9 +420,11 @@ export function Settings() {
       .catch((error: unknown) => {
         if (active) {
           setStatusType('error');
-          setStatusMessage(error instanceof Error
-            ? error.message
-            : 'The profile picture could not be loaded.');
+          setStatusMessage(
+            error instanceof Error
+              ? error.message
+              : 'The profile picture could not be loaded.',
+          );
         }
       });
 
@@ -402,23 +445,28 @@ export function Settings() {
 
   useEffect(() => {
     if (profileModalVisible) {
-      document.querySelector<HTMLInputElement>(
-        `.${styles.profileModal} input:not([readonly])`,
-      )?.focus();
+      document
+        .querySelector<HTMLInputElement>(
+          `.${styles.profileModal} input:not([readonly])`,
+        )
+        ?.focus();
     }
   }, [profileModalVisible]);
 
-  useEffect(() => () => {
-    if (modalCloseTimerRef.current !== null) {
-      window.clearTimeout(modalCloseTimerRef.current);
-    }
-    if (toastTimerRef.current !== null) {
-      window.clearTimeout(toastTimerRef.current);
-    }
-    if (selectedPhotoPreviewRef.current) {
-      URL.revokeObjectURL(selectedPhotoPreviewRef.current);
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (modalCloseTimerRef.current !== null) {
+        window.clearTimeout(modalCloseTimerRef.current);
+      }
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current);
+      }
+      if (selectedPhotoPreviewRef.current) {
+        URL.revokeObjectURL(selectedPhotoPreviewRef.current);
+      }
+    },
+    [],
+  );
 
   function updateSetting<Key extends keyof SettingsState>(
     key: Key,
@@ -434,7 +482,10 @@ export function Settings() {
     if (toastTimerRef.current !== null) {
       window.clearTimeout(toastTimerRef.current);
     }
-    toastTimerRef.current = window.setTimeout(() => setProfileToast(null), 4200);
+    toastTimerRef.current = window.setTimeout(
+      () => setProfileToast(null),
+      4200,
+    );
   }
 
   const releaseSelectedPhotoPreview = useCallback(() => {
@@ -453,7 +504,9 @@ export function Settings() {
     }
     releaseSelectedPhotoPreview();
     setProfileDraft({
-      full_name: [profile.first_name, profile.last_name].filter(Boolean).join(' '),
+      full_name: [profile.first_name, profile.last_name]
+        .filter(Boolean)
+        .join(' '),
       email: profile.email,
     });
     setProfileError('');
@@ -461,29 +514,38 @@ export function Settings() {
     window.requestAnimationFrame(() => setProfileModalVisible(true));
   }
 
-  const closeProfileModal = useCallback((force = false) => {
-    if (profileSaving) return;
-    const currentFullName = [profile.first_name, profile.last_name].filter(Boolean).join(' ');
-    const hasUnsavedChanges = profileDraft.full_name.trim() !== currentFullName
-      || profileDraft.email.trim() !== profile.email
-      || selectedPhoto !== null;
-    if (!force && hasUnsavedChanges
-      && !window.confirm('Discard your unsaved profile changes?')) {
-      return;
-    }
-    releaseSelectedPhotoPreview();
-    setProfileModalVisible(false);
-    modalCloseTimerRef.current = window.setTimeout(() => {
-      setProfileModalMounted(false);
-      modalCloseTimerRef.current = null;
-    }, 190);
-  }, [
-    profile,
-    profileDraft,
-    profileSaving,
-    releaseSelectedPhotoPreview,
-    selectedPhoto,
-  ]);
+  const closeProfileModal = useCallback(
+    (force = false) => {
+      if (profileSaving) return;
+      const currentFullName = [profile.first_name, profile.last_name]
+        .filter(Boolean)
+        .join(' ');
+      const hasUnsavedChanges =
+        profileDraft.full_name.trim() !== currentFullName ||
+        profileDraft.email.trim() !== profile.email ||
+        selectedPhoto !== null;
+      if (
+        !force &&
+        hasUnsavedChanges &&
+        !window.confirm('Discard your unsaved profile changes?')
+      ) {
+        return;
+      }
+      releaseSelectedPhotoPreview();
+      setProfileModalVisible(false);
+      modalCloseTimerRef.current = window.setTimeout(() => {
+        setProfileModalMounted(false);
+        modalCloseTimerRef.current = null;
+      }, 190);
+    },
+    [
+      profile,
+      profileDraft,
+      profileSaving,
+      releaseSelectedPhotoPreview,
+      selectedPhoto,
+    ],
+  );
 
   useEffect(() => {
     if (!profileModalMounted || profileSaving) return;
@@ -497,8 +559,10 @@ export function Settings() {
   function selectProfilePhoto(file?: File) {
     if (!file) return;
     const extension = file.name.split('.').pop()?.toLowerCase();
-    if (!['jpg', 'jpeg', 'png'].includes(extension ?? '')
-      || (file.type && !['image/jpeg', 'image/png'].includes(file.type))) {
+    if (
+      !['jpg', 'jpeg', 'png'].includes(extension ?? '') ||
+      (file.type && !['image/jpeg', 'image/png'].includes(file.type))
+    ) {
       setProfileError('Choose a JPG, JPEG, or PNG image.');
       return;
     }
@@ -535,10 +599,13 @@ export function Settings() {
       payload.append('email', profileDraft.email.trim());
       if (selectedPhoto) payload.append('profile_photo', selectedPhoto);
 
-      const response = await request<ProfilePhotoResponse>('/api/settings/profile-photo', {
-        method: 'POST',
-        body: payload,
-      });
+      const response = await request<ProfilePhotoResponse>(
+        '/api/settings/profile-photo',
+        {
+          method: 'POST',
+          body: payload,
+        },
+      );
       if (!response.data?.profile) {
         throw new Error('The server did not confirm the profile update.');
       }
@@ -562,9 +629,10 @@ export function Settings() {
         modalCloseTimerRef.current = null;
       }, 190);
     } catch (error) {
-      const message = error instanceof Error
-        ? error.message
-        : 'Your profile could not be saved. Please try again.';
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Your profile could not be saved. Please try again.';
       setProfileError(message);
       showProfileToast('error', message);
     } finally {
@@ -599,7 +667,19 @@ export function Settings() {
         }),
       });
       if (!response.data?.profile || !response.data?.preferences) {
-        throw new Error('The server did not confirm the account settings update.');
+        throw new Error(
+          'The server did not confirm the account settings update.',
+        );
+      }
+      const savedTheme = response.data.preferences.theme;
+      if (
+        savedTheme === 'light' ||
+        savedTheme === 'dark' ||
+        savedTheme === 'system'
+      ) {
+        saveThemePreference(user?.id, savedTheme);
+      } else {
+        saveThemePreference(user?.id, settings.theme);
       }
       updateUser({
         first_name: response.data.profile.first_name,
@@ -613,16 +693,23 @@ export function Settings() {
         'Reports and Analytics': routePaths.reportsAnalytics,
       };
       setStatusType('success');
-      setStatusMessage('Your profile and preferences were saved to your account.');
-      if (settings.defaultDashboard !== savedDashboard && dashboardPaths[settings.defaultDashboard]) {
+      setStatusMessage(
+        'Your profile and preferences were saved to your account.',
+      );
+      if (
+        settings.defaultDashboard !== savedDashboard &&
+        dashboardPaths[settings.defaultDashboard]
+      ) {
         navigate(dashboardPaths[settings.defaultDashboard]);
       }
       setSavedDashboard(settings.defaultDashboard);
     } catch (error) {
       setStatusType('error');
-      setStatusMessage(error instanceof Error
-        ? error.message
-        : 'Account settings could not be saved.');
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : 'Account settings could not be saved.',
+      );
     } finally {
       setSaving(false);
     }
@@ -631,11 +718,7 @@ export function Settings() {
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const applySettings = () => {
-      const resolvedTheme = settings.theme === 'system'
-        ? (media.matches ? 'dark' : 'light')
-        : settings.theme;
-      document.documentElement.dataset.theme = resolvedTheme;
-      document.documentElement.dataset.themePreference = settings.theme;
+      applyThemePreference(settings.theme);
       document.documentElement.dataset.dateFormat = settings.dateFormat;
       document.documentElement.dataset.timeFormat = settings.timeFormat;
       document.documentElement.dataset.timeZone = timeZone;
@@ -645,7 +728,13 @@ export function Settings() {
     if (settings.theme !== 'system') return;
     media.addEventListener('change', applySettings);
     return () => media.removeEventListener('change', applySettings);
-  }, [settings.dateFormat, settings.language, settings.theme, settings.timeFormat, timeZone]);
+  }, [
+    settings.dateFormat,
+    settings.language,
+    settings.theme,
+    settings.timeFormat,
+    timeZone,
+  ]);
 
   const themes: { value: Theme; label: string; icon: string }[] = [
     { value: 'light', label: 'Light', icon: 'sun' },
@@ -653,454 +742,488 @@ export function Settings() {
     { value: 'system', label: 'System (Auto)', icon: 'system' },
   ];
 
-  const roleLabel = user?.role === 'admin'
-    ? 'MSWDO Administrator'
-    : user?.role === 'teacher'
-      ? 'Teacher'
-      : 'Parent';
+  const roleLabel =
+    user?.role === 'admin'
+      ? 'MSWDO Administrator'
+      : user?.role === 'teacher'
+        ? 'Teacher'
+        : 'Parent';
 
   return (
     <>
-    <section aria-busy={loading || saving} className={styles.page}>
-      <header className={styles.pageHeader}>
-        <span aria-hidden="true" className={styles.titleIcon}>
-          <Icon name="settings" />
-        </span>
-        <div>
-          <h1>Settings</h1>
-          <p>Customize your account preferences and system settings.</p>
-        </div>
-      </header>
-
-      <div className={styles.topGrid}>
-        <section
-          aria-labelledby="account-information-title"
-          className={`${styles.card} ${styles.accountCard}`}
-        >
-          <div className={styles.cardHeader}>
-            <span className={styles.sectionIcon}>
-              <Icon name="account" />
-            </span>
-            <h2 id="account-information-title">Account Information</h2>
+      <section aria-busy={loading || saving} className={styles.page}>
+        <header className={styles.pageHeader}>
+          <span aria-hidden="true" className={styles.titleIcon}>
+            <Icon name="settings" />
+          </span>
+          <div>
+            <h1>Settings</h1>
+            <p>Customize your account preferences and system settings.</p>
           </div>
-          <div className={styles.accountContent}>
-            <div aria-hidden="true" className={styles.avatar}>
-              {profilePhotoUrl
-                ? <img alt="" src={profilePhotoUrl} />
-                : profile.first_name.trim().charAt(0).toUpperCase() || 'A'}
+        </header>
+
+        <div className={styles.topGrid}>
+          <section
+            aria-labelledby="account-information-title"
+            className={`${styles.card} ${styles.accountCard}`}
+          >
+            <div className={styles.cardHeader}>
+              <span className={styles.sectionIcon}>
+                <Icon name="account" />
+              </span>
+              <h2 id="account-information-title">Account Information</h2>
             </div>
-            <div className={styles.accountDetails}>
-              <strong>{[profile.first_name, profile.last_name].filter(Boolean).join(' ')}</strong>
-              <span>{profile.email}</span>
-              <span>{roleLabel}</span>
-              <button
-                className={styles.editButton}
-                onClick={openProfileModal}
-                type="button"
-              >
-                <Icon name="edit" />
-                Edit Profile
-              </button>
-            </div>
-          </div>
-          <p className={styles.localNote}>
-            Profile details are loaded from and saved to your account.
-          </p>
-        </section>
-
-        <section
-          aria-labelledby="language-title"
-          className={`${styles.card} ${styles.languageCard}`}
-        >
-          <div className={styles.cardHeader}>
-            <span className={styles.sectionIcon}>
-              <Icon name="globe" />
-            </span>
-            <h2 id="language-title">Language</h2>
-          </div>
-          <p className={styles.cardDescription}>
-            Select your preferred language for the system.
-          </p>
-          <label className={styles.selectField}>
-            <span className={styles.languageIcon}>
-              <Icon name="globe" />
-            </span>
-            <span className={styles.visuallyHidden}>Preferred language</span>
-            <select
-              onChange={(event) =>
-                updateSetting('language', event.target.value as Language)
-              }
-              value={settings.language}
-            >
-              <option value="en-US">English (United States)</option>
-              <option value="fil">Filipino</option>
-            </select>
-            <Icon name="chevron" />
-          </label>
-          <p className={styles.helperText}>
-            Language selection will apply where translations are available.
-          </p>
-        </section>
-
-        <section
-          aria-labelledby="theme-title"
-          className={`${styles.card} ${styles.themeCard}`}
-        >
-          <div className={styles.cardHeader}>
-            <span className={styles.sectionIcon}>
-              <Icon name="palette" />
-            </span>
-            <h2 id="theme-title">Theme</h2>
-          </div>
-          <p className={styles.cardDescription}>
-            Choose your preferred appearance.
-          </p>
-          <div aria-label="Appearance theme" className={styles.themeOptions}>
-            {themes.map((theme) => (
-              <button
-                aria-pressed={settings.theme === theme.value}
-                className={`${styles.themeOption} ${settings.theme === theme.value ? styles.selectedTheme : ''}`}
-                key={theme.value}
-                onClick={() => updateSetting('theme', theme.value)}
-                type="button"
-              >
-                {settings.theme === theme.value && (
-                  <span aria-hidden="true" className={styles.themeCheck}>
-                    <Icon name="check" />
-                  </span>
+            <div className={styles.accountContent}>
+              <div aria-hidden="true" className={styles.avatar}>
+                {profilePhotoUrl ? (
+                  <img alt="" src={profilePhotoUrl} />
+                ) : (
+                  profile.first_name.trim().charAt(0).toUpperCase() || 'A'
                 )}
-                <Icon name={theme.icon} />
-                <span>{theme.label}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <div className={styles.bottomGrid}>
-        <section
-          aria-labelledby="notification-preferences-title"
-          className={`${styles.card} ${styles.notificationCard}`}
-        >
-          <div className={styles.cardHeader}>
-            <span className={styles.sectionIcon}>
-              <Icon name="bell" />
-            </span>
-            <div>
-              <h2 id="notification-preferences-title">
-                Notification Preferences
-              </h2>
-              <p>Manage how you want to receive notifications and alerts.</p>
-            </div>
-          </div>
-          <div className={styles.preferenceList}>
-            {notificationOptions.map((option) => (
-              <div className={styles.preferenceRow} key={option.key}>
-                <span className={styles.preferenceIcon}>
-                  <Icon name={option.icon} />
-                </span>
-                <span className={styles.preferenceCopy}>
-                  <strong>{option.title}</strong>
-                  <small>{option.description}</small>
-                </span>
+              </div>
+              <div className={styles.accountDetails}>
+                <strong>
+                  {[profile.first_name, profile.last_name]
+                    .filter(Boolean)
+                    .join(' ')}
+                </strong>
+                <span>{profile.email}</span>
+                <span>{roleLabel}</span>
                 <button
-                  aria-checked={settings.notifications[option.key]}
-                  aria-label={option.title}
-                  className={`${styles.switch} ${settings.notifications[option.key] ? styles.switchOn : ''}`}
-                  onClick={() =>
-                    updateNotification(
-                      option.key,
-                      !settings.notifications[option.key],
-                    )
-                  }
-                  role="switch"
+                  className={styles.editButton}
+                  onClick={openProfileModal}
                   type="button"
                 >
-                  <span />
+                  <Icon name="edit" />
+                  Edit Profile
                 </button>
               </div>
-            ))}
-          </div>
-        </section>
-
-        <section
-          aria-labelledby="system-preferences-title"
-          className={`${styles.card} ${styles.systemCard}`}
-        >
-          <div className={styles.cardHeader}>
-            <span className={styles.sectionIcon}>
-              <Icon name="sliders" />
-            </span>
-            <div>
-              <h2 id="system-preferences-title">System Preferences</h2>
-              <p>Configure additional system settings.</p>
             </div>
-          </div>
+            <p className={styles.localNote}>
+              Profile details are loaded from and saved to your account.
+            </p>
+          </section>
 
-          <div className={styles.systemOptions}>
-            <label className={styles.systemRow}>
-              <span className={styles.preferenceIcon}>
-                <Icon name="calendar" />
-              </span>
-              <span>Date Format</span>
-              <select
-                onChange={(event) =>
-                  updateSetting('dateFormat', event.target.value)
-                }
-                value={settings.dateFormat}
-              >
-                <option>MM/DD/YYYY</option>
-                <option>DD/MM/YYYY</option>
-                <option>YYYY-MM-DD</option>
-              </select>
-            </label>
-            <label className={styles.systemRow}>
-              <span className={styles.preferenceIcon}>
-                <Icon name="bell" />
-              </span>
-              <span>Time Format</span>
-              <select
-                onChange={(event) =>
-                  updateSetting('timeFormat', event.target.value)
-                }
-                value={settings.timeFormat}
-              >
-                <option>12-hour (AM/PM)</option>
-                <option>24-hour</option>
-              </select>
-            </label>
-            <label className={styles.systemRow}>
-              <span className={styles.preferenceIcon}>
+          <section
+            aria-labelledby="language-title"
+            className={`${styles.card} ${styles.languageCard}`}
+          >
+            <div className={styles.cardHeader}>
+              <span className={styles.sectionIcon}>
                 <Icon name="globe" />
               </span>
-              <span>Time Zone</span>
-              <select
-                onChange={(event) =>
-                  updateSetting('timeZone', event.target.value)
-                }
-                value={settings.timeZone}
-              >
-                <option>(UTC+08:00) Manila</option>
-                <option>(UTC+00:00) UTC</option>
-                <option>(UTC-05:00) Eastern Time</option>
-              </select>
-            </label>
-            <label className={styles.systemRow}>
-              <span className={styles.preferenceIcon}>
-                <Icon name="account" />
-              </span>
-              <span>Default Dashboard</span>
-              <select
-                onChange={(event) =>
-                  updateSetting('defaultDashboard', event.target.value)
-                }
-                value={settings.defaultDashboard}
-              >
-                <option>MSWDO Dashboard</option>
-                <option>Child Development Centers</option>
-                <option>Enrollment Management</option>
-                <option>Reports and Analytics</option>
-              </select>
-            </label>
-          </div>
-          <p className={styles.preferencePreview}>
-            Preview: {previewDate} · {previewTime} ({settings.timeZone})
-          </p>
-
-          <div className={styles.saveArea}>
-            <p
-              aria-live="polite"
-              className={
-                statusType === 'error'
-                  ? styles.errorStatus
-                  : styles.successStatus
-              }
-            >
-              <Icon name={statusType === 'error' ? 'alert' : 'check'} />
-              {statusMessage || (loading
-                ? <BouncingDots label="Loading your account settings" />
-                : 'Changes are saved to your account when you select Save Changes.')}
+              <h2 id="language-title">Language</h2>
+            </div>
+            <p className={styles.cardDescription}>
+              Select your preferred language for the system.
             </p>
-            <button
-              className={styles.saveButton}
-              onClick={saveSettings}
-              disabled={loading || saving}
-              type="button"
-            >
-              <Icon name="save" />
-              {saving ? 'Saving…' : 'Save Changes'}
-            </button>
-          </div>
-        </section>
-      </div>
-    </section>
-    {profileModalMounted && (
-      <div
-        className={`${styles.modalBackdrop} ${profileModalVisible ? styles.modalBackdropVisible : styles.modalBackdropClosing}`}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) closeProfileModal();
-        }}
-      >
-        <section
-          aria-labelledby="edit-profile-title"
-          aria-modal="true"
-          className={`${styles.profileModal} ${profileModalVisible ? styles.profileModalVisible : styles.profileModalClosing}`}
-          role="dialog"
-        >
-          <header className={styles.profileModalHeader}>
-            <span className={styles.profileModalTitleIcon}>
-              <Icon name="account" />
-            </span>
-            <h2 id="edit-profile-title">Edit Profile</h2>
-            <button
-              aria-label="Close edit profile"
-              className={styles.modalCloseButton}
-              disabled={profileSaving}
-              onClick={() => closeProfileModal()}
-              type="button"
-            >
-              <Icon name="close" />
-            </button>
-          </header>
-          <form
-            aria-busy={profileSaving}
-            className={styles.profileForm}
-            onSubmit={saveProfile}
+            <label className={styles.selectField}>
+              <span className={styles.languageIcon}>
+                <Icon name="globe" />
+              </span>
+              <span className={styles.visuallyHidden}>Preferred language</span>
+              <select
+                onChange={(event) =>
+                  updateSetting('language', event.target.value as Language)
+                }
+                value={settings.language}
+              >
+                <option value="en-US">English (United States)</option>
+                <option value="fil">Filipino</option>
+              </select>
+              <Icon name="chevron" />
+            </label>
+            <p className={styles.helperText}>
+              Language selection will apply where translations are available.
+            </p>
+          </section>
+
+          <section
+            aria-labelledby="theme-title"
+            className={`${styles.card} ${styles.themeCard}`}
           >
-            <div className={styles.profileInfoNotice}>
-              <Icon name="info" />
-              <span>Update your profile information below.</span>
+            <div className={styles.cardHeader}>
+              <span className={styles.sectionIcon}>
+                <Icon name="palette" />
+              </span>
+              <h2 id="theme-title">Theme</h2>
             </div>
+            <p className={styles.cardDescription}>
+              Choose your preferred appearance.
+            </p>
+            <div aria-label="Appearance theme" className={styles.themeOptions}>
+              {themes.map((theme) => (
+                <button
+                  aria-pressed={settings.theme === theme.value}
+                  className={`${styles.themeOption} ${settings.theme === theme.value ? styles.selectedTheme : ''}`}
+                  key={theme.value}
+                  onClick={() => updateSetting('theme', theme.value)}
+                  type="button"
+                >
+                  {settings.theme === theme.value && (
+                    <span aria-hidden="true" className={styles.themeCheck}>
+                      <Icon name="check" />
+                    </span>
+                  )}
+                  <Icon name={theme.icon} />
+                  <span>{theme.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
 
-            <div className={styles.pictureEditor}>
-              <div aria-hidden="true" className={styles.profilePicturePreview}>
-                {selectedPhotoPreviewUrl || profilePhotoUrl
-                  ? <img alt="" src={selectedPhotoPreviewUrl || profilePhotoUrl} />
-                  : <span>{profileDraft.full_name.trim().charAt(0).toUpperCase() || 'A'}</span>}
+        <div className={styles.bottomGrid}>
+          <section
+            aria-labelledby="notification-preferences-title"
+            className={`${styles.card} ${styles.notificationCard}`}
+          >
+            <div className={styles.cardHeader}>
+              <span className={styles.sectionIcon}>
+                <Icon name="bell" />
+              </span>
+              <div>
+                <h2 id="notification-preferences-title">
+                  Notification Preferences
+                </h2>
+                <p>Manage how you want to receive notifications and alerts.</p>
               </div>
-              <button
-                aria-label="Change profile picture"
-                className={styles.cameraButton}
-                disabled={profileSaving}
-                onClick={() => photoInputRef.current?.click()}
-                type="button"
-              >
-                <Icon name="camera" />
-              </button>
-              <button
-                className={styles.uploadArea}
-                disabled={profileSaving}
-                onClick={() => photoInputRef.current?.click()}
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={(event) => {
-                  event.preventDefault();
-                  selectProfilePhoto(event.dataTransfer.files[0]);
-                }}
-                type="button"
-              >
-                <Icon name="upload" />
-                <span className={styles.uploadCopy}>
-                  <strong>Change Profile Picture</strong>
-                  <small>Click to upload or drag and drop</small>
-                  <small>(JPG, PNG, up to 2MB)</small>
-                </span>
-              </button>
-              <input
-                ref={photoInputRef}
-                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-                className={styles.hiddenFileInput}
-                onChange={(event) => {
-                  selectProfilePhoto(event.target.files?.[0]);
-                  event.target.value = '';
-                }}
-                type="file"
-              />
+            </div>
+            <div className={styles.preferenceList}>
+              {notificationOptions.map((option) => (
+                <div className={styles.preferenceRow} key={option.key}>
+                  <span className={styles.preferenceIcon}>
+                    <Icon name={option.icon} />
+                  </span>
+                  <span className={styles.preferenceCopy}>
+                    <strong>{option.title}</strong>
+                    <small>{option.description}</small>
+                  </span>
+                  <button
+                    aria-checked={settings.notifications[option.key]}
+                    aria-label={option.title}
+                    className={`${styles.switch} ${settings.notifications[option.key] ? styles.switchOn : ''}`}
+                    onClick={() =>
+                      updateNotification(
+                        option.key,
+                        !settings.notifications[option.key],
+                      )
+                    }
+                    role="switch"
+                    type="button"
+                  >
+                    <span />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section
+            aria-labelledby="system-preferences-title"
+            className={`${styles.card} ${styles.systemCard}`}
+          >
+            <div className={styles.cardHeader}>
+              <span className={styles.sectionIcon}>
+                <Icon name="sliders" />
+              </span>
+              <div>
+                <h2 id="system-preferences-title">System Preferences</h2>
+                <p>Configure additional system settings.</p>
+              </div>
             </div>
 
-            <label className={styles.modalField}>
-              <span>Full Name</span>
-              <span className={styles.modalInputWrap}>
-                <Icon name="account" />
-                <input
-                  autoComplete="name"
-                  maxLength={201}
-                  onChange={(event) => {
-                    setProfileDraft((current) => ({ ...current, full_name: event.target.value }));
-                    setProfileError('');
-                  }}
-                  required
-                  value={profileDraft.full_name}
-                />
-              </span>
-            </label>
-            <label className={styles.modalField}>
-              <span>Email Address</span>
-              <span className={styles.modalInputWrap}>
-                <Icon name="mail" />
-                <input
-                  autoComplete="email"
-                  maxLength={255}
-                  onChange={(event) => {
-                    setProfileDraft((current) => ({ ...current, email: event.target.value }));
-                    setProfileError('');
-                  }}
-                  required
-                  type="email"
-                  value={profileDraft.email}
-                />
-              </span>
-            </label>
-            <label className={styles.modalField}>
-              <span>Role</span>
-              <span className={`${styles.modalInputWrap} ${styles.readOnlyField}`}>
-                <Icon name="shield" />
-                <input aria-readonly="true" readOnly value={roleLabel} />
-                <Icon name="chevron" />
-              </span>
-            </label>
+            <div className={styles.systemOptions}>
+              <label className={styles.systemRow}>
+                <span className={styles.preferenceIcon}>
+                  <Icon name="calendar" />
+                </span>
+                <span>Date Format</span>
+                <select
+                  onChange={(event) =>
+                    updateSetting('dateFormat', event.target.value)
+                  }
+                  value={settings.dateFormat}
+                >
+                  <option>MM/DD/YYYY</option>
+                  <option>DD/MM/YYYY</option>
+                  <option>YYYY-MM-DD</option>
+                </select>
+              </label>
+              <label className={styles.systemRow}>
+                <span className={styles.preferenceIcon}>
+                  <Icon name="bell" />
+                </span>
+                <span>Time Format</span>
+                <select
+                  onChange={(event) =>
+                    updateSetting('timeFormat', event.target.value)
+                  }
+                  value={settings.timeFormat}
+                >
+                  <option>12-hour (AM/PM)</option>
+                  <option>24-hour</option>
+                </select>
+              </label>
+              <label className={styles.systemRow}>
+                <span className={styles.preferenceIcon}>
+                  <Icon name="globe" />
+                </span>
+                <span>Time Zone</span>
+                <select
+                  onChange={(event) =>
+                    updateSetting('timeZone', event.target.value)
+                  }
+                  value={settings.timeZone}
+                >
+                  <option>(UTC+08:00) Manila</option>
+                  <option>(UTC+00:00) UTC</option>
+                  <option>(UTC-05:00) Eastern Time</option>
+                </select>
+              </label>
+              <label className={styles.systemRow}>
+                <span className={styles.preferenceIcon}>
+                  <Icon name="account" />
+                </span>
+                <span>Default Dashboard</span>
+                <select
+                  onChange={(event) =>
+                    updateSetting('defaultDashboard', event.target.value)
+                  }
+                  value={settings.defaultDashboard}
+                >
+                  <option>MSWDO Dashboard</option>
+                  <option>Child Development Centers</option>
+                  <option>Enrollment Management</option>
+                  <option>Reports and Analytics</option>
+                </select>
+              </label>
+            </div>
+            <p className={styles.preferencePreview}>
+              Preview: {previewDate} · {previewTime} ({settings.timeZone})
+            </p>
 
-            {profileError && (
-              <p aria-live="assertive" className={styles.profileFormError}>
-                {profileError}
+            <div className={styles.saveArea}>
+              <p
+                aria-live="polite"
+                className={
+                  statusType === 'error'
+                    ? styles.errorStatus
+                    : styles.successStatus
+                }
+              >
+                <Icon name={statusType === 'error' ? 'alert' : 'check'} />
+                {statusMessage ||
+                  (loading ? (
+                    <BouncingDots label="Loading your account settings" />
+                  ) : (
+                    'Changes are saved to your account when you select Save Changes.'
+                  ))}
               </p>
-            )}
-
-            <footer className={styles.profileModalFooter}>
               <button
-                className={styles.cancelProfileButton}
+                className={styles.saveButton}
+                onClick={saveSettings}
+                disabled={loading || saving}
+                type="button"
+              >
+                <Icon name="save" />
+                {saving ? 'Saving…' : 'Save Changes'}
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+      {profileModalMounted && (
+        <div
+          className={`${styles.modalBackdrop} ${profileModalVisible ? styles.modalBackdropVisible : styles.modalBackdropClosing}`}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) closeProfileModal();
+          }}
+        >
+          <section
+            aria-labelledby="edit-profile-title"
+            aria-modal="true"
+            className={`${styles.profileModal} ${profileModalVisible ? styles.profileModalVisible : styles.profileModalClosing}`}
+            role="dialog"
+          >
+            <header className={styles.profileModalHeader}>
+              <span className={styles.profileModalTitleIcon}>
+                <Icon name="account" />
+              </span>
+              <h2 id="edit-profile-title">Edit Profile</h2>
+              <button
+                aria-label="Close edit profile"
+                className={styles.modalCloseButton}
                 disabled={profileSaving}
                 onClick={() => closeProfileModal()}
                 type="button"
               >
-                Cancel
+                <Icon name="close" />
               </button>
-              <button
-                className={styles.saveProfileButton}
-                disabled={profileSaving}
-                type="submit"
-              >
-                {profileSaving
-                  ? <span aria-hidden="true" className={styles.profileSpinner} />
-                  : <Icon name="save" />}
-                {profileSaving ? 'Saving…' : 'Save Changes'}
-              </button>
-            </footer>
-          </form>
-        </section>
-      </div>
-    )}
-    {profileToast && (
-      <div
-        aria-live="polite"
-        className={`${styles.profileToast} ${profileToast.type === 'error' ? styles.profileToastError : ''}`}
-        role="status"
-      >
-        <span className={styles.toastIcon}>
-          <Icon name={profileToast.type === 'success' ? 'check' : 'alert'} />
-        </span>
-        {profileToast.message}
-      </div>
-    )}
+            </header>
+            <form
+              aria-busy={profileSaving}
+              className={styles.profileForm}
+              onSubmit={saveProfile}
+            >
+              <div className={styles.profileInfoNotice}>
+                <Icon name="info" />
+                <span>Update your profile information below.</span>
+              </div>
+
+              <div className={styles.pictureEditor}>
+                <div
+                  aria-hidden="true"
+                  className={styles.profilePicturePreview}
+                >
+                  {selectedPhotoPreviewUrl || profilePhotoUrl ? (
+                    <img
+                      alt=""
+                      src={selectedPhotoPreviewUrl || profilePhotoUrl}
+                    />
+                  ) : (
+                    <span>
+                      {profileDraft.full_name.trim().charAt(0).toUpperCase() ||
+                        'A'}
+                    </span>
+                  )}
+                </div>
+                <button
+                  aria-label="Change profile picture"
+                  className={styles.cameraButton}
+                  disabled={profileSaving}
+                  onClick={() => photoInputRef.current?.click()}
+                  type="button"
+                >
+                  <Icon name="camera" />
+                </button>
+                <button
+                  className={styles.uploadArea}
+                  disabled={profileSaving}
+                  onClick={() => photoInputRef.current?.click()}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    selectProfilePhoto(event.dataTransfer.files[0]);
+                  }}
+                  type="button"
+                >
+                  <Icon name="upload" />
+                  <span className={styles.uploadCopy}>
+                    <strong>Change Profile Picture</strong>
+                    <small>Click to upload or drag and drop</small>
+                    <small>(JPG, PNG, up to 2MB)</small>
+                  </span>
+                </button>
+                <input
+                  ref={photoInputRef}
+                  accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                  className={styles.hiddenFileInput}
+                  onChange={(event) => {
+                    selectProfilePhoto(event.target.files?.[0]);
+                    event.target.value = '';
+                  }}
+                  type="file"
+                />
+              </div>
+
+              <label className={styles.modalField}>
+                <span>Full Name</span>
+                <span className={styles.modalInputWrap}>
+                  <Icon name="account" />
+                  <input
+                    autoComplete="name"
+                    maxLength={201}
+                    onChange={(event) => {
+                      setProfileDraft((current) => ({
+                        ...current,
+                        full_name: event.target.value,
+                      }));
+                      setProfileError('');
+                    }}
+                    required
+                    value={profileDraft.full_name}
+                  />
+                </span>
+              </label>
+              <label className={styles.modalField}>
+                <span>Email Address</span>
+                <span className={styles.modalInputWrap}>
+                  <Icon name="mail" />
+                  <input
+                    autoComplete="email"
+                    maxLength={255}
+                    onChange={(event) => {
+                      setProfileDraft((current) => ({
+                        ...current,
+                        email: event.target.value,
+                      }));
+                      setProfileError('');
+                    }}
+                    required
+                    type="email"
+                    value={profileDraft.email}
+                  />
+                </span>
+              </label>
+              <label className={styles.modalField}>
+                <span>Role</span>
+                <span
+                  className={`${styles.modalInputWrap} ${styles.readOnlyField}`}
+                >
+                  <Icon name="shield" />
+                  <input aria-readonly="true" readOnly value={roleLabel} />
+                  <Icon name="chevron" />
+                </span>
+              </label>
+
+              {profileError && (
+                <p aria-live="assertive" className={styles.profileFormError}>
+                  {profileError}
+                </p>
+              )}
+
+              <footer className={styles.profileModalFooter}>
+                <button
+                  className={styles.cancelProfileButton}
+                  disabled={profileSaving}
+                  onClick={() => closeProfileModal()}
+                  type="button"
+                >
+                  Cancel
+                </button>
+                <button
+                  className={styles.saveProfileButton}
+                  disabled={profileSaving}
+                  type="submit"
+                >
+                  {profileSaving ? (
+                    <span
+                      aria-hidden="true"
+                      className={styles.profileSpinner}
+                    />
+                  ) : (
+                    <Icon name="save" />
+                  )}
+                  {profileSaving ? 'Saving…' : 'Save Changes'}
+                </button>
+              </footer>
+            </form>
+          </section>
+        </div>
+      )}
+      {profileToast && (
+        <div
+          aria-live="polite"
+          className={`${styles.profileToast} ${profileToast.type === 'error' ? styles.profileToastError : ''}`}
+          role="status"
+        >
+          <span className={styles.toastIcon}>
+            <Icon name={profileToast.type === 'success' ? 'check' : 'alert'} />
+          </span>
+          {profileToast.message}
+        </div>
+      )}
     </>
   );
 }
