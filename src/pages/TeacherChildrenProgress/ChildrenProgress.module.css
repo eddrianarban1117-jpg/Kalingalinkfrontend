@@ -43,7 +43,8 @@
 }
 
 .notice,
-.errorNotice {
+.errorNotice,
+.warningNotice {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -70,6 +71,12 @@
   border-color: #f0c5c5;
   color: #a32929;
   background: #fff2f2;
+}
+
+.warningNotice {
+  border-color: #f0d7a2;
+  color: #825b13;
+  background: #fff8e8;
 }
 
 .heading {
