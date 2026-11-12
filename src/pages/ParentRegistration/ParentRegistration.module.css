@@ -374,6 +374,7 @@
 }
 
 .actions {
+  position: static;
   display: flex;
   justify-content: space-between;
   gap: 0.65rem;

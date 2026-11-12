@@ -1,32 +1,231 @@
 .page {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  min-height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
   place-items: center;
-  padding: 2rem 1.25rem;
-  background-color: var(--color-white);
+  padding: clamp(1.5rem, 5vh, 3rem) 1.25rem;
+  background-color: #f5f9ff;
+  background-image: var(--welcome-background);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  animation: background-drift 24s ease-in-out infinite alternate;
+}
+
+.page::before,
+.page::after {
+  position: absolute;
+  z-index: -1;
+  display: block;
+  border: 1px solid rgb(53 137 238 / 18%);
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+  animation: circle-float 9s ease-in-out infinite alternate;
+}
+
+.page::before {
+  top: 21%;
+  left: 5%;
+  width: clamp(2.5rem, 5vw, 4.5rem);
+  aspect-ratio: 1;
+  background: rgb(97 159 245 / 8%);
+}
+
+.page::after {
+  right: 7%;
+  bottom: 17%;
+  width: clamp(1.5rem, 3vw, 2.75rem);
+  aspect-ratio: 1;
+  background: rgb(97 159 245 / 11%);
+  animation-delay: -4s;
 }
 
 .content {
   display: flex;
-  width: min(100%, 32rem);
+  width: min(100%, 38rem);
   flex-direction: column;
   align-items: center;
-  gap: 2.5rem;
+  text-align: center;
 }
 
 .logo {
   display: block;
-  width: min(100%, 17rem);
+  width: min(100%, clamp(18rem, 30vw, 24rem));
   height: auto;
   object-fit: contain;
+  animation: welcome-in 700ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
 }
 
-@media (max-width: 480px) {
+.accent {
+  width: 4.5rem;
+  height: 0.28rem;
+  margin: 0.65rem 0 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffc52d, #f8a900);
+  animation: welcome-in 650ms 190ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+}
+
+.description {
+  max-width: 29rem;
+  margin: 0 0 2rem;
+  color: #405675;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 450;
+  line-height: 1.5;
+  text-wrap: balance;
+  animation: welcome-in 650ms 260ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+}
+
+.getStarted {
+  display: inline-flex;
+  min-width: 16.5rem;
+  min-height: 4.15rem;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 0.85rem 1.65rem;
+  border: 2px solid rgb(255 255 255 / 90%);
+  border-radius: 999px;
+  background: linear-gradient(120deg, #3188f2 0%, #0755c9 100%);
+  box-shadow:
+    0 0.75rem 1.5rem rgb(20 99 205 / 27%),
+    0 0 0 1px rgb(34 117 222 / 8%);
+  font-size: 1.08rem;
+  font-weight: 750;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    filter 180ms ease;
+  animation: welcome-in 650ms 340ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+}
+
+.getStarted:hover {
+  box-shadow:
+    0 0.95rem 1.8rem rgb(20 99 205 / 34%),
+    0 0 0 1px rgb(34 117 222 / 12%);
+  filter: saturate(1.08);
+  transform: translateY(-2px) scale(1.025);
+}
+
+.getStarted:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.getStarted:focus-visible {
+  outline: 3px solid #0755c9;
+  outline-offset: 5px;
+}
+
+.arrow {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
+}
+
+.getStarted:hover .arrow {
+  transform: translateX(3px);
+}
+
+@keyframes welcome-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.8rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes circle-float {
+  from {
+    transform: translate3d(0, -0.35rem, 0);
+  }
+
+  to {
+    transform: translate3d(0.3rem, 0.4rem, 0);
+  }
+}
+
+@keyframes background-drift {
+  from {
+    background-position: 50% 50%;
+  }
+
+  to {
+    background-position: 50.3% 49.7%;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 1.25rem 1.1rem;
+    background-position: center;
+  }
+
   .content {
-    gap: 2rem;
+    width: min(100%, 31rem);
   }
 
   .logo {
-    width: min(100%, 15rem);
+    width: min(100%, clamp(15rem, 54vw, 20rem));
+  }
+
+  .description {
+    max-width: 25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .getStarted {
+    width: min(100%, 20rem);
+    min-height: 3.75rem;
+  }
+
+  .page::before {
+    top: 16%;
+    left: -1rem;
+  }
+
+  .page::after {
+    right: -0.4rem;
+    bottom: 10%;
+  }
+}
+
+@media (max-height: 650px) and (min-width: 601px) {
+  .page {
+    padding-block: 1rem;
+  }
+
+  .logo {
+    width: min(100%, 16rem);
+  }
+
+  .description {
+    margin-bottom: 1rem;
+  }
+
+  .getStarted {
+    min-height: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page,
+  .page::before,
+  .page::after,
+  .logo,
+  .accent,
+  .description,
+  .getStarted,
+  .arrow {
+    animation: none;
+    transition: none;
   }
 }

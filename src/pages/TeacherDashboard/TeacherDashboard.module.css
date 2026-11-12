@@ -2221,27 +2221,63 @@
   overflow-wrap: anywhere;
 }
 
-.backToStudents {
+.profileActions {
   display: flex;
-  min-height: 2rem;
   align-self: flex-end;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+
+.viewStudentId,
+.backToStudents {
+  display: inline-flex;
+  min-height: 2rem;
   align-items: center;
   justify-content: center;
   gap: 0.38rem;
-  margin-top: auto;
   padding: 0.4rem 0.8rem;
   border: 0;
   border-radius: 0.48rem;
-  color: #fff;
-  background: #318be7;
   font: inherit;
   font-size: 0.58rem;
   font-weight: 800;
   cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.viewStudentId {
+  color: #176fc7;
+  background: #e7f4ff;
+}
+
+.viewStudentId:hover {
+  background: #d6ecff;
+  box-shadow: 0 0.15rem 0.45rem rgb(20 90 155 / 12%);
+  transform: translateY(-1px);
+}
+
+.backToStudents {
+  color: #fff;
+  background: #318be7;
 }
 
 .backToStudents:hover {
   background: #176fc7;
+}
+
+.profileActions button:active {
+  transform: scale(0.97);
+}
+
+.profileActions button svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
 }
 
 .backToStudents svg {

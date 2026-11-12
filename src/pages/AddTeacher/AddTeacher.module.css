@@ -514,6 +514,7 @@
 }
 
 .formActions {
+  position: static;
   display: flex;
   justify-content: flex-end;
   gap: 0.6rem;

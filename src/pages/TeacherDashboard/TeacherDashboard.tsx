@@ -18,6 +18,8 @@ import { Logo } from '../../components/common/Logo/Logo';
 import { LogoutConfirmation } from '../../components/common/LogoutConfirmation/LogoutConfirmation';
 import { useAnnouncementFeed } from '../../hooks/useAnnouncementFeed';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
+import { StudentIdViewer } from './StudentIdViewer';
+import { studentCode } from './student-id-utils';
 
 type IconName =
   | 'home'
@@ -272,6 +274,9 @@ type AttendanceEntry = {
 
 type TeacherStudent = {
   id: number;
+  firstName: string;
+  middleName: string;
+  lastName: string;
   nickname: string | null;
   name: string;
   age: number;
@@ -546,6 +551,8 @@ export function TeacherDashboard() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null,
   );
+  const [isStudentIdOpen, setIsStudentIdOpen] = useState(false);
+  const appliedVerificationCode = useRef('');
   const [studentTab, setStudentTab] = useState<StudentTab>('general');
   const [attendanceDate, setAttendanceDate] = useState(() => dateInputValue());
   const [attendanceTime, setAttendanceTime] = useState('07:30');
@@ -582,6 +589,9 @@ export function TeacherDashboard() {
           }
           return {
             id: Number(record.id),
+            firstName: record.first_name,
+            middleName: record.middle_name ?? '',
+            lastName: record.last_name,
             nickname: record.nickname,
             name: [record.first_name, record.middle_name, record.last_name]
               .filter(Boolean)
@@ -801,7 +811,7 @@ export function TeacherDashboard() {
     0,
   ];
   const filteredClassStudents = classStudents.filter((student) => {
-    const matchesQuery = `${student.name} ${student.nickname ?? ''}`
+    const matchesQuery = `${student.name} ${student.nickname ?? ''} ${studentCode(student.id)}`
       .toLowerCase()
       .includes(query.trim().toLowerCase());
     const matchesClass =
@@ -810,6 +820,21 @@ export function TeacherDashboard() {
   });
   const selectedStudent =
     classStudents.find((student) => student.id === selectedStudentId) ?? null;
+  const verificationCode =
+    new URLSearchParams(location.search).get('verify')?.trim().toUpperCase() ??
+    '';
+  useEffect(() => {
+    if (!isStudentsPage || !verificationCode || studentsLoading) return;
+    if (appliedVerificationCode.current === verificationCode) return;
+    const verifiedStudent = classStudents.find(
+      (student) => studentCode(student.id) === verificationCode,
+    );
+    if (!verifiedStudent) return;
+    appliedVerificationCode.current = verificationCode;
+    setQuery(verificationCode);
+    setSelectedStudentId(verifiedStudent.id);
+    setStudentTab('general');
+  }, [classStudents, isStudentsPage, studentsLoading, verificationCode]);
   const attendanceStudents = attendanceEntries.filter(
     ({ student, classId }) => {
       const matchesQuery = `${student.name} ${student.nickname}`
@@ -2116,9 +2141,7 @@ export function TeacherDashboard() {
                               <Icon name="file" />
                               Student ID
                             </dt>
-                            <dd>
-                              STU-{String(selectedStudent.id).padStart(4, '0')}
-                            </dd>
+                            <dd>{studentCode(selectedStudent.id)}</dd>
                           </div>
                         </dl>
                       </section>
@@ -2251,15 +2274,48 @@ export function TeacherDashboard() {
                     </section>
                   )}
                 </div>
-                <button
-                  className={styles.backToStudents}
-                  type="button"
-                  onClick={() => setSelectedStudentId(null)}
-                >
-                  <Icon name="back" />
-                  Back to Students
-                </button>
+                <div className={styles.profileActions}>
+                  <button
+                    className={styles.viewStudentId}
+                    type="button"
+                    onClick={() => setIsStudentIdOpen(true)}
+                  >
+                    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+                      <rect
+                        x="3"
+                        y="5"
+                        width="18"
+                        height="14"
+                        rx="2"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                      <circle cx="8" cy="11" r="2" fill="currentColor" />
+                      <path
+                        d="M5.5 16c.4-1.6 1.2-2.4 2.5-2.4s2.1.8 2.5 2.4M13 10h5m-5 4h5"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="1.7"
+                      />
+                    </svg>
+                    View ID
+                  </button>
+                  <button
+                    className={styles.backToStudents}
+                    type="button"
+                    onClick={() => setSelectedStudentId(null)}
+                  >
+                    <Icon name="back" />
+                    Back to Students
+                  </button>
+                </div>
               </aside>
+            )}
+            {isStudentIdOpen && selectedStudent && (
+              <StudentIdViewer
+                student={selectedStudent}
+                onClose={() => setIsStudentIdOpen(false)}
+              />
             )}
           </main>
         ) : (
