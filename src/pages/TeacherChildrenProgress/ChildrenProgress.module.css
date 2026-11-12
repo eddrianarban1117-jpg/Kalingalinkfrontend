@@ -58,7 +58,9 @@
   font-size: 0.58rem;
 }
 
-.notice button {
+.notice button,
+.errorNotice button,
+.warningNotice button {
   border: 0;
   color: inherit;
   background: transparent;
