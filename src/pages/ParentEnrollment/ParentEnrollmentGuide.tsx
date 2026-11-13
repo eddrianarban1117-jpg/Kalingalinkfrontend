@@ -2,6 +2,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
@@ -55,18 +56,47 @@ function isGuideLanguage(value: string): value is GuideLanguage {
   return value === 'en' || value === 'tl';
 }
 
+function wrapInstructionLines(element: HTMLElement, text: string) {
+  const context = document.createElement('canvas').getContext('2d');
+  if (!context) return [text];
+  const style = getComputedStyle(element);
+  context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const maxWidth = element.clientWidth;
+  if (!maxWidth) return [text];
+
+  const lines: string[] = [];
+  let line = '';
+  for (const word of text.split(/\s+/)) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (line && context.measureText(candidate).width > maxWidth) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = candidate;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
 export function ParentEnrollmentGuide() {
   const [language, setLanguage] = useState<GuideLanguage>('en');
   const [step, setStep] = useState(0);
   const [open, setOpen] = useState(true);
   const [contentVisible, setContentVisible] = useState(true);
+  const [instructionLines, setInstructionLines] = useState<{
+    text: string;
+    lines: string[];
+  }>({ text: '', lines: [] });
   const [widgetPosition, setWidgetPosition] = useState<{
     left: number;
     top: number;
   } | null>(null);
+  const [bubbleToRight, setBubbleToRight] = useState(false);
   const contentTimer = useRef<number | null>(null);
   const guideRef = useRef<HTMLDivElement | null>(null);
   const mascotRef = useRef<HTMLButtonElement | null>(null);
+  const instructionRef = useRef<HTMLParagraphElement | null>(null);
   const dragStart = useRef<{
     pointerId: number;
     startX: number;
@@ -79,6 +109,10 @@ export function ParentEnrollmentGuide() {
   const content = parentEnrollmentGuideContent[language];
   const activeStep = content.steps[step] ?? content.steps[0];
   const isFinalStep = step === content.steps.length - 1;
+  const visibleLines =
+    instructionLines.text === activeStep.instruction
+      ? instructionLines.lines
+      : [activeStep.instruction];
 
   useEffect(
     () => () => {
@@ -90,29 +124,59 @@ export function ParentEnrollmentGuide() {
   );
 
   useEffect(() => {
+    const paragraph = instructionRef.current;
+    if (!paragraph) return;
+
+    const updateLines = () => {
+      setInstructionLines({
+        text: activeStep.instruction,
+        lines: wrapInstructionLines(paragraph, activeStep.instruction),
+      });
+    };
+    updateLines();
+    const observer = new ResizeObserver(updateLines);
+    observer.observe(paragraph);
+    return () => observer.disconnect();
+  }, [activeStep.instruction]);
+
+  useEffect(() => {
     function keepWidgetInViewport() {
+      const mascot = mascotRef.current;
       const widget = guideRef.current;
-      if (!widget) return;
-      const bounds = widget.getBoundingClientRect();
-      setWidgetPosition((current) =>
-        current
-          ? {
-              left: Math.max(
-                0,
-                Math.min(window.innerWidth - bounds.width, current.left),
-              ),
-              top: Math.max(
-                0,
-                Math.min(window.innerHeight - bounds.height, current.top),
-              ),
-            }
-          : null,
+      if (!mascot || !widget || !widgetPosition) return;
+      const mascotWidth = mascot.getBoundingClientRect().width;
+      const panelWidth = widget.getBoundingClientRect().width - mascotWidth;
+      const toRight =
+        widgetPosition.left + mascotWidth / 2 < window.innerWidth / 2;
+      const widgetLeft = toRight
+        ? widgetPosition.left
+        : widgetPosition.left - panelWidth;
+      const clampedWidgetLeft = Math.max(
+        0,
+        Math.min(
+          window.innerWidth - widget.getBoundingClientRect().width,
+          widgetLeft,
+        ),
       );
+      const mascotLeft = toRight
+        ? clampedWidgetLeft
+        : clampedWidgetLeft + panelWidth;
+      setBubbleToRight(toRight);
+      setWidgetPosition({
+        left: mascotLeft,
+        top: Math.max(
+          0,
+          Math.min(
+            window.innerHeight - mascot.getBoundingClientRect().height,
+            widgetPosition.top,
+          ),
+        ),
+      });
     }
 
     window.addEventListener('resize', keepWidgetInViewport);
     return () => window.removeEventListener('resize', keepWidgetInViewport);
-  }, []);
+  }, [widgetPosition]);
 
   function transitionContent(update: () => void) {
     if (contentTimer.current !== null) {
@@ -145,10 +209,8 @@ export function ParentEnrollmentGuide() {
 
   function handleMascotPointerDown(event: PointerEvent<HTMLButtonElement>) {
     if (event.button !== 0) return;
-    const guide = guideRef.current;
-    if (!guide) return;
     suppressMascotClick.current = false;
-    const bounds = guide.getBoundingClientRect();
+    const bounds = event.currentTarget.getBoundingClientRect();
     dragStart.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -163,22 +225,37 @@ export function ParentEnrollmentGuide() {
   function handleMascotPointerMove(event: PointerEvent<HTMLButtonElement>) {
     const start = dragStart.current;
     if (!start || start.pointerId !== event.pointerId) return;
-    const guide = guideRef.current;
-    if (!guide) return;
+    const widget = guideRef.current;
+    const mascot = mascotRef.current;
+    if (!widget || !mascot) return;
     const deltaX = event.clientX - start.startX;
     const deltaY = event.clientY - start.startY;
     if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) start.moved = true;
     if (!start.moved) return;
 
-    const bounds = guide.getBoundingClientRect();
+    const mascotBounds = mascot.getBoundingClientRect();
+    const widgetWidth = widget.getBoundingClientRect().width;
+    const mascotLeft = start.left + deltaX;
+    const toRight = mascotLeft + mascotBounds.width / 2 < window.innerWidth / 2;
+    const panelWidth = widgetWidth - mascotBounds.width;
+    const widgetLeft = toRight ? mascotLeft : mascotLeft - panelWidth;
+    const clampedWidgetLeft = Math.max(
+      0,
+      Math.min(window.innerWidth - widgetWidth, widgetLeft),
+    );
+    const clampedMascotLeft = toRight
+      ? clampedWidgetLeft
+      : clampedWidgetLeft + panelWidth;
+    const panel = widget.querySelector<HTMLElement>(
+      `[id="kali-enrollment-guide"]`,
+    );
+    const panelHeight = panel?.getBoundingClientRect().height ?? 0;
+    setBubbleToRight(toRight);
     setWidgetPosition({
-      left: Math.max(
-        0,
-        Math.min(window.innerWidth - bounds.width, start.left + deltaX),
-      ),
+      left: clampedMascotLeft,
       top: Math.max(
-        0,
-        Math.min(window.innerHeight - bounds.height, start.top + deltaY),
+        open ? panelHeight + 20 : 0,
+        Math.min(window.innerHeight - mascotBounds.height, start.top + deltaY),
       ),
     });
   }
@@ -197,7 +274,8 @@ export function ParentEnrollmentGuide() {
 
   function handleMascotKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     const widget = guideRef.current;
-    if (!widget) return;
+    const mascot = mascotRef.current;
+    if (!widget || !mascot) return;
     const movement: Record<string, number> = {
       ArrowLeft: -20,
       ArrowRight: 20,
@@ -209,8 +287,9 @@ export function ParentEnrollmentGuide() {
 
     event.preventDefault();
     const bounds = widget.getBoundingClientRect();
-    const currentLeft = widgetPosition?.left ?? bounds.left;
-    const currentTop = widgetPosition?.top ?? bounds.top;
+    const mascotBounds = mascot.getBoundingClientRect();
+    const currentLeft = widgetPosition?.left ?? mascotBounds.left;
+    const currentTop = widgetPosition?.top ?? mascotBounds.top;
     const nextLeft =
       event.key === 'ArrowLeft' || event.key === 'ArrowRight'
         ? currentLeft + delta
@@ -219,9 +298,24 @@ export function ParentEnrollmentGuide() {
       event.key === 'ArrowUp' || event.key === 'ArrowDown'
         ? currentTop + delta
         : currentTop;
+    const toRight = nextLeft + mascotBounds.width / 2 < window.innerWidth / 2;
+    const panelWidth = bounds.width - mascotBounds.width;
+    const rootLeft = toRight ? nextLeft : nextLeft - panelWidth;
+    const clampedRootLeft = Math.max(
+      0,
+      Math.min(window.innerWidth - bounds.width, rootLeft),
+    );
+    setBubbleToRight(toRight);
     setWidgetPosition({
-      left: Math.max(0, Math.min(window.innerWidth - bounds.width, nextLeft)),
-      top: Math.max(0, Math.min(window.innerHeight - bounds.height, nextTop)),
+      left: toRight ? clampedRootLeft : clampedRootLeft + panelWidth,
+      top: Math.max(
+        open
+          ? (widget
+              .querySelector('#kali-enrollment-guide')
+              ?.getBoundingClientRect().height ?? 0) + 20
+          : 0,
+        Math.min(window.innerHeight - mascotBounds.height, nextTop),
+      ),
     });
   }
 
@@ -236,7 +330,7 @@ export function ParentEnrollmentGuide() {
 
   return createPortal(
     <div
-      className={styles.guide}
+      className={`${styles.guide} ${bubbleToRight ? styles.bubbleToRight : ''}`}
       ref={guideRef}
       style={
         widgetPosition
@@ -314,7 +408,31 @@ export function ParentEnrollmentGuide() {
                 {content.step} {step + 1} {content.of} {content.steps.length}
               </span>
               <h2>{activeStep.title}</h2>
-              <p>{activeStep.instruction}</p>
+              <p aria-label={activeStep.instruction} ref={instructionRef}>
+                {visibleLines.map((line, index) => {
+                  const previousLength = visibleLines
+                    .slice(0, index)
+                    .reduce(
+                      (length, previousLine) => length + previousLine.length,
+                      0,
+                    );
+                  return (
+                    <span
+                      aria-hidden="true"
+                      className={styles.typewriterLine}
+                      key={`${line}-${index}`}
+                      style={
+                        {
+                          '--line-chars': line.length,
+                          '--line-delay': `${previousLength * 22}ms`,
+                        } as CSSProperties
+                      }
+                    >
+                      {line}
+                    </span>
+                  );
+                })}
+              </p>
             </div>
 
             <button

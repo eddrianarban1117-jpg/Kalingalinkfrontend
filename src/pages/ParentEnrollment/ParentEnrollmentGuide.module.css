@@ -1,16 +1,29 @@
 .guide {
+  --mascot-width: clamp(5.5rem, 11vw, 7.5rem);
+  --mascot-height: clamp(5.8rem, 12vw, 8rem);
+  --panel-width: clamp(18rem, 27vw, 24rem);
+
   position: fixed;
   z-index: 30;
-  right: 1.25rem;
+  right: calc(1.25rem - var(--panel-width));
   bottom: 1.25rem;
-  width: min(31rem, calc(100vw - 2.5rem));
-  padding-bottom: 5.5rem;
+  width: calc(var(--panel-width) + var(--mascot-width));
+  height: var(--mascot-height);
+  transform: translateX(calc(var(--mascot-width) - 100%));
   pointer-events: none;
+}
+
+.bubbleToRight {
+  transform: none;
 }
 
 .panelShell {
   display: grid;
   grid-template-rows: 1fr;
+  position: absolute;
+  bottom: calc(100% + 0.65rem);
+  left: 0;
+  width: calc(100% - var(--mascot-width));
   opacity: 1;
   transition:
     grid-template-rows 220ms ease,
@@ -18,6 +31,10 @@
     visibility 180ms ease;
   visibility: visible;
   pointer-events: auto;
+}
+
+.bubbleToRight .panelShell {
+  left: var(--mascot-width);
 }
 
 .panelClosed {
@@ -30,17 +47,18 @@
 .panel {
   --guide-surface: rgb(255 255 255 / 96%);
   --guide-surface-soft: #f2f8ff;
-  --guide-border: #b6d6f4;
+  --guide-border: #8bc5ff;
   --guide-title: #104c91;
   --guide-text: #345b83;
   --guide-muted: #6684a5;
   --guide-accent: #147de1;
   --guide-accent-soft: #e7f3ff;
-  --guide-shadow: 0 0.55rem 1.6rem rgb(24 76 129 / 16%);
+  --guide-shadow:
+    0 0 0.45rem rgb(22 131 248 / 22%), 0 0.55rem 1.6rem rgb(24 76 129 / 20%);
 
   position: relative;
   min-height: 0;
-  padding: clamp(0.75rem, 2vw, 1.05rem);
+  padding: clamp(0.6rem, 1.4vw, 0.75rem);
   overflow: visible;
   border: 1px solid var(--guide-border);
   border-radius: 1rem;
@@ -53,6 +71,7 @@
     ),
     var(--guide-surface);
   box-shadow: var(--guide-shadow);
+  backdrop-filter: blur(7px);
   transition:
     background-color 240ms ease,
     color 240ms ease,
@@ -62,7 +81,7 @@
 
 .panel::after {
   position: absolute;
-  right: 2rem;
+  right: 1.7rem;
   bottom: -0.48rem;
   width: 0.85rem;
   height: 0.85rem;
@@ -73,13 +92,18 @@
   transform: rotate(45deg);
 }
 
+.bubbleToRight .panel::after {
+  right: auto;
+  left: 1.7rem;
+}
+
 .header {
   display: flex;
   min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0 0.25rem 0.65rem;
+  padding: 0 0.2rem 0.4rem;
   border-bottom: 1px solid rgb(116 161 204 / 18%);
 }
 
@@ -174,14 +198,15 @@
 .stepStage {
   position: relative;
   display: grid;
-  min-height: 7.8rem;
+  min-height: 4.5rem;
   align-items: center;
-  padding: 0.75rem 3.4rem 0.85rem 4rem;
+  padding: 0.35rem 2.9rem;
 }
 
 .instruction {
   min-width: 0;
-  padding-right: clamp(8.25rem, 10vw, 9.25rem);
+  padding: 0;
+  text-align: center;
   opacity: 0;
   transform: translateY(0.25rem);
   transition:
@@ -205,19 +230,31 @@
 }
 
 .instruction h2 {
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.2rem;
   color: var(--guide-title);
-  font-size: clamp(0.95rem, 2vw, 1.06rem);
+  font-size: clamp(0.88rem, 1.6vw, 0.98rem);
   font-weight: 900;
   line-height: 1.25;
 }
 
 .instruction p {
-  max-width: 38rem;
+  max-width: 100%;
   margin: 0;
   color: var(--guide-text);
-  font-size: clamp(0.86rem, 1.5vw, 0.94rem);
-  line-height: 1.45;
+  font-size: clamp(0.75rem, 1.2vw, 0.82rem);
+  line-height: 1.4;
+}
+
+.typewriterLine {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(0 100% 0 0);
+  animation: typewriter-line calc(var(--line-chars) * 22ms)
+    steps(var(--line-chars), end) var(--line-delay) both;
 }
 
 .navigationButton {
@@ -290,8 +327,8 @@
   right: 0;
   bottom: 0;
   display: grid;
-  width: clamp(5.5rem, 11vw, 7.5rem);
-  height: clamp(5.8rem, 12vw, 8rem);
+  width: var(--mascot-width);
+  height: var(--mascot-height);
   place-items: center;
   padding: 0;
   border: 0;
@@ -304,7 +341,8 @@
 }
 
 .floatingButton:hover {
-  filter: drop-shadow(0 0.3rem 0.55rem rgb(9 59 111 / 23%));
+  filter: drop-shadow(0 0 0.45rem rgb(22 131 248 / 68%))
+    drop-shadow(0 0.3rem 0.55rem rgb(9 59 111 / 23%));
 }
 
 .floatingButton:active {
@@ -319,6 +357,12 @@
   pointer-events: none;
   animation: kali-float 4s ease-in-out infinite;
   will-change: transform;
+  filter: drop-shadow(0 0 0.45rem rgb(22 131 248 / 55%));
+}
+
+.bubbleToRight .floatingButton {
+  right: auto;
+  left: 0;
 }
 
 .mascotOpen img {
@@ -330,13 +374,14 @@
 :global([data-theme='dark']) .panel {
   --guide-surface: rgb(19 31 50 / 96%);
   --guide-surface-soft: #18263b;
-  --guide-border: #345373;
+  --guide-border: #287bd0;
   --guide-title: #f1f5ff;
   --guide-text: #c4d2e7;
   --guide-muted: #a8b9d4;
   --guide-accent: #1683f8;
   --guide-accent-soft: #203b5c;
-  --guide-shadow: 0 0.55rem 1.6rem rgb(0 0 0 / 30%);
+  --guide-shadow:
+    0 0 0.55rem rgb(22 131 248 / 32%), 0 0.55rem 1.6rem rgb(0 0 0 / 30%);
 }
 
 :global([data-theme='dark']) .navigationButton:disabled {
@@ -383,12 +428,29 @@
   }
 }
 
+@keyframes typewriter-line {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 @media (max-width: 620px) {
   .guide {
-    right: 0.5rem;
+    --mascot-width: clamp(4.5rem, 22vw, 5.7rem);
+    --mascot-height: clamp(4.7rem, 23vw, 6rem);
+    --panel-width: calc(100vw - 1rem - var(--mascot-width));
+
+    right: calc(0.5rem - var(--panel-width));
     bottom: 0.5rem;
-    width: calc(100vw - 1rem);
-    padding-bottom: clamp(4.25rem, calc(23vw - 0.4rem), 5.6rem);
+    width: calc(var(--panel-width) + var(--mascot-width));
+    transform: translateX(calc(var(--mascot-width) - 100%));
+  }
+
+  .bubbleToRight {
+    transform: none;
   }
 
   .panel {
@@ -434,12 +496,8 @@
   }
 
   .stepStage {
-    min-height: 7rem;
-    padding: 0.7rem 2.45rem 1.1rem 3.7rem;
-  }
-
-  .instruction {
-    padding-right: 0.5rem;
+    min-height: 4.25rem;
+    padding: 0.3rem 2.25rem;
   }
 
   .stepCount {
@@ -447,11 +505,11 @@
   }
 
   .instruction h2 {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
   }
 
   .instruction p {
-    font-size: 0.84rem;
+    font-size: 0.74rem;
     line-height: 1.4;
   }
 
@@ -472,12 +530,6 @@
     width: 0.95rem;
     height: 0.95rem;
   }
-
-  .floatingButton {
-    right: 0;
-    width: clamp(4.5rem, 22vw, 5.7rem);
-    height: clamp(4.7rem, 23vw, 6rem);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -497,5 +549,10 @@
   .contentVisible {
     opacity: 1;
     transform: none;
+  }
+
+  .typewriterLine {
+    clip-path: none;
+    animation: none;
   }
 }
