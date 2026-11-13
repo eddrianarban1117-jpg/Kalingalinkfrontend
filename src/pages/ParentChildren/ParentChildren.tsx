@@ -1,9 +1,21 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import { Avatar } from '../../components/common/Avatar/Avatar';
 import { routePaths } from '../../constants/app-constants';
 import childrenBanner from '../../assets/images/children-banner.png';
+import emergencyIllustration from '../../../emerg.png';
+import medicalIllustration from '../../../medic.png';
+import otherInformationIllustration from '../../../other_info.png';
 import styles from './ParentChildren.module.css';
 
 type ChildTab =
@@ -18,6 +30,7 @@ type ChildProfile = {
   firstName: string;
   middleName: string;
   lastName: string;
+  suffix: string;
   fullName: string;
   nickname: string;
   birthDate: string;
@@ -65,6 +78,7 @@ type ApiChildProfile = {
   first_name: string;
   middle_name: string | null;
   last_name: string;
+  suffix: string | null;
   nickname: string | null;
   birth_date: string;
   gender: string;
@@ -96,8 +110,15 @@ function formatDate(value: string) {
   if (!value) return '';
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
   if (!match) return value;
-  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
-    .toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  return new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+  ).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 function todayDateInputValue() {
@@ -109,13 +130,19 @@ function calculateAge(value: string) {
   if (!value) return 'Not provided';
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
   if (!match) return 'Not provided';
-  const birthDate = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  const birthDate = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+  );
   const today = new Date();
   let years = today.getFullYear() - birthDate.getFullYear();
   if (
     today.getMonth() < birthDate.getMonth() ||
-    (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
-  ) years -= 1;
+    (today.getMonth() === birthDate.getMonth() &&
+      today.getDate() < birthDate.getDate())
+  )
+    years -= 1;
   return `${Math.max(years, 0)} ${years === 1 ? 'year' : 'years'} old`;
 }
 
@@ -123,17 +150,22 @@ function mapChildProfile(record: ApiChildProfile): ChildProfile {
   const firstName = record.first_name ?? '';
   const middleName = record.middle_name ?? '';
   const lastName = record.last_name ?? '';
-  const status = record.enrollment_status === 'enrolled'
-    ? 'Enrolled'
-    : (record.application_status || record.enrollment_status || 'pending')
-      .replaceAll('_', ' ')
-      .replace(/^./, (letter) => letter.toUpperCase());
+  const suffix = record.suffix ?? '';
+  const status =
+    record.enrollment_status === 'enrolled'
+      ? 'Enrolled'
+      : (record.application_status || record.enrollment_status || 'pending')
+          .replaceAll('_', ' ')
+          .replace(/^./, (letter) => letter.toUpperCase());
   return {
     id: record.id,
     firstName,
     middleName,
     lastName,
-    fullName: [firstName, middleName, lastName].filter(Boolean).join(' '),
+    suffix,
+    fullName: [firstName, middleName, lastName, suffix]
+      .filter(Boolean)
+      .join(' '),
     nickname: record.nickname ?? '',
     birthDate: record.birth_date ?? '',
     gender: record.gender ?? '',
@@ -142,9 +174,12 @@ function mapChildProfile(record: ApiChildProfile): ChildProfile {
     placeOfBirth: record.place_of_birth ?? '',
     address: record.address ?? '',
     dateEnrolled: record.enrolled_at ? formatDate(record.enrolled_at) : '',
-    enrollmentType: record.enrollment_type === 'reenrollment'
-      ? 'Re-enrollment'
-      : record.enrollment_type === 'new' ? 'New Enrollment' : '',
+    enrollmentType:
+      record.enrollment_type === 'reenrollment'
+        ? 'Re-enrollment'
+        : record.enrollment_type === 'new'
+          ? 'New Enrollment'
+          : '',
     enrollmentStatus: status,
     bloodType: record.blood_type ?? '',
     allergies: record.allergies ?? '',
@@ -284,6 +319,19 @@ function Icon({ name }: { name: string }) {
           <path d="M12 3s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12Z" />
         </svg>
       );
+    case 'home':
+      return (
+        <svg {...shared}>
+          <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
+        </svg>
+      );
+    case 'clock':
+      return (
+        <svg {...shared}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      );
     case 'edit':
       return (
         <svg {...shared}>
@@ -309,6 +357,30 @@ function Icon({ name }: { name: string }) {
         </svg>
       );
   }
+}
+
+function InfoCard({
+  icon,
+  title,
+  children,
+  className = '',
+}: {
+  icon: string;
+  title: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={`${styles.infoCard} ${className}`.trim()}>
+      <h3 className={styles.infoCardTitle}>
+        <span aria-hidden="true">
+          <Icon name={icon} />
+        </span>
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
 }
 
 function Detail({
@@ -339,11 +411,14 @@ function Detail({
 
 export function ParentChildren({ search }: { search: string }) {
   const navigate = useNavigate();
-  const { request } = useAuth();
+  const { request, download, user } = useAuth();
   const [profiles, setProfiles] = useState<ChildProfile[]>([]);
   const [activeTabs, setActiveTabs] = useState<Record<number, ChildTab>>({});
+  const [viewingChildId, setViewingChildId] = useState<number | null>(null);
   const [editingChild, setEditingChild] = useState<number | null>(null);
   const [draft, setDraft] = useState<ChildProfile | null>(null);
+  const [parentPhotoUrl, setParentPhotoUrl] = useState('');
+  const [parentPhotoError, setParentPhotoError] = useState('');
   const [notice, setNotice] = useState('');
   const [loadError, setLoadError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -351,39 +426,78 @@ export function ParentChildren({ search }: { search: string }) {
   const [saveError, setSaveError] = useState('');
   const requestId = useRef(0);
 
-  const loadProfiles = useCallback(async (isActive: () => boolean = () => true) => {
-    const currentRequestId = ++requestId.current;
-    try {
-      const response = await request<{ data: ApiChildProfile[] }>('/api/parent/children');
-      if (!isActive() || currentRequestId !== requestId.current) return;
-      if (!Array.isArray(response.data)) {
-        throw new Error('The server returned an invalid child profiles list.');
-      }
-      const nextProfiles = response.data
-        .filter((child) => child.enrollment_status === 'enrolled')
-        .map(mapChildProfile);
-      setProfiles(nextProfiles);
-      setActiveTabs((current) => {
-        const next = { ...current };
-        nextProfiles.forEach(({ id }) => {
-          next[id] ??= 'Personal Information';
-        });
-        return next;
+  useEffect(() => {
+    let active = true;
+    let photoUrl = '';
+    setParentPhotoUrl('');
+    setParentPhotoError('');
+    if (!user?.profile_photo) return;
+
+    void download('/api/settings/profile-photo')
+      .then((blob) => {
+        if (!active) return;
+        if (blob.size === 0) {
+          setParentPhotoError('Parent profile photo could not be loaded.');
+          return;
+        }
+        photoUrl = URL.createObjectURL(blob);
+        setParentPhotoUrl(photoUrl);
+      })
+      .catch(() => {
+        if (active)
+          setParentPhotoError('Parent profile photo could not be loaded.');
       });
-      setLoadError('');
-    } catch (error) {
-      if (isActive() && currentRequestId === requestId.current) {
-        setLoadError(error instanceof Error ? error.message : 'Child profiles could not be loaded.');
+
+    return () => {
+      active = false;
+      if (photoUrl) URL.revokeObjectURL(photoUrl);
+    };
+  }, [download, user?.profile_photo]);
+
+  const loadProfiles = useCallback(
+    async (isActive: () => boolean = () => true) => {
+      const currentRequestId = ++requestId.current;
+      try {
+        const response = await request<{ data: ApiChildProfile[] }>(
+          '/api/parent/children',
+        );
+        if (!isActive() || currentRequestId !== requestId.current) return;
+        if (!Array.isArray(response.data)) {
+          throw new Error(
+            'The server returned an invalid child profiles list.',
+          );
+        }
+        const nextProfiles = response.data.map(mapChildProfile);
+        setProfiles(nextProfiles);
+        setActiveTabs((current) => {
+          const next = { ...current };
+          nextProfiles.forEach(({ id }) => {
+            next[id] ??= 'Personal Information';
+          });
+          return next;
+        });
+        setLoadError('');
+      } catch (error) {
+        if (isActive() && currentRequestId === requestId.current) {
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : 'Child profiles could not be loaded.',
+          );
+        }
+      } finally {
+        if (isActive() && currentRequestId === requestId.current)
+          setLoading(false);
       }
-    } finally {
-      if (isActive() && currentRequestId === requestId.current) setLoading(false);
-    }
-  }, [request]);
+    },
+    [request],
+  );
 
   useEffect(() => {
     let active = true;
     const refresh = () => {
-      if (active && document.visibilityState === 'visible') void loadProfiles(() => active);
+      if (active && document.visibilityState === 'visible')
+        void loadProfiles(() => active);
     };
     void loadProfiles(() => active);
     const interval = window.setInterval(refresh, 15_000);
@@ -405,6 +519,15 @@ export function ParentChildren({ search }: { search: string }) {
         .includes(term),
     );
   }, [profiles, search]);
+  const viewingChild = filteredProfiles.find(({ id }) => id === viewingChildId);
+  const activeTab = viewingChild
+    ? (activeTabs[viewingChild.id] ?? 'Personal Information')
+    : null;
+
+  function selectTab(tab: ChildTab) {
+    if (!viewingChild) return;
+    setActiveTabs((current) => ({ ...current, [viewingChild.id]: tab }));
+  }
 
   function openEdit(child: ChildProfile) {
     setDraft({ ...child });
@@ -443,7 +566,11 @@ export function ParentChildren({ search }: { search: string }) {
       setNotice('Child profile updated.');
       await loadProfiles();
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : 'Child profile could not be saved.');
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : 'Child profile could not be saved.',
+      );
     } finally {
       setSaving(false);
     }
@@ -475,9 +602,13 @@ export function ParentChildren({ search }: { search: string }) {
 
       <div className={styles.toolbar}>
         <span>
-          {loading ? <BouncingDots label="Loading child profiles" size="small" inline /> : `${filteredProfiles.length} ${
-            filteredProfiles.length === 1 ? 'child profile' : 'child profiles'
-          }`}
+          {loading ? (
+            <BouncingDots label="Loading child profiles" size="small" inline />
+          ) : (
+            `${filteredProfiles.length} ${
+              filteredProfiles.length === 1 ? 'child profile' : 'child profiles'
+            }`
+          )}
         </span>
         <button
           className={styles.addButton}
@@ -488,231 +619,363 @@ export function ParentChildren({ search }: { search: string }) {
         </button>
       </div>
 
-      {loadError && <p className={styles.error} role="alert">{loadError}</p>}
+      {loadError && (
+        <p className={styles.error} role="alert">
+          {loadError}
+        </p>
+      )}
       {notice && (
         <p className={styles.notice} role="status">
           {notice}
         </p>
       )}
 
-      <div className={styles.profileList}>
-        {filteredProfiles.map((child) => {
-          const activeTab = activeTabs[child.id] ?? 'Personal Information';
-          const selectTab = (tab: ChildTab) =>
-            setActiveTabs((current) => ({ ...current, [child.id]: tab }));
-          return (
+      {viewingChild && activeTab ? (
+        <section
+          aria-label={`${viewingChild.fullName} profile`}
+          className={styles.profileView}
+        >
+          <div className={styles.profileActions}>
+            <button
+              className={styles.backButton}
+              type="button"
+              onClick={() => setViewingChildId(null)}
+            >
+              <span aria-hidden="true">←</span> Back to Children
+            </button>
+            <button
+              className={styles.printButton}
+              type="button"
+              onClick={() => window.print()}
+            >
+              <span aria-hidden="true">⎙</span> Print Profile
+            </button>
+          </div>
+
+          <header className={styles.profileHeader}>
+            <Avatar
+              className={styles.childAvatar}
+              name={viewingChild.fullName || 'Child profile'}
+              size="large"
+            />
+            <div className={styles.profileHeaderDetails}>
+              <div className={styles.profileNameRow}>
+                <h2>{viewingChild.fullName || 'Child profile'}</h2>
+                <span
+                  className={`${styles.enrolled} ${viewingChild.enrollmentStatus === 'Enrolled' ? '' : viewingChild.enrollmentStatus === 'Rejected' ? styles.rejectedStatus : styles.otherStatus}`}
+                >
+                  {viewingChild.enrollmentStatus === 'Enrolled' && (
+                    <Icon name="check" />
+                  )}
+                  {viewingChild.enrollmentStatus || 'Status unavailable'}
+                </span>
+              </div>
+              <div className={styles.profileMeta}>
+                <span>
+                  <Icon name="person" />
+                  Age: {calculateAge(viewingChild.birthDate)}
+                </span>
+                <span>
+                  <Icon name="calendar" />
+                  Date of Birth:{' '}
+                  {formatDate(viewingChild.birthDate) || 'Not provided'}
+                </span>
+              </div>
+            </div>
+          </header>
+
+          <section className={styles.informationPanel}>
+            <div
+              aria-label={`${viewingChild.fullName} information`}
+              className={styles.tabs}
+              role="tablist"
+            >
+              {(Object.keys(tabIcons) as ChildTab[]).map((tab) => (
+                <button
+                  aria-selected={activeTab === tab}
+                  className={activeTab === tab ? styles.activeTab : ''}
+                  id={`child-${viewingChild.id}-${tab.replaceAll(/[^a-z]/gi, '-').toLowerCase()}`}
+                  key={tab}
+                  role="tab"
+                  type="button"
+                  onClick={() => selectTab(tab)}
+                >
+                  <Icon name={tabIcons[tab]} />
+                  <span>{tab}</span>
+                </button>
+              ))}
+              <button
+                className={styles.editButton}
+                disabled={!editableFields[activeTab].length}
+                title={
+                  editableFields[activeTab].length
+                    ? 'Edit child information'
+                    : 'Only personal and health information can be edited here'
+                }
+                type="button"
+                onClick={() => openEdit(viewingChild)}
+              >
+                <Icon name="edit" /> Edit
+              </button>
+            </div>
+
+            <div
+              aria-labelledby={`child-${viewingChild.id}-${activeTab.replaceAll(/[^a-z]/gi, '-').toLowerCase()}`}
+              className={styles.details}
+              role="tabpanel"
+            >
+              {activeTab === 'Personal Information' ? (
+                <div className={styles.sectionGrid}>
+                  <InfoCard icon="person" title="Basic Information">
+                    <dl className={styles.detailGrid}>
+                      <Detail
+                        icon="person"
+                        label="Full Name"
+                        value={viewingChild.fullName}
+                      />
+                      <Detail
+                        icon="edit"
+                        label="Nickname"
+                        value={viewingChild.nickname}
+                      />
+                      <Detail
+                        icon="person"
+                        label="Gender"
+                        value={viewingChild.gender}
+                      />
+                      <Detail
+                        icon="calendar"
+                        label="Date of Birth"
+                        value={formatDate(viewingChild.birthDate)}
+                      />
+                      <Detail
+                        icon="clock"
+                        label="Age"
+                        value={calculateAge(viewingChild.birthDate)}
+                      />
+                      <Detail
+                        icon="children"
+                        label="Enrollment Status"
+                        value={viewingChild.enrollmentStatus}
+                      />
+                    </dl>
+                  </InfoCard>
+                  <InfoCard icon="file" title="Additional Personal Details">
+                    <dl className={styles.detailGrid}>
+                      <Detail
+                        icon="file"
+                        label="PSA Birth Certificate Number"
+                        value={viewingChild.certificate}
+                      />
+                      <Detail
+                        icon="globe"
+                        label="Nationality"
+                        value={viewingChild.nationality}
+                      />
+                      <Detail
+                        icon="location"
+                        label="Place of Birth"
+                        value={viewingChild.placeOfBirth}
+                      />
+                      <Detail
+                        icon="home"
+                        label="Residential Address"
+                        value={viewingChild.address}
+                      />
+                    </dl>
+                  </InfoCard>
+                </div>
+              ) : activeTab === 'Health Information' ? (
+                <div className={`${styles.sectionGrid} ${styles.healthGrid}`}>
+                  <InfoCard
+                    className={styles.healthDetails}
+                    icon="health"
+                    title="Health Details"
+                  >
+                    <dl className={styles.detailGrid}>
+                      <Detail
+                        icon="blood"
+                        label="Blood Type"
+                        value={viewingChild.bloodType}
+                      />
+                      <Detail
+                        icon="health"
+                        label="Medical Conditions"
+                        value={viewingChild.medicalConditions}
+                      />
+                      <Detail
+                        icon="check"
+                        label="Immunization Status"
+                        value={viewingChild.immunization}
+                      />
+                    </dl>
+                  </InfoCard>
+                  <InfoCard
+                    className={styles.medicalHistory}
+                    icon="file"
+                    title="Medical History"
+                  >
+                    <img alt="" src={medicalIllustration} />
+                    <p>No medical history records yet.</p>
+                    <span>This section will be updated as needed.</span>
+                  </InfoCard>
+                  <InfoCard
+                    className={styles.allergiesCard}
+                    icon="health"
+                    title="Allergies"
+                  >
+                    <p className={styles.allergyValue}>
+                      {viewingChild.allergies || 'Not provided'}
+                    </p>
+                  </InfoCard>
+                </div>
+              ) : activeTab === 'Parent / Guardian Information' ? (
+                <div className={styles.sectionGrid}>
+                  <InfoCard
+                    className={styles.parentCard}
+                    icon="family"
+                    title="Parent / Guardian"
+                  >
+                    <div className={styles.parentProfile}>
+                      <Avatar
+                        className={styles.parentAvatar}
+                        name={viewingChild.parentName || 'Parent or guardian'}
+                        size="large"
+                        src={parentPhotoUrl || null}
+                      />
+                      <dl className={styles.detailGrid}>
+                        <Detail
+                          icon="person"
+                          label="Full Name"
+                          value={viewingChild.parentName}
+                        />
+                        <Detail
+                          icon="family"
+                          label="Relationship"
+                          value={viewingChild.parentRelationship}
+                        />
+                        <Detail
+                          icon="phone"
+                          label="Contact Number"
+                          value={viewingChild.parentPhone}
+                        />
+                        <Detail
+                          icon="file"
+                          label="Email Address"
+                          value={viewingChild.parentEmail}
+                        />
+                      </dl>
+                    </div>
+                    {parentPhotoError && (
+                      <p className={styles.photoNotice} role="status">
+                        {parentPhotoError}
+                      </p>
+                    )}
+                  </InfoCard>
+                </div>
+              ) : activeTab === 'Emergency Contact' ? (
+                <div
+                  className={`${styles.sectionGrid} ${styles.emergencyLayout}`}
+                >
+                  <div className={styles.emergencyIllustration}>
+                    <img alt="" src={emergencyIllustration} />
+                    <p>In case of emergency, please contact:</p>
+                  </div>
+                  <InfoCard icon="phone" title="Emergency Contact">
+                    <dl className={styles.detailGrid}>
+                      <Detail
+                        icon="person"
+                        label="Contact Person"
+                        value={viewingChild.emergencyName}
+                      />
+                      <Detail
+                        icon="family"
+                        label="Relationship"
+                        value={viewingChild.emergencyRelationship}
+                      />
+                      <Detail
+                        icon="phone"
+                        label="Contact Number"
+                        value={viewingChild.emergencyPhone}
+                      />
+                    </dl>
+                  </InfoCard>
+                </div>
+              ) : (
+                <div className={`${styles.sectionGrid} ${styles.otherLayout}`}>
+                  <InfoCard icon="file" title="Enrollment Details">
+                    <dl className={styles.detailGrid}>
+                      <Detail
+                        icon="file"
+                        label="Enrollment Type"
+                        value={viewingChild.enrollmentType}
+                      />
+                      <Detail
+                        icon="calendar"
+                        label="Enrollment Date"
+                        value={viewingChild.dateEnrolled}
+                      />
+                      <Detail
+                        icon="location"
+                        label="Child Development Center"
+                        value={viewingChild.center}
+                      />
+                    </dl>
+                  </InfoCard>
+                  <img
+                    alt=""
+                    className={styles.otherIllustration}
+                    src={otherInformationIllustration}
+                  />
+                </div>
+              )}
+            </div>
+          </section>
+        </section>
+      ) : (
+        <div className={styles.profileList}>
+          {filteredProfiles.map((child) => (
             <article
               aria-label={`${child.fullName} profile`}
               className={styles.childProfile}
               key={child.id}
             >
-              <section className={styles.childIdentity}>
-                <img alt="" src={childrenBanner} />
+              <Avatar
+                className={styles.listAvatar}
+                name={child.fullName || 'Child profile'}
+                size="large"
+              />
+              <div className={styles.listIdentity}>
                 <h2>{child.fullName || 'Child profile'}</h2>
                 <p>Age: {calculateAge(child.birthDate)}</p>
-                <span className={`${styles.enrolled} ${child.enrollmentStatus === 'Enrolled' ? '' : child.enrollmentStatus === 'Rejected' ? styles.rejectedStatus : styles.otherStatus}`}>
-                  {child.enrollmentStatus === 'Enrolled' && <Icon name="check" />}
+                <span
+                  className={`${styles.enrolled} ${child.enrollmentStatus === 'Enrolled' ? '' : child.enrollmentStatus === 'Rejected' ? styles.rejectedStatus : styles.otherStatus}`}
+                >
+                  {child.enrollmentStatus === 'Enrolled' && (
+                    <Icon name="check" />
+                  )}
                   {child.enrollmentStatus || 'Status unavailable'}
                 </span>
-              </section>
-              <section className={styles.informationPanel}>
-                <div
-                  className={styles.tabs}
-                  role="tablist"
-                  aria-label={`${child.fullName} information`}
-                >
-                  {(Object.keys(tabIcons) as ChildTab[]).map((tab) => (
-                    <button
-                      aria-selected={activeTab === tab}
-                      className={activeTab === tab ? styles.activeTab : ''}
-                      id={`child-${child.id}-${tab.replaceAll(/[^a-z]/gi, '-').toLowerCase()}`}
-                      key={tab}
-                      role="tab"
-                      type="button"
-                      onClick={() => selectTab(tab)}
-                    >
-                      <Icon name={tabIcons[tab]} />
-                      <span>{tab}</span>
-                    </button>
-                  ))}
-                  <button
-                    className={styles.editButton}
-                    disabled={!editableFields[activeTab].length}
-                    title={editableFields[activeTab].length ? 'Edit child information' : 'Only personal and health information can be edited here'}
-                    type="button"
-                    onClick={() => openEdit(child)}
-                  >
-                    <Icon name="edit" /> Edit
-                  </button>
-                </div>
-                <div
-                  aria-labelledby={`child-${child.id}-${activeTab.replaceAll(/[^a-z]/gi, '-').toLowerCase()}`}
-                  className={styles.details}
-                  role="tabpanel"
-                >
-                  {activeTab === 'Personal Information' ? (
-                    <>
-                      <dl>
-                        <Detail
-                          icon="person"
-                          label="Full Name"
-                          value={child.fullName}
-                        />
-                        <Detail
-                          icon="edit"
-                          label="Nickname"
-                          value={child.nickname}
-                        />
-                        <Detail
-                          icon="calendar"
-                          label="Date of Birth"
-                          value={formatDate(child.birthDate)}
-                        />
-                        <Detail
-                          icon="person"
-                          label="Gender"
-                          value={child.gender}
-                        />
-                        <Detail
-                          icon="children"
-                          label="Enrollment Status"
-                          value={child.enrollmentStatus}
-                        />
-                      </dl>
-                      <dl>
-                        <Detail
-                          icon="calendar"
-                          label="PSA Birth Certificate No."
-                          value={child.certificate}
-                        />
-                        <Detail
-                          icon="globe"
-                          label="Nationality"
-                          value={child.nationality}
-                        />
-                        <Detail
-                          icon="home"
-                          label="Place of Birth"
-                          value={child.placeOfBirth}
-                        />
-                        <Detail
-                          icon="pin"
-                          label="Address"
-                          value={child.address}
-                        />
-                        <Detail
-                          icon="calendar"
-                          label="Date Enrolled"
-                          value={child.dateEnrolled}
-                        />
-                        <Detail
-                          icon="file"
-                          label="Enrollment Type"
-                          value={child.enrollmentType}
-                        />
-                      </dl>
-                    </>
-                  ) : activeTab === 'Health Information' ? (
-                    <dl className={styles.singleColumn}>
-                      <Detail
-                        icon="blood"
-                        label="Blood Type"
-                        value={child.bloodType}
-                      />
-                      <Detail
-                        icon="health"
-                        label="Allergies"
-                        value={child.allergies}
-                      />
-                      <Detail
-                        icon="health"
-                        label="Medical Conditions"
-                        value={child.medicalConditions}
-                      />
-                      <Detail
-                        icon="check"
-                        label="Immunization Status"
-                        value={child.immunization}
-                      />
-                    </dl>
-                  ) : activeTab === 'Parent / Guardian Information' ? (
-                    <dl className={styles.singleColumn}>
-                      <Detail
-                        icon="person"
-                        label="Parent / Guardian Name"
-                        value={child.parentName}
-                      />
-                      <Detail
-                        icon="family"
-                        label="Relationship to Child"
-                        value={child.parentRelationship}
-                      />
-                      <Detail
-                        icon="phone"
-                        label="Contact Number"
-                        value={child.parentPhone}
-                      />
-                      <Detail
-                        icon="file"
-                        label="Email Address"
-                        value={child.parentEmail}
-                      />
-                    </dl>
-                  ) : activeTab === 'Emergency Contact' ? (
-                    <dl className={styles.singleColumn}>
-                      <Detail
-                        icon="person"
-                        label="Contact Person"
-                        value={child.emergencyName}
-                      />
-                      <Detail
-                        icon="family"
-                        label="Relationship"
-                        value={child.emergencyRelationship}
-                      />
-                      <Detail
-                        icon="phone"
-                        label="Contact Number"
-                        value={child.emergencyPhone}
-                      />
-                    </dl>
-                  ) : (
-                    <dl className={styles.singleColumn}>
-                      <Detail
-                        icon="home"
-                        label="Child Development Center"
-                        value={child.center}
-                      />
-                      <Detail
-                        icon="person"
-                        label="Assigned Teacher"
-                        value={child.teacher}
-                      />
-                      <Detail
-                        icon="calendar"
-                        label="Date Enrolled"
-                        value={child.dateEnrolled}
-                      />
-                      <Detail
-                        icon="file"
-                        label="Enrollment Type"
-                        value={child.enrollmentType}
-                      />
-                    </dl>
-                  )}
-                </div>
-              </section>
+              </div>
+              <button
+                className={styles.viewButton}
+                type="button"
+                onClick={() => setViewingChildId(child.id)}
+              >
+                <span aria-hidden="true">→</span>
+                View Profile
+              </button>
             </article>
-          );
-        })}
-        {!loading && !loadError && !filteredProfiles.length && (
-          <p className={styles.emptyState}>
-            {profiles.length
-              ? 'No child profiles match your search.'
-              : 'No child profiles are linked to your account yet. Submit an enrollment application to add a child.'}
-          </p>
-        )}
-      </div>
+          ))}
+          {!loading && !loadError && !filteredProfiles.length && (
+            <p className={styles.emptyState}>
+              {profiles.length
+                ? 'No child profiles match your search.'
+                : 'No child profiles are linked to your account yet. Submit an enrollment application to add a child.'}
+            </p>
+          )}
+        </div>
+      )}
 
       {editingChild !== null && draft && currentEditTab && (
         <div className={styles.dialogBackdrop}>
@@ -744,15 +1007,23 @@ export function ParentChildren({ search }: { search: string }) {
                   <select
                     required={key === 'gender'}
                     value={draft[key]}
-                    onChange={(event) => setDraft((current) =>
-                      current ? { ...current, [key]: event.target.value } : current,
-                    )}
+                    onChange={(event) =>
+                      setDraft((current) =>
+                        current
+                          ? { ...current, [key]: event.target.value }
+                          : current,
+                      )
+                    }
                   >
                     <option value="">Select {label.toLowerCase()}</option>
                     {(key === 'gender'
                       ? ['Female', 'Male']
                       : ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-                    ).map((choice) => <option key={choice} value={choice}>{choice}</option>)}
+                    ).map((choice) => (
+                      <option key={choice} value={choice}>
+                        {choice}
+                      </option>
+                    ))}
                   </select>
                 ) : key === 'birthDate' ? (
                   <input
@@ -760,21 +1031,39 @@ export function ParentChildren({ search }: { search: string }) {
                     max={todayDateInputValue()}
                     type="date"
                     value={draft[key]}
-                    onChange={(event) => setDraft((current) =>
-                      current ? { ...current, [key]: event.target.value } : current,
-                    )}
+                    onChange={(event) =>
+                      setDraft((current) =>
+                        current
+                          ? { ...current, [key]: event.target.value }
+                          : current,
+                      )
+                    }
                   />
                 ) : (
                   <textarea
-                    rows={draft[key].includes('\n') || key === 'address' || key === 'allergies' || key === 'medicalConditions' ? 3 : 1}
+                    rows={
+                      draft[key].includes('\n') ||
+                      key === 'address' ||
+                      key === 'allergies' ||
+                      key === 'medicalConditions'
+                        ? 3
+                        : 1
+                    }
                     required={key === 'firstName' || key === 'lastName'}
                     maxLength={
-                      key === 'address' ? 255
-                        : key === 'certificate' ? 60
-                          : key === 'placeOfBirth' ? 180
-                            : key === 'nationality' ? 80
-                              : key === 'allergies' || key === 'medicalConditions' ? 2000
-                                : key === 'immunization' ? 120
+                      key === 'address'
+                        ? 255
+                        : key === 'certificate'
+                          ? 60
+                          : key === 'placeOfBirth'
+                            ? 180
+                            : key === 'nationality'
+                              ? 80
+                              : key === 'allergies' ||
+                                  key === 'medicalConditions'
+                                ? 2000
+                                : key === 'immunization'
+                                  ? 120
                                   : 100
                     }
                     value={draft[key]}
@@ -789,7 +1078,11 @@ export function ParentChildren({ search }: { search: string }) {
                 )}
               </label>
             ))}
-            {saveError && <p className={styles.error} role="alert">{saveError}</p>}
+            {saveError && (
+              <p className={styles.error} role="alert">
+                {saveError}
+              </p>
+            )}
             <div className={styles.dialogActions}>
               <button
                 className={styles.secondaryButton}
@@ -802,7 +1095,11 @@ export function ParentChildren({ search }: { search: string }) {
               >
                 Cancel
               </button>
-              <button className={styles.addButton} disabled={saving} type="submit">
+              <button
+                className={styles.addButton}
+                disabled={saving}
+                type="submit"
+              >
                 {saving ? 'Saving…' : 'Save Changes'}
               </button>
             </div>
