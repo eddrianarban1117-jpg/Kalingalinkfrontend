@@ -97,7 +97,6 @@ export function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState(redirectState?.message ?? '');
   const [submitting, setSubmitting] = useState(false);
-  const [googleStarting, setGoogleStarting] = useState(false);
   const loginInProgress = useRef(false);
 
   useEffect(() => {
@@ -165,19 +164,6 @@ export function Login() {
     } finally {
       loginInProgress.current = false;
       setSubmitting(false);
-    }
-  }
-
-  function startGoogleSignIn() {
-    if (googleStarting || submitting) return;
-    setMessage('Connecting to Google…');
-    setGoogleStarting(true);
-    const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-    try {
-      window.location.assign(`${apiBaseUrl}/api/auth/google`);
-    } catch {
-      setGoogleStarting(false);
-      setMessage('Google sign-in could not be started. Please try again.');
     }
   }
 
@@ -313,25 +299,6 @@ export function Login() {
                 {message}
               </p>
             )}
-
-            <div aria-hidden="true" className={styles.divider}>
-              <span />
-              <span>or</span>
-              <span />
-            </div>
-
-            <button
-              aria-busy={googleStarting}
-              className={styles.googleButton}
-              disabled={googleStarting || submitting}
-              onClick={startGoogleSignIn}
-              type="button"
-            >
-              <span aria-hidden="true" className={styles.googleMark}>
-                G
-              </span>
-              Continue with Google
-            </button>
 
             <p className={styles.createAccount}>
               New to KalingaLink?{' '}

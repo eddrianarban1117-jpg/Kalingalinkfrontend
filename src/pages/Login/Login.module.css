@@ -321,63 +321,6 @@
   animation: auth-fade-up var(--dur-base) var(--ease-out) both;
 }
 
-.divider {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 1rem;
-  margin: 0.05rem 0;
-  color: #7794b9;
-  font-size: 0.72rem;
-}
-
-.divider span:first-child,
-.divider span:last-child {
-  height: 1px;
-  background: #dceaf8;
-}
-
-.googleButton {
-  display: flex;
-  min-height: 3.2rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.7rem;
-  border: 1px solid #c6e1fb;
-  border-radius: 0.75rem;
-  color: #1681e8;
-  background: #fff;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 750;
-  cursor: pointer;
-  transition:
-    background-color var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out),
-    box-shadow var(--dur-base) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
-}
-
-.googleButton:hover {
-  border-color: #80baf0;
-  background: #f6fbff;
-  box-shadow: 0 0.25rem 0.7rem rgb(23 109 190 / 9%);
-}
-
-.googleButton:active:not(:disabled) {
-  transform: scale(0.99);
-}
-
-.googleMark {
-  color: #4285f4;
-  font-family: Arial, sans-serif;
-  font-size: 1.25rem;
-  font-weight: 900;
-  text-shadow:
-    1px 1px #34a853,
-    -1px -1px #ea4335;
-}
-
 .createAccount {
   margin: 0.2rem 0 0;
   color: #6787ad;
