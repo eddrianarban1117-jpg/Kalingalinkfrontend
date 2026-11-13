@@ -54,23 +54,37 @@ function isGuideLanguage(value: string): value is GuideLanguage {
   return value === 'en' || value === 'tl';
 }
 
+function getMascotLeftBounds(guide: HTMLDivElement, mascot: HTMLButtonElement) {
+  const guideBounds = guide.getBoundingClientRect();
+  const mascotBounds = mascot.getBoundingClientRect();
+  const instruction = guide.querySelector<HTMLElement>(
+    `.${styles.instruction} p`,
+  );
+  const maxLeft = Math.max(0, guideBounds.width - mascotBounds.width);
+  const safeLeft = instruction
+    ? instruction.getBoundingClientRect().right - guideBounds.left + 12
+    : maxLeft;
+
+  return {
+    minLeft: Math.min(maxLeft, Math.max(0, safeLeft)),
+    maxLeft,
+  };
+}
+
 export function ParentEnrollmentGuide() {
   const [language, setLanguage] = useState<GuideLanguage>('en');
   const [step, setStep] = useState(0);
   const [open, setOpen] = useState(true);
   const [contentVisible, setContentVisible] = useState(true);
-  const [mascotPosition, setMascotPosition] = useState<{
-    left: number;
-    top: number;
-  } | null>(null);
+  const [mascotLeft, setMascotLeft] = useState<number | null>(null);
   const contentTimer = useRef<number | null>(null);
+  const guideRef = useRef<HTMLDivElement | null>(null);
   const mascotRef = useRef<HTMLButtonElement | null>(null);
   const dragStart = useRef<{
     pointerId: number;
     startX: number;
     startY: number;
     left: number;
-    top: number;
     moved: boolean;
   } | null>(null);
   const suppressMascotClick = useRef(false);
@@ -88,44 +102,20 @@ export function ParentEnrollmentGuide() {
   );
 
   useEffect(() => {
-    let resizeFrame: number | null = null;
+    const guide = guideRef.current;
+    if (!guide) return;
 
-    function keepMascotInViewport() {
-      if (resizeFrame !== null) {
-        window.cancelAnimationFrame(resizeFrame);
-      }
+    const observer = new ResizeObserver(() => {
+      const mascot = mascotRef.current;
+      if (!mascot) return;
+      const { minLeft, maxLeft } = getMascotLeftBounds(guide, mascot);
+      setMascotLeft((current) =>
+        current === null ? null : Math.max(minLeft, Math.min(maxLeft, current)),
+      );
+    });
 
-      resizeFrame = window.requestAnimationFrame(() => {
-        resizeFrame = null;
-        const mascot = mascotRef.current;
-        if (!mascot) return;
-
-        const { width, height } = mascot.getBoundingClientRect();
-        const viewportWidth = document.documentElement.clientWidth;
-        setMascotPosition((current) =>
-          current
-            ? {
-                left: Math.max(
-                  0,
-                  Math.min(viewportWidth - width - 8, current.left),
-                ),
-                top: Math.max(
-                  0,
-                  Math.min(window.innerHeight - height - 8, current.top),
-                ),
-              }
-            : null,
-        );
-      });
-    }
-
-    window.addEventListener('resize', keepMascotInViewport);
-    return () => {
-      window.removeEventListener('resize', keepMascotInViewport);
-      if (resizeFrame !== null) {
-        window.cancelAnimationFrame(resizeFrame);
-      }
-    };
+    observer.observe(guide);
+    return () => observer.disconnect();
   }, []);
 
   function transitionContent(update: () => void) {
@@ -159,14 +149,16 @@ export function ParentEnrollmentGuide() {
 
   function handleMascotPointerDown(event: PointerEvent<HTMLButtonElement>) {
     if (event.button !== 0) return;
+    const guide = guideRef.current;
+    if (!guide) return;
     suppressMascotClick.current = false;
     const bounds = event.currentTarget.getBoundingClientRect();
+    const guideBounds = guide.getBoundingClientRect();
     dragStart.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
-      left: bounds.left,
-      top: bounds.top,
+      left: bounds.left - guideBounds.left,
       moved: false,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -175,25 +167,18 @@ export function ParentEnrollmentGuide() {
   function handleMascotPointerMove(event: PointerEvent<HTMLButtonElement>) {
     const start = dragStart.current;
     if (!start || start.pointerId !== event.pointerId) return;
+    const guide = guideRef.current;
+    if (!guide) return;
     const deltaX = event.clientX - start.startX;
     const deltaY = event.clientY - start.startY;
     if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) start.moved = true;
     if (!start.moved) return;
 
-    const bounds = event.currentTarget.getBoundingClientRect();
-    setMascotPosition({
-      left: Math.max(
-        0,
-        Math.min(
-          document.documentElement.clientWidth - bounds.width - 8,
-          start.left + deltaX,
-        ),
-      ),
-      top: Math.max(
-        0,
-        Math.min(window.innerHeight - bounds.height - 8, start.top + deltaY),
-      ),
-    });
+    const { minLeft, maxLeft } = getMascotLeftBounds(
+      guide,
+      event.currentTarget,
+    );
+    setMascotLeft(Math.max(minLeft, Math.min(maxLeft, start.left + deltaX)));
   }
 
   function handleMascotPointerUp(event: PointerEvent<HTMLButtonElement>) {
@@ -209,33 +194,22 @@ export function ParentEnrollmentGuide() {
   }
 
   function handleMascotKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
-    const movement: Record<string, [number, number]> = {
-      ArrowLeft: [-20, 0],
-      ArrowRight: [20, 0],
-      ArrowUp: [0, -20],
-      ArrowDown: [0, 20],
+    const guide = guideRef.current;
+    if (!guide) return;
+    const movement: Record<string, number> = {
+      ArrowLeft: -20,
+      ArrowRight: 20,
     };
     const delta = movement[event.key];
     if (!delta) return;
 
     event.preventDefault();
-    const bounds = event.currentTarget.getBoundingClientRect();
-    setMascotPosition((current) => ({
-      left: Math.max(
-        0,
-        Math.min(
-          document.documentElement.clientWidth - bounds.width - 8,
-          (current?.left ?? bounds.left) + delta[0],
-        ),
-      ),
-      top: Math.max(
-        0,
-        Math.min(
-          window.innerHeight - bounds.height - 8,
-          (current?.top ?? bounds.top) + delta[1],
-        ),
-      ),
-    }));
+    const mascot = event.currentTarget;
+    const { minLeft, maxLeft } = getMascotLeftBounds(guide, mascot);
+    const bounds = mascot.getBoundingClientRect();
+    const guideBounds = guide.getBoundingClientRect();
+    const currentLeft = mascotLeft ?? bounds.left - guideBounds.left;
+    setMascotLeft(Math.max(minLeft, Math.min(maxLeft, currentLeft + delta)));
   }
 
   function toggleGuide() {
@@ -248,7 +222,7 @@ export function ParentEnrollmentGuide() {
   }
 
   return (
-    <div className={styles.guide}>
+    <div className={styles.guide} ref={guideRef}>
       <section
         aria-hidden={!open}
         aria-labelledby="kali-guide-title"
@@ -341,7 +315,7 @@ export function ParentEnrollmentGuide() {
         aria-controls="kali-enrollment-guide"
         aria-expanded={open}
         aria-label={open ? content.close : content.reopen}
-        aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
+        aria-keyshortcuts="ArrowLeft ArrowRight"
         className={`${styles.floatingButton} ${open ? styles.mascotOpen : ''}`}
         onClick={toggleGuide}
         onKeyDown={handleMascotKeyDown}
@@ -350,15 +324,7 @@ export function ParentEnrollmentGuide() {
         onPointerMove={handleMascotPointerMove}
         onPointerUp={handleMascotPointerUp}
         style={
-          mascotPosition
-            ? {
-                bottom: 'auto',
-                left: mascotPosition.left,
-                position: 'fixed',
-                right: 'auto',
-                top: mascotPosition.top,
-              }
-            : undefined
+          mascotLeft !== null ? { left: mascotLeft, right: 'auto' } : undefined
         }
         ref={mascotRef}
         type="button"

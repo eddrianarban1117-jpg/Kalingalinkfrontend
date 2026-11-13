@@ -1,9 +1,9 @@
 .guide {
   position: relative;
   z-index: 4;
-  width: min(100%, 43rem);
-  margin: 0 auto 0.25rem;
-  padding-bottom: 1.75rem;
+  width: 100%;
+  margin: 0 0 0.25rem;
+  padding-bottom: clamp(4.75rem, 7vw, 5.75rem);
 }
 
 .panelShell {
@@ -173,12 +173,12 @@
   display: grid;
   min-height: 7.8rem;
   align-items: center;
-  padding: 0.75rem 3.4rem 0.85rem;
+  padding: 0.75rem 3.4rem 0.85rem 4rem;
 }
 
 .instruction {
   min-width: 0;
-  padding-right: clamp(3.8rem, 12vw, 6.1rem);
+  padding-right: clamp(8.25rem, 10vw, 9.25rem);
   opacity: 0;
   transform: translateY(0.25rem);
   transition:
@@ -284,7 +284,7 @@
 .floatingButton {
   position: absolute;
   z-index: 2;
-  right: -0.8rem;
+  right: 0;
   bottom: 0;
   display: grid;
   width: clamp(5.5rem, 11vw, 7.5rem);
@@ -383,7 +383,7 @@
   .guide {
     width: 100%;
     margin-bottom: 0.1rem;
-    padding-bottom: 1.45rem;
+    padding-bottom: 4rem;
   }
 
   .panel {
@@ -434,7 +434,7 @@
   }
 
   .instruction {
-    padding-right: clamp(3.2rem, 16vw, 4.2rem);
+    padding-right: clamp(5.5rem, 19vw, 6rem);
   }
 
   .stepCount {
@@ -469,7 +469,7 @@
   }
 
   .floatingButton {
-    right: -0.55rem;
+    right: 0;
     width: clamp(4.5rem, 22vw, 5.7rem);
     height: clamp(4.7rem, 23vw, 6rem);
   }
