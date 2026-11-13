@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
@@ -234,21 +234,26 @@ function Icon({ name }: { name: IconName }) {
 type NavigationItem = {
   label: string;
   icon: IconName;
+  section: 'OVERVIEW' | 'CLASSROOM' | 'MANAGE' | 'UPDATES';
   active?: boolean;
 };
 
 const navigation: NavigationItem[] = [
-  { label: 'Dashboard', icon: 'home', active: true },
-  { label: 'Events', icon: 'calendar' },
-  { label: 'Enrollment Management', icon: 'enrollment' },
-  { label: 'Students', icon: 'students' },
-  { label: 'Daily Attendance', icon: 'calendar' },
-  { label: 'Learning Activities', icon: 'book' },
-  { label: 'Lesson Plans and Materials', icon: 'file' },
-  { label: 'Children Progress', icon: 'chart' },
-  { label: 'My Task and Submissions', icon: 'tasks' },
-  { label: 'Notifications', icon: 'bell' },
-  { label: 'Profile', icon: 'profile' },
+  { section: 'OVERVIEW', label: 'Dashboard', icon: 'home', active: true },
+  { section: 'OVERVIEW', label: 'Events', icon: 'calendar' },
+  { section: 'CLASSROOM', label: 'Students', icon: 'students' },
+  { section: 'CLASSROOM', label: 'Daily Attendance', icon: 'calendar' },
+  { section: 'CLASSROOM', label: 'Learning Activities', icon: 'book' },
+  {
+    section: 'CLASSROOM',
+    label: 'Lesson Plans and Materials',
+    icon: 'file',
+  },
+  { section: 'CLASSROOM', label: 'Children Progress', icon: 'chart' },
+  { section: 'MANAGE', label: 'Enrollment Management', icon: 'enrollment' },
+  { section: 'MANAGE', label: 'My Task and Submissions', icon: 'tasks' },
+  { section: 'UPDATES', label: 'Notifications', icon: 'bell' },
+  { section: 'UPDATES', label: 'Profile', icon: 'profile' },
 ];
 
 type StudentTab = 'general' | 'guardian' | 'medical';
@@ -1190,8 +1195,12 @@ export function TeacherDashboard() {
         </Link>
 
         <nav aria-label="Teacher workspace" className={styles.navigation}>
-          {navigation.map((item) => (
-            <button
+          {navigation.map((item, index) => (
+            <Fragment key={item.label}>
+              {navigation[index - 1]?.section !== item.section && (
+                <h2 className={styles.navigationHeading}>{item.section}</h2>
+              )}
+              <button
               aria-current={
                 (isTeacherEnrollmentPage &&
                   item.label === 'Enrollment Management') ||
@@ -1270,7 +1279,6 @@ export function TeacherDashboard() {
                   'Profile',
                 ].includes(item.label)
               }
-              key={item.label}
               onClick={() => {
                 setIsNavigationOpen(false);
                 if (item.label === 'Dashboard') {
@@ -1327,7 +1335,13 @@ export function TeacherDashboard() {
               }
             >
               <Icon name={item.icon} />
-              <span>{item.label}</span>
+              <span>
+                {item.label === 'Lesson Plans and Materials'
+                  ? 'Lesson Plans & Materials'
+                  : item.label === 'My Task and Submissions'
+                    ? 'My Task & Submissions'
+                    : item.label}
+              </span>
               {item.label === 'Notifications' && unreadNotifications > 0 && (
                 <span
                   aria-label={`${unreadNotifications} unread notifications`}
@@ -1336,18 +1350,43 @@ export function TeacherDashboard() {
                   {unreadNotifications}
                 </span>
               )}
-            </button>
+              </button>
+            </Fragment>
           ))}
         </nav>
 
-        <button
-          className={styles.logout}
-          type="button"
-          onClick={() => setIsLogoutDialogOpen(true)}
-        >
-          <Icon name="logout" />
-          <span>Logout</span>
-        </button>
+        <footer className={styles.sidebarFooter}>
+          <button
+            aria-label={`View profile for ${[user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Teacher'}`}
+            className={styles.profileSummary}
+            type="button"
+            onClick={() => {
+              setQuery('');
+              navigate(routePaths.teacherProfile);
+              setIsNavigationOpen(false);
+            }}
+          >
+            <span aria-hidden="true" className={styles.sidebarProfileInitial}>
+              {(user?.first_name?.charAt(0) || 'T').toUpperCase()}
+            </span>
+            <span className={styles.sidebarProfileCopy}>
+              <strong>
+                {[user?.first_name, user?.last_name]
+                  .filter(Boolean)
+                  .join(' ') || 'Teacher'}
+              </strong>
+              <span>Teacher</span>
+            </span>
+          </button>
+          <button
+            className={styles.logout}
+            type="button"
+            onClick={() => setIsLogoutDialogOpen(true)}
+          >
+            <Icon name="logout" />
+            <span>Logout</span>
+          </button>
+        </footer>
         <LogoutConfirmation
           open={isLogoutDialogOpen}
           onCancel={() => setIsLogoutDialogOpen(false)}

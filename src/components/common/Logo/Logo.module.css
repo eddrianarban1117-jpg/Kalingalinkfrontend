@@ -20,3 +20,42 @@
   max-width: 100%;
   height: auto;
 }
+
+.adminSidebar {
+  display: grid;
+  width: var(--role-sidebar-logo-width);
+  max-width: 100%;
+  height: auto;
+  place-items: center;
+}
+
+.adminSidebar img {
+  display: block;
+  width: 100%;
+  height: auto;
+  grid-area: 1 / 1;
+  object-fit: contain;
+  transition: opacity 180ms ease;
+}
+
+.adminLightLogo {
+  opacity: 1;
+}
+
+.adminDarkLogo {
+  opacity: 0;
+}
+
+:global(html[data-theme='dark']) .adminLightLogo {
+  opacity: 0;
+}
+
+:global(html[data-theme='dark']) .adminDarkLogo {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adminSidebar img {
+    transition-duration: 0.01ms;
+  }
+}

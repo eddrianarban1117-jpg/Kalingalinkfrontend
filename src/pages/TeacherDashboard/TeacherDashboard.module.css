@@ -96,8 +96,21 @@
 
 .navigation {
   display: flex;
+  min-height: 0;
+  flex: 1;
   flex-direction: column;
   gap: 0.22rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.navigationHeading {
+  margin: 0.4rem 0 0.12rem;
+  padding: 0 0.68rem;
+  color: rgb(224 239 255 / 76%);
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
 }
 
 .navItem {
@@ -116,6 +129,11 @@
   text-decoration: none;
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
 .navItem:not(.activeNavItem) {
@@ -128,6 +146,10 @@
 
 .navItem:not(.activeNavItem):hover {
   background: rgb(255 255 255 / 10%);
+}
+
+.navItem:not(:disabled):hover {
+  transform: translateX(2px);
 }
 
 .navItem svg,
@@ -167,20 +189,102 @@
   min-height: 2.8rem;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.7rem;
+  margin-top: 0.25rem;
   padding: 0.5rem 0.68rem;
   border: 0;
-  border-top: 1px solid rgb(255 255 255 / 18%);
   color: #fff;
   background: transparent;
   font: inherit;
   font-size: 0.72rem;
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
 }
 
 .logout:hover {
   color: #fff4d2;
+}
+
+.sidebarFooter {
+  flex: 0 0 auto;
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgb(255 255 255 / 18%);
+}
+
+.profileSummary {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem;
+  border: 0;
+  border-radius: 0.55rem;
+  color: #fff;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.profileSummary:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+.profileInitial {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 50%;
+  color: #124a8f;
+  background: #e7f3ff;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.sidebarProfileCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.sidebarProfileCopy strong,
+.sidebarProfileCopy > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebarProfileCopy strong {
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+.sidebarProfileCopy > span {
+  color: rgb(224 239 255 / 80%);
+  font-size: 0.6rem;
+}
+
+.sidebarProfileInitial {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 50%;
+  color: #124a8f;
+  background: #e7f3ff;
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .mainArea {
@@ -2875,8 +2979,13 @@
 
   .navigation {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: 0.2rem;
+  }
+
+  .navigationHeading {
+    display: block;
   }
 
   .navItem {

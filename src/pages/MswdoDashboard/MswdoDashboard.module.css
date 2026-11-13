@@ -9,6 +9,14 @@
 }
 
 .sidebar {
+  --sidebar-surface: #fff;
+  --sidebar-text: #173e70;
+  --sidebar-muted: #6682a2;
+  --sidebar-border: #e4edf6;
+  --sidebar-hover: #eff7ff;
+  --sidebar-active: #e1f0ff;
+  --sidebar-profile: #f3f8fe;
+
   position: relative;
   z-index: 1;
   display: flex;
@@ -18,10 +26,24 @@
   flex: 0 0 var(--role-sidebar-width);
   flex-direction: column;
   padding: 0.75rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-  color: var(--color-white);
-  background: linear-gradient(165deg, #2085ed 0%, #1378df 65%, #55aaf6 100%);
+  overflow: hidden;
+  color: var(--sidebar-text);
+  background: var(--sidebar-surface);
+  border-right: 1px solid var(--sidebar-border);
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+:global(html[data-theme='dark']) .sidebar {
+  --sidebar-surface: #123d7a;
+  --sidebar-text: #fff;
+  --sidebar-muted: #c3d6ed;
+  --sidebar-border: rgb(196 221 250 / 18%);
+  --sidebar-hover: rgb(169 207 255 / 14%);
+  --sidebar-active: #2a5b99;
+  --sidebar-profile: rgb(255 255 255 / 9%);
 }
 
 .brand {
@@ -44,6 +66,14 @@
   object-fit: contain;
 }
 
+.brand > .adminSidebar {
+  display: grid;
+}
+
+.brand > .adminSidebar img {
+  width: 100%;
+}
+
 .brand > span,
 .profileText,
 .dateCard > span {
@@ -62,8 +92,36 @@
 
 .navigation {
   display: flex;
+  min-height: 0;
+  flex: 1;
   flex-direction: column;
   gap: 0.28rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: var(--sidebar-muted) transparent;
+  scrollbar-width: thin;
+}
+
+.navigationGroup {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.systemNavigationGroup {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.navigationHeading {
+  margin: 0.45rem 0 0.15rem;
+  padding: 0 0.75rem;
+  color: var(--sidebar-muted);
+  font-size: 0.6rem;
+  font-weight: 850;
+  letter-spacing: 0.11em;
 }
 
 .navItem {
@@ -74,16 +132,22 @@
   padding: 0.5rem 0.75rem;
   border: 0;
   border-radius: 0.9rem;
-  color: rgb(255 255 255 / 96%);
+  color: var(--sidebar-text);
   background: transparent;
   text-align: left;
   font-size: 0.76rem;
   line-height: 1.15;
   cursor: pointer;
+  transition:
+    background-color 170ms ease,
+    color 170ms ease,
+    box-shadow 170ms ease,
+    transform 170ms ease;
 }
 
 .navItem:hover {
-  background: rgb(255 255 255 / 15%);
+  background: var(--sidebar-hover);
+  transform: translateX(2px);
 }
 
 .eventBadge {
@@ -102,13 +166,18 @@
 }
 
 .activeNavItem {
-  color: var(--admin-blue-dark);
-  background: #eef7ff;
+  color: #0b4da0;
+  background: var(--sidebar-active);
   box-shadow: 0 0.15rem 0.45rem rgb(0 58 116 / 10%);
 }
 
 .activeNavItem:hover {
-  background: var(--color-white);
+  background: var(--sidebar-active);
+}
+
+:global(html[data-theme='dark']) .activeNavItem {
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgb(224 239 255 / 10%);
 }
 
 .navIcon {

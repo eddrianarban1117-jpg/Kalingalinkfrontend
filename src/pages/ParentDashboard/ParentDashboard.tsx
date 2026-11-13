@@ -25,46 +25,67 @@ import { useAuth } from '../../auth/AuthProvider';
 import { useAnnouncementFeed } from '../../hooks/useAnnouncementFeed';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
 
-const navigation = [
-  { label: 'Dashboard', path: routePaths.parentDashboard, icon: 'home' },
-  { label: 'Events', path: routePaths.parentEvents, icon: 'calendar' },
+type ParentNavigationItem = {
+  label: string;
+  path: string;
+  icon: string;
+};
+
+const navigationGroups: {
+  label: string;
+  items: ParentNavigationItem[];
+}[] = [
   {
-    label: 'Activities & Assignments',
-    path: routePaths.parentActivities,
-    icon: 'tasks',
+    label: 'MAIN',
+    items: [
+      { label: 'Dashboard', path: routePaths.parentDashboard, icon: 'home' },
+      { label: 'Events', path: routePaths.parentEvents, icon: 'calendar' },
+    ],
   },
   {
-    label: 'Apply for Enrollment',
-    path: routePaths.parentEnrollment,
-    icon: 'file',
+    label: 'ENROLLMENT & CHILD',
+    items: [
+      {
+        label: 'Apply for Enrollment',
+        path: routePaths.parentEnrollment,
+        icon: 'file',
+      },
+      {
+        label: 'Application Status',
+        path: routePaths.parentApplicationStatus,
+        icon: 'status',
+      },
+      {
+        label: 'Child / Children',
+        path: routePaths.parentChildren,
+        icon: 'children',
+      },
+      {
+        label: 'Attendance Updates',
+        path: routePaths.parentAttendance,
+        icon: 'calendar',
+      },
+      {
+        label: 'Child Progress',
+        path: routePaths.parentProgress,
+        icon: 'chart',
+      },
+    ],
   },
   {
-    label: 'Application Status',
-    path: routePaths.parentApplicationStatus,
-    icon: 'status',
+    label: 'UPDATES',
+    items: [
+      {
+        label: 'Announcements',
+        path: routePaths.parentAnnouncements,
+        icon: 'bell',
+      },
+      { label: 'Profile', path: routePaths.parentProfile, icon: 'profile' },
+    ],
   },
-  {
-    label: 'Child / Children',
-    path: routePaths.parentChildren,
-    icon: 'children',
-  },
-  {
-    label: 'Attendance Updates',
-    path: routePaths.parentAttendance,
-    icon: 'calendar',
-  },
-  {
-    label: 'Child Progress',
-    path: routePaths.parentProgress,
-    icon: 'chart',
-  },
-  {
-    label: 'Announcements & Notifications',
-    path: routePaths.parentAnnouncements,
-    icon: 'bell',
-  },
-  { label: 'Profile', path: routePaths.parentProfile, icon: 'profile' },
 ];
+
+const navigation = navigationGroups.flatMap((group) => group.items);
 
 type DashboardChild = {
   id: number;
@@ -469,7 +490,7 @@ function formatDashboardDate(date: string) {
 export function ParentDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { request, logout, updateUser } = useAuth();
+  const { request, logout, updateUser, user } = useAuth();
   const unreadNotifications = useNotificationCount();
   const {
     announcements: announcementFeed,
@@ -749,7 +770,14 @@ export function ParentDashboard() {
         ? routePaths.parentAnnouncements
         : location.pathname;
   const activeItem =
-    navigation.find((item) => item.path === currentPath) ?? navigation[0];
+    navigation.find((item) => item.path === currentPath) ??
+    (currentPath === routePaths.parentActivities
+      ? {
+          label: 'Activities & Assignments',
+          path: routePaths.parentActivities,
+          icon: 'tasks',
+        }
+      : navigation[0]);
   const isDashboard = currentPath === routePaths.parentDashboard;
   const dashboardChildren = useMemo<DashboardChildCard[]>(
     () =>
@@ -830,6 +858,12 @@ export function ParentDashboard() {
     [announcements, search],
   );
   const firstName = profile.name.split(' ')[0] || 'Parent';
+  const parentDisplayName =
+    profile.name ||
+    [user?.first_name, user?.middle_name, user?.last_name]
+      .filter(Boolean)
+      .join(' ') ||
+    'Parent';
   const greetingHour = new Date().getHours();
   const greeting =
     greetingHour < 12
@@ -879,40 +913,63 @@ export function ParentDashboard() {
         >
           <Logo alt="KalingaLink" variant="sidebar" />
         </button>
-        <nav aria-label="Parent workspace">
-          {navigation.map((item) => (
-            <button
-              aria-current={activeItem.path === item.path ? 'page' : undefined}
-              className={`${styles.navItem} ${activeItem.path === item.path ? styles.activeNav : ''}`}
-              key={item.path}
-              type="button"
-              onClick={() => {
-                navigate(item.path);
-                setIsNavigationOpen(false);
-              }}
-            >
-              <Icon name={item.icon} />
-              <span>{item.label}</span>
-              {item.path === routePaths.parentAnnouncements &&
-                unreadNotifications > 0 && (
-                <span
-                  aria-label={`${unreadNotifications} unread notifications`}
-                  className={styles.eventBadge}
+        <nav aria-label="Parent workspace" className={styles.navigation}>
+          {navigationGroups.map((group) => (
+            <section className={styles.navigationGroup} key={group.label}>
+              <h2 className={styles.navigationHeading}>{group.label}</h2>
+              {group.items.map((item) => (
+                <button
+                  aria-current={
+                    activeItem.path === item.path ? 'page' : undefined
+                  }
+                  className={`${styles.navItem} ${activeItem.path === item.path ? styles.activeNav : ''}`}
+                  key={item.path}
+                  type="button"
+                  onClick={() => {
+                    navigate(item.path);
+                    setIsNavigationOpen(false);
+                  }}
                 >
-                  {unreadNotifications}
-                </span>
-              )}
-            </button>
+                  <Icon name={item.icon} />
+                  <span>{item.label}</span>
+                  {item.path === routePaths.parentAnnouncements &&
+                    unreadNotifications > 0 && (
+                      <span
+                        aria-label={`${unreadNotifications} unread notifications`}
+                        className={styles.eventBadge}
+                      >
+                        {unreadNotifications}
+                      </span>
+                    )}
+                </button>
+              ))}
+            </section>
           ))}
         </nav>
-        <button
-          className={styles.logout}
-          type="button"
-          onClick={() => setIsLogoutDialogOpen(true)}
-        >
-          <Icon name="logout" />
-          <span>Log Out</span>
-        </button>
+        <footer className={styles.sidebarFooter}>
+          <button
+            aria-label={`View profile for ${parentDisplayName}`}
+            className={styles.profileSummary}
+            type="button"
+            onClick={() => navigate(routePaths.parentProfile)}
+          >
+            <span aria-hidden="true" className={styles.profileInitial}>
+              {parentDisplayName.charAt(0).toUpperCase()}
+            </span>
+            <span className={styles.profileCopy}>
+              <strong>{parentDisplayName}</strong>
+              <span>Parent</span>
+            </span>
+          </button>
+          <button
+            className={styles.logout}
+            type="button"
+            onClick={() => setIsLogoutDialogOpen(true)}
+          >
+            <Icon name="logout" />
+            <span>Log Out</span>
+          </button>
+        </footer>
       </aside>
       <LogoutConfirmation
         open={isLogoutDialogOpen}

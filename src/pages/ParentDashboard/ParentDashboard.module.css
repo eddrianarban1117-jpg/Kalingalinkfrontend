@@ -18,9 +18,20 @@
   flex: 0 0 var(--role-sidebar-width);
   flex-direction: column;
   padding: 0.75rem;
-  overflow-y: auto;
+  overflow: hidden;
   color: #fff;
   background: linear-gradient(160deg, #07529e, #064483 70%, #083e79);
+}
+
+.navigation {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.8rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: #fff;
 }
 
 .brand {
@@ -42,10 +53,19 @@
   object-fit: contain;
 }
 
-.sidebar nav {
+.navigationGroup {
   display: flex;
   flex-direction: column;
   gap: 0.18rem;
+}
+
+.navigationHeading {
+  margin: 0.35rem 0 0.1rem;
+  padding: 0 0.6rem;
+  color: rgb(218 237 255 / 72%);
+  font-size: 0.56rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
 }
 
 .navItem,
@@ -64,6 +84,11 @@
   font-weight: 750;
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
 .navItem svg,
@@ -77,6 +102,10 @@
 .navItem:hover,
 .logout:hover {
   background: rgb(255 255 255 / 12%);
+}
+
+.navItem:hover {
+  transform: translateX(2px);
 }
 
 .eventBadge {
@@ -105,7 +134,73 @@
 }
 
 .logout {
-  margin-top: 0.65rem;
+  width: 100%;
+  margin: 0.35rem 0 0;
+}
+
+.sidebarFooter {
+  flex: 0 0 auto;
+  margin-top: 0.5rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgb(255 255 255 / 18%);
+}
+
+.profileSummary {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem;
+  border: 0;
+  border-radius: 0.55rem;
+  color: #fff;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.profileSummary:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+.profileInitial {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 50%;
+  color: #0b4d91;
+  background: #e7f3ff;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.profileCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.profileCopy strong,
+.profileCopy > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profileCopy strong {
+  font-size: 0.7rem;
+}
+
+.profileCopy > span {
+  color: rgb(218 237 255 / 76%);
+  font-size: 0.6rem;
 }
 
 .main {
@@ -1499,7 +1594,7 @@
     transform: translateX(0.1rem);
   }
 
-  .sidebar nav {
+  .navigation {
     width: 100%;
   }
 
@@ -1509,9 +1604,20 @@
     padding-inline: 0.3rem;
   }
 
-  .navItem span,
-  .logout span {
+  .navItem > span:not(.eventBadge),
+  .logout span,
+  .navigationHeading,
+  .profileCopy {
     display: none;
+  }
+
+  .sidebarFooter {
+    width: 100%;
+  }
+
+  .profileSummary {
+    justify-content: center;
+    padding-inline: 0.3rem;
   }
 
   .dashboardGrid,
@@ -1559,7 +1665,7 @@
     transform: translateX(0);
   }
 
-  .sidebarOpen nav {
+  .sidebarOpen .navigation {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -1579,7 +1685,7 @@
     transform: none;
   }
 
-  .sidebar nav {
+  .sidebar .navigation {
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -1596,16 +1702,37 @@
     padding-inline: 0.7rem;
   }
 
-  .navItem span,
-  .logout span {
+  .navItem > span:not(.eventBadge),
+  .logout span,
+  .profileCopy {
     display: inline;
     min-width: 0;
     overflow-wrap: break-word;
     word-break: normal;
   }
 
+  .navigationHeading {
+    display: block;
+  }
+
+  .profileSummary {
+    justify-content: flex-start;
+  }
+
   .navItem span {
     flex: 1;
+  }
+
+  .navigationHeading {
+    display: block;
+  }
+
+  .profileCopy {
+    display: flex;
+  }
+
+  .profileSummary {
+    justify-content: flex-start;
   }
 
   .navigationOverlay {
@@ -1788,5 +1915,13 @@
 
   .profileModal form {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace *,
+  .workspace *::before,
+  .workspace *::after {
+    transition-duration: 0.01ms !important;
   }
 }
