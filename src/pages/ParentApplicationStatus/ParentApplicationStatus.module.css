@@ -220,46 +220,6 @@
   fill: currentColor;
 }
 
-.notificationList {
-  display: grid;
-  margin: 0;
-  padding: 0 0.7rem;
-  list-style: none;
-}
-
-.notificationList li {
-  padding: 0.55rem 0;
-  border-bottom: 1px solid #e5f0fa;
-}
-
-.notificationList li:last-child {
-  border-bottom: 0;
-}
-
-.notificationList strong {
-  color: #174477;
-  font-size: 0.68rem;
-}
-
-.notificationList span {
-  margin-left: 0.45rem;
-  color: #08754f;
-  font-size: 0.55rem;
-  font-weight: 800;
-}
-
-.notificationList p {
-  margin: 0.2rem 0;
-  color: #55799f;
-  font-size: 0.62rem;
-  overflow-wrap: anywhere;
-}
-
-.notificationList time {
-  color: #6c8caf;
-  font-size: 0.55rem;
-}
-
 .tableSearch {
   display: flex;
   width: min(17rem, 48%);

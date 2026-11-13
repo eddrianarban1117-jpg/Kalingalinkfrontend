@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
-import { EventNotifications } from '../EventNotifications/EventNotifications';
 import childrenBanner from '../../assets/images/children-banner.png';
 import femalePanel from '../../../femalepanel.png';
 import styles from './ParentApplicationStatus.module.css';
@@ -711,8 +710,6 @@ export function ParentApplicationStatus({
           <p>from the Child Development Center.</p>
         </div>
       </section>
-
-      <EventNotifications />
 
       <section aria-label="Application summary" className={styles.stats}>
         <SummaryStat
