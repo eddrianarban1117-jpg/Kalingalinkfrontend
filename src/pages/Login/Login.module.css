@@ -104,11 +104,6 @@
 
 .loginContent {
   width: min(100%, 31rem);
-  padding: clamp(1.45rem, 3vw, 2.25rem);
-  border: 1px solid var(--auth-card-border);
-  border-radius: 1.35rem;
-  background: var(--auth-card-surface);
-  box-shadow: var(--auth-card-shadow);
 }
 
 .loginHeader {
@@ -454,12 +449,6 @@
     flex: 1;
     min-height: 0;
     padding: 3rem 1.25rem 1rem;
-  }
-
-  .loginContent {
-    width: min(100%, 31rem);
-    padding: 1.1rem 1rem;
-    border-radius: 1.1rem;
   }
 
   .supportLink {
