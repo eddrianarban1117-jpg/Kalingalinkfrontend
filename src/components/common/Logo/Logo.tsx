@@ -1,6 +1,6 @@
 import logo from '../../../../logo1.png';
 import whiteLogo from '../../../../whitekalinga.png';
-import darkBlueLogo from '../../../../darkbluekalinga.png';
+import skyBlueLogo from '../../../../skybluekalinga.png';
 import styles from './Logo.module.css';
 
 type LogoProps = {
@@ -17,7 +17,7 @@ export function Logo({
   if (variant === 'adminSidebar') {
     return (
       <span aria-label={alt} className={`${styles.adminSidebar} ${className}`.trim()} role="img">
-        <img alt="" className={styles.adminLightLogo} src={darkBlueLogo} />
+        <img alt="" className={styles.adminLightLogo} src={skyBlueLogo} />
         <img alt="" className={styles.adminDarkLogo} src={whiteLogo} />
       </span>
     );

@@ -951,7 +951,10 @@ export function ParentDashboard() {
             aria-label={`View profile for ${parentDisplayName}`}
             className={styles.profileSummary}
             type="button"
-            onClick={() => navigate(routePaths.parentProfile)}
+            onClick={() => {
+              navigate(routePaths.parentProfile);
+              setIsNavigationOpen(false);
+            }}
           >
             <span aria-hidden="true" className={styles.profileInitial}>
               {parentDisplayName.charAt(0).toUpperCase()}

@@ -59,7 +59,7 @@
   --avatar-size-lg: 6rem;
   --logo-size-sidebar: 3rem;
   --logo-size-login: clamp(8rem, 25vw, 20rem);
-  --role-sidebar-width: 14.5rem;
+  --role-sidebar-width: 16rem;
   --role-sidebar-drawer-width: min(20rem, 88vw);
   --role-sidebar-logo-width: 11rem;
   --banner-min-height: 4.5rem;
