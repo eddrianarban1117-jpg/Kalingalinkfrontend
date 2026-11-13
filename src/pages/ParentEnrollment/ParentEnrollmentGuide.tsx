@@ -5,6 +5,7 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
+import { createPortal } from 'react-dom';
 import kali from '../../../kali.png';
 import {
   parentEnrollmentGuideContent,
@@ -54,29 +55,15 @@ function isGuideLanguage(value: string): value is GuideLanguage {
   return value === 'en' || value === 'tl';
 }
 
-function getMascotLeftBounds(guide: HTMLDivElement, mascot: HTMLButtonElement) {
-  const guideBounds = guide.getBoundingClientRect();
-  const mascotBounds = mascot.getBoundingClientRect();
-  const instruction = guide.querySelector<HTMLElement>(
-    `.${styles.instruction} p`,
-  );
-  const maxLeft = Math.max(0, guideBounds.width - mascotBounds.width);
-  const safeLeft = instruction
-    ? instruction.getBoundingClientRect().right - guideBounds.left + 12
-    : maxLeft;
-
-  return {
-    minLeft: Math.min(maxLeft, Math.max(0, safeLeft)),
-    maxLeft,
-  };
-}
-
 export function ParentEnrollmentGuide() {
   const [language, setLanguage] = useState<GuideLanguage>('en');
   const [step, setStep] = useState(0);
   const [open, setOpen] = useState(true);
   const [contentVisible, setContentVisible] = useState(true);
-  const [mascotLeft, setMascotLeft] = useState<number | null>(null);
+  const [widgetPosition, setWidgetPosition] = useState<{
+    left: number;
+    top: number;
+  } | null>(null);
   const contentTimer = useRef<number | null>(null);
   const guideRef = useRef<HTMLDivElement | null>(null);
   const mascotRef = useRef<HTMLButtonElement | null>(null);
@@ -85,6 +72,7 @@ export function ParentEnrollmentGuide() {
     startX: number;
     startY: number;
     left: number;
+    top: number;
     moved: boolean;
   } | null>(null);
   const suppressMascotClick = useRef(false);
@@ -102,20 +90,28 @@ export function ParentEnrollmentGuide() {
   );
 
   useEffect(() => {
-    const guide = guideRef.current;
-    if (!guide) return;
-
-    const observer = new ResizeObserver(() => {
-      const mascot = mascotRef.current;
-      if (!mascot) return;
-      const { minLeft, maxLeft } = getMascotLeftBounds(guide, mascot);
-      setMascotLeft((current) =>
-        current === null ? null : Math.max(minLeft, Math.min(maxLeft, current)),
+    function keepWidgetInViewport() {
+      const widget = guideRef.current;
+      if (!widget) return;
+      const bounds = widget.getBoundingClientRect();
+      setWidgetPosition((current) =>
+        current
+          ? {
+              left: Math.max(
+                0,
+                Math.min(window.innerWidth - bounds.width, current.left),
+              ),
+              top: Math.max(
+                0,
+                Math.min(window.innerHeight - bounds.height, current.top),
+              ),
+            }
+          : null,
       );
-    });
+    }
 
-    observer.observe(guide);
-    return () => observer.disconnect();
+    window.addEventListener('resize', keepWidgetInViewport);
+    return () => window.removeEventListener('resize', keepWidgetInViewport);
   }, []);
 
   function transitionContent(update: () => void) {
@@ -152,13 +148,13 @@ export function ParentEnrollmentGuide() {
     const guide = guideRef.current;
     if (!guide) return;
     suppressMascotClick.current = false;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const guideBounds = guide.getBoundingClientRect();
+    const bounds = guide.getBoundingClientRect();
     dragStart.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
-      left: bounds.left - guideBounds.left,
+      left: bounds.left,
+      top: bounds.top,
       moved: false,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -174,11 +170,17 @@ export function ParentEnrollmentGuide() {
     if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) start.moved = true;
     if (!start.moved) return;
 
-    const { minLeft, maxLeft } = getMascotLeftBounds(
-      guide,
-      event.currentTarget,
-    );
-    setMascotLeft(Math.max(minLeft, Math.min(maxLeft, start.left + deltaX)));
+    const bounds = guide.getBoundingClientRect();
+    setWidgetPosition({
+      left: Math.max(
+        0,
+        Math.min(window.innerWidth - bounds.width, start.left + deltaX),
+      ),
+      top: Math.max(
+        0,
+        Math.min(window.innerHeight - bounds.height, start.top + deltaY),
+      ),
+    });
   }
 
   function handleMascotPointerUp(event: PointerEvent<HTMLButtonElement>) {
@@ -194,22 +196,33 @@ export function ParentEnrollmentGuide() {
   }
 
   function handleMascotKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
-    const guide = guideRef.current;
-    if (!guide) return;
+    const widget = guideRef.current;
+    if (!widget) return;
     const movement: Record<string, number> = {
       ArrowLeft: -20,
       ArrowRight: 20,
+      ArrowUp: -20,
+      ArrowDown: 20,
     };
     const delta = movement[event.key];
-    if (!delta) return;
+    if (delta === undefined) return;
 
     event.preventDefault();
-    const mascot = event.currentTarget;
-    const { minLeft, maxLeft } = getMascotLeftBounds(guide, mascot);
-    const bounds = mascot.getBoundingClientRect();
-    const guideBounds = guide.getBoundingClientRect();
-    const currentLeft = mascotLeft ?? bounds.left - guideBounds.left;
-    setMascotLeft(Math.max(minLeft, Math.min(maxLeft, currentLeft + delta)));
+    const bounds = widget.getBoundingClientRect();
+    const currentLeft = widgetPosition?.left ?? bounds.left;
+    const currentTop = widgetPosition?.top ?? bounds.top;
+    const nextLeft =
+      event.key === 'ArrowLeft' || event.key === 'ArrowRight'
+        ? currentLeft + delta
+        : currentLeft;
+    const nextTop =
+      event.key === 'ArrowUp' || event.key === 'ArrowDown'
+        ? currentTop + delta
+        : currentTop;
+    setWidgetPosition({
+      left: Math.max(0, Math.min(window.innerWidth - bounds.width, nextLeft)),
+      top: Math.max(0, Math.min(window.innerHeight - bounds.height, nextTop)),
+    });
   }
 
   function toggleGuide() {
@@ -221,8 +234,21 @@ export function ParentEnrollmentGuide() {
     else setOpen(true);
   }
 
-  return (
-    <div className={styles.guide} ref={guideRef}>
+  return createPortal(
+    <div
+      className={styles.guide}
+      ref={guideRef}
+      style={
+        widgetPosition
+          ? {
+              left: widgetPosition.left,
+              top: widgetPosition.top,
+              right: 'auto',
+              bottom: 'auto',
+            }
+          : undefined
+      }
+    >
       <section
         aria-hidden={!open}
         aria-labelledby="kali-guide-title"
@@ -315,7 +341,7 @@ export function ParentEnrollmentGuide() {
         aria-controls="kali-enrollment-guide"
         aria-expanded={open}
         aria-label={open ? content.close : content.reopen}
-        aria-keyshortcuts="ArrowLeft ArrowRight"
+        aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown"
         className={`${styles.floatingButton} ${open ? styles.mascotOpen : ''}`}
         onClick={toggleGuide}
         onKeyDown={handleMascotKeyDown}
@@ -323,14 +349,12 @@ export function ParentEnrollmentGuide() {
         onPointerDown={handleMascotPointerDown}
         onPointerMove={handleMascotPointerMove}
         onPointerUp={handleMascotPointerUp}
-        style={
-          mascotLeft !== null ? { left: mascotLeft, right: 'auto' } : undefined
-        }
         ref={mascotRef}
         type="button"
       >
         <img alt={content.mascotAlt} draggable={false} src={kali} />
       </button>
-    </div>
+    </div>,
+    document.body,
   );
 }

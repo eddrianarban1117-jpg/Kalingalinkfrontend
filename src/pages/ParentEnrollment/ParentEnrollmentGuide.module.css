@@ -1,9 +1,11 @@
 .guide {
-  position: relative;
-  z-index: 4;
-  width: 100%;
-  margin: 0 0 0.25rem;
-  padding-bottom: clamp(4.75rem, 7vw, 5.75rem);
+  position: fixed;
+  z-index: 30;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: min(31rem, calc(100vw - 2.5rem));
+  padding-bottom: 5.5rem;
+  pointer-events: none;
 }
 
 .panelShell {
@@ -15,6 +17,7 @@
     opacity 180ms ease,
     visibility 180ms ease;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .panelClosed {
@@ -294,6 +297,7 @@
   border: 0;
   background: transparent;
   cursor: grab;
+  pointer-events: auto;
   touch-action: none;
   user-select: none;
   transition: filter 160ms ease;
@@ -381,9 +385,10 @@
 
 @media (max-width: 620px) {
   .guide {
-    width: 100%;
-    margin-bottom: 0.1rem;
-    padding-bottom: 4rem;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    width: calc(100vw - 1rem);
+    padding-bottom: clamp(4.25rem, calc(23vw - 0.4rem), 5.6rem);
   }
 
   .panel {
@@ -434,7 +439,7 @@
   }
 
   .instruction {
-    padding-right: clamp(5.5rem, 19vw, 6rem);
+    padding-right: 0.5rem;
   }
 
   .stepCount {
