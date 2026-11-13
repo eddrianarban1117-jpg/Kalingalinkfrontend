@@ -361,35 +361,19 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
           </Link>
         </div>
       )}
-      <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
-        {isPublicRegistration ? (
-          <>
-            <Link to={routePaths.welcome}>
-              {publicTeacherPageCopy.breadcrumbHome}
-            </Link>
-            <span aria-hidden="true">/</span>
-            <Link to={routePaths.accountChoice}>
-              {publicTeacherPageCopy.breadcrumbAccountType}
-            </Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page">
-              {publicTeacherPageCopy.breadcrumbCreate}
-            </span>
-          </>
-        ) : (
-          <>
-            <Link to={routePaths.mswdoAdmin}>
-              {teacherPageCopy.breadcrumbAdmin}
-            </Link>
-            <span aria-hidden="true">/</span>
-            <Link to={routePaths.teacherManagement}>
-              {teacherPageCopy.breadcrumbManagement}
-            </Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page">{teacherPageCopy.breadcrumbAdd}</span>
-          </>
-        )}
-      </nav>
+      {!isPublicRegistration && (
+        <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
+          <Link to={routePaths.mswdoAdmin}>
+            {teacherPageCopy.breadcrumbAdmin}
+          </Link>
+          <span aria-hidden="true">/</span>
+          <Link to={routePaths.teacherManagement}>
+            {teacherPageCopy.breadcrumbManagement}
+          </Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{teacherPageCopy.breadcrumbAdd}</span>
+        </nav>
+      )}
 
       <header className={styles.pageHeader}>
         <div className={styles.titleBlock}>

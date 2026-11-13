@@ -24,8 +24,6 @@ export const teacherPageCopy = {
 } as const;
 
 export const publicTeacherPageCopy = {
-  breadcrumbHome: 'Welcome',
-  breadcrumbAccountType: 'Account Type',
   breadcrumbCreate: 'Create Teacher Account',
   back: 'Back to account type',
 } as const;
