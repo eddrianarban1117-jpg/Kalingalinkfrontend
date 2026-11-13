@@ -608,11 +608,54 @@ export function EventNotifications({
     }
   }
 
-  const visibleNotifications = notifications.filter((notification) =>
-    readFilter === 'all' ||
-    (readFilter === 'unread' ? notification.unread : !notification.unread),
+  const filteredNotifications = useMemo(
+    () =>
+      notifications
+        .filter(
+          (notification) =>
+            readFilter === 'all' ||
+            (readFilter === 'unread'
+              ? notification.unread
+              : !notification.unread),
+        )
+        .sort((first, second) => {
+          if (!parentDashboard) return 0;
+          const firstCreatedAt = Date.parse(first.created_at.replace(' ', 'T'));
+          const secondCreatedAt = Date.parse(second.created_at.replace(' ', 'T'));
+          if (!Number.isFinite(firstCreatedAt)) {
+            return Number.isFinite(secondCreatedAt)
+              ? 1
+              : second.id - first.id;
+          }
+          if (!Number.isFinite(secondCreatedAt)) return -1;
+          return secondCreatedAt - firstCreatedAt || second.id - first.id;
+        }),
+    [notifications, parentDashboard, readFilter],
+  );
+  const notificationPageSize = 5;
+  const notificationPageCount = Math.max(
+    1,
+    Math.ceil(filteredNotifications.length / notificationPageSize),
+  );
+  const visibleNotifications = parentDashboard
+    ? filteredNotifications.slice(
+        (notificationPage - 1) * notificationPageSize,
+        notificationPage * notificationPageSize,
+      )
+    : filteredNotifications;
+  const firstVisibleNotification = filteredNotifications.length
+    ? (notificationPage - 1) * notificationPageSize + 1
+    : 0;
+  const lastVisibleNotification = Math.min(
+    notificationPage * notificationPageSize,
+    filteredNotifications.length,
   );
   const readCount = notifications.filter((notification) => !notification.unread).length;
+  useEffect(() => {
+    if (parentDashboard && notificationPage > notificationPageCount) {
+      setNotificationPage(notificationPageCount);
+    }
+  }, [notificationPage, notificationPageCount, parentDashboard]);
   const filterAdminNotifications = (filter: AdminNotificationFilter) => {
     setAdminFilter(filter);
     setNotificationPage(1);
@@ -819,7 +862,16 @@ export function EventNotifications({
       <>
         <div aria-label="Filter notifications" className={`${styles.filters} ${parentDashboard ? styles.parentDashboardFilters : ''}`}>
           {(['all', 'unread', 'read'] as const).map((filter) => (
-            <button aria-pressed={readFilter === filter} className={readFilter === filter ? styles.activeFilter : ''} key={filter} onClick={() => setReadFilter(filter)} type="button">
+            <button
+              aria-pressed={readFilter === filter}
+              className={readFilter === filter ? styles.activeFilter : ''}
+              key={filter}
+              onClick={() => {
+                setReadFilter(filter);
+                setNotificationPage(1);
+              }}
+              type="button"
+            >
               {filter === 'all' ? `All (${notifications.length})` : filter === 'unread' ? `Unread (${unreadCount})` : `Read (${readCount})`}
             </button>
           ))}
@@ -873,6 +925,41 @@ export function EventNotifications({
               </li>
             ))}
           </ul>
+        )}
+        {parentDashboard && !loading && filteredNotifications.length > 0 && (
+          <footer className={styles.parentNotificationPagination}>
+            <span>
+              Showing {firstVisibleNotification}–{lastVisibleNotification} of{' '}
+              {filteredNotifications.length} notifications
+            </span>
+            <div aria-label="Notification pages" className={styles.parentNotificationPaginationControls}>
+              <button
+                aria-label="Previous notification page"
+                disabled={notificationPage <= 1}
+                onClick={() =>
+                  setNotificationPage((current) => Math.max(1, current - 1))
+                }
+                type="button"
+              >
+                ‹
+              </button>
+              <span>
+                {notificationPage} / {notificationPageCount}
+              </span>
+              <button
+                aria-label="Next notification page"
+                disabled={notificationPage >= notificationPageCount}
+                onClick={() =>
+                  setNotificationPage((current) =>
+                    Math.min(notificationPageCount, current + 1),
+                  )
+                }
+                type="button"
+              >
+                ›
+              </button>
+            </div>
+          </footer>
         )}
       </>
       )}
