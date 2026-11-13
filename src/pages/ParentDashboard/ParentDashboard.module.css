@@ -35,6 +35,17 @@
   overflow-y: auto;
 }
 
+.navigation,
+.sidebar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navigation::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
 .brand {
   display: grid;
   width: 100%;

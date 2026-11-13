@@ -27,6 +27,8 @@
   flex-direction: column;
   padding: 0.75rem;
   overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   color: var(--sidebar-text);
   background: var(--sidebar-surface);
   border-right: 1px solid var(--sidebar-border);
@@ -91,8 +93,13 @@
   gap: 0.28rem;
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-color: var(--sidebar-muted) transparent;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar::-webkit-scrollbar,
+.navigation::-webkit-scrollbar {
+  display: none;
 }
 
 .navigationGroup {
