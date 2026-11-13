@@ -67,14 +67,6 @@
   object-fit: contain;
 }
 
-.brand > .adminSidebar {
-  display: grid;
-}
-
-.brand > .adminSidebar img {
-  width: 100%;
-}
-
 .brand > span,
 .profileText,
 .dateCard > span {

@@ -1,6 +1,6 @@
 import logo from '../../../../logo1.png';
 import whiteLogo from '../../../../whitekalinga.png';
-import skyBlueLogo from '../../../../skybluekalinga.png';
+import sidebarLogo from '../../../../logo3.png';
 import styles from './Logo.module.css';
 
 type LogoProps = {
@@ -14,22 +14,17 @@ export function Logo({
   alt = 'KalingaLink',
   variant = 'default',
 }: LogoProps) {
-  if (variant === 'lightSidebar') {
+  if (
+    variant === 'sidebar' ||
+    variant === 'lightSidebar' ||
+    variant === 'adminSidebar'
+  ) {
     return (
       <img
         alt={alt}
-        className={`${styles.logo} ${styles.lightSidebar} ${className}`.trim()}
-        src={skyBlueLogo}
+        className={`${styles.logo} ${styles.sidebar} ${className}`.trim()}
+        src={sidebarLogo}
       />
-    );
-  }
-
-  if (variant === 'adminSidebar') {
-    return (
-      <span aria-label={alt} className={`${styles.adminSidebar} ${className}`.trim()} role="img">
-        <img alt="" className={styles.adminLightLogo} src={skyBlueLogo} />
-        <img alt="" className={styles.adminDarkLogo} src={whiteLogo} />
-      </span>
     );
   }
 
