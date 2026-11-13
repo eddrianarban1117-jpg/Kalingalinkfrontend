@@ -23,10 +23,12 @@
 
 .topBar {
   display: flex;
+  min-height: 4.25rem;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   padding: 0.35rem 0 0.7rem;
+  border-bottom: 1px solid #dbeaf9;
 }
 
 .brand {
@@ -67,7 +69,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin: 0.18rem 0 0.9rem;
+  margin: 0.9rem 0;
 }
 
 .headerCopy {
@@ -87,6 +89,19 @@
   color: #53627d;
   font-size: 0.76rem;
   line-height: 1.5;
+}
+
+.backLink {
+  flex: 0 0 auto;
+  color: #0b4f9e;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .notice {
@@ -426,6 +441,9 @@
   }
 
   .pageHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
     min-height: 0;
     margin-bottom: 0.7rem;
   }

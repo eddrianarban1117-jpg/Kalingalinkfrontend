@@ -265,6 +265,9 @@ export function ParentRegistration() {
               for enrollment from your dashboard after signing in.
             </p>
           </div>
+          <Link className={styles.backLink} to={routePaths.accountChoice}>
+            Back to account type
+          </Link>
         </header>
 
         <form
