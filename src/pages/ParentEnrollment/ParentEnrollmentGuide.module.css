@@ -81,7 +81,7 @@
 
 .panel::after {
   position: absolute;
-  right: 1.7rem;
+  right: 0.35rem;
   bottom: -0.48rem;
   width: 0.85rem;
   height: 0.85rem;
@@ -94,7 +94,7 @@
 
 .bubbleToRight .panel::after {
   right: auto;
-  left: 1.7rem;
+  left: 0.35rem;
 }
 
 .header {
