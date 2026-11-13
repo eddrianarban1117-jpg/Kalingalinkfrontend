@@ -2,7 +2,7 @@
   display: grid;
   min-height: 100dvh;
   grid-template-columns: minmax(0, 1.03fr) minmax(0, 0.97fr);
-  background: var(--color-white);
+  background: #f3f8ff;
 }
 
 .hero {
@@ -37,16 +37,28 @@
   position: relative;
   display: grid;
   min-width: 0;
-  min-height: 100%;
+  min-height: 100dvh;
   place-items: center;
-  padding: 4rem clamp(1.25rem, 3.2vw, 2.75rem) 2rem;
+  padding: 3.5rem clamp(1.25rem, 3.2vw, 2.75rem) 2rem;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgb(213 235 255 / 55%),
+      transparent 25rem
+    ),
+    #f5f9ff;
 }
 
 .content {
   display: flex;
-  width: min(100%, 36rem);
+  width: min(100%, 34rem);
   flex-direction: column;
   align-items: center;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid var(--auth-card-border);
+  border-radius: 1.35rem;
+  background: var(--auth-card-surface);
+  box-shadow: var(--auth-card-shadow);
   text-align: center;
 }
 
@@ -81,27 +93,7 @@
 
 .heading {
   width: 100%;
-  margin-bottom: 2.25rem;
-}
-
-.eyebrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  color: #1687ec;
-  font-size: 0.78rem;
-  font-weight: 850;
-  letter-spacing: 0.2em;
-}
-
-.eyebrow::before,
-.eyebrow::after {
-  width: min(18%, 4.75rem);
-  height: 1px;
-  background: #b9ddff;
-  content: '';
+  margin-bottom: 1.25rem;
 }
 
 .heading h1 {
@@ -148,9 +140,14 @@
 }
 
 .choiceButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.01);
   border-color: #8cc4fa;
-  box-shadow: 0 0.35rem 0.8rem rgb(20 86 150 / 12%);
+  background: linear-gradient(110deg, #e9f5ff, #dceeff);
+  box-shadow: 0 0.55rem 1.1rem rgb(20 86 150 / 15%);
+}
+
+.choiceButton:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
 .choiceIconWrap {
@@ -161,6 +158,10 @@
   border-radius: 50%;
   color: #084ea8;
   background: #d7ebff;
+  transition:
+    color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-spring);
 }
 
 .choiceIconWrap svg {
@@ -200,6 +201,22 @@
   border-radius: 50%;
   color: #0878dc;
   background: #d2eaff;
+  transition:
+    color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+.choiceButton:hover .choiceIconWrap {
+  color: #fff;
+  background: #258be9;
+  transform: scale(1.05);
+}
+
+.choiceButton:hover .choiceArrow {
+  color: #fff;
+  background: #258be9;
+  transform: translateX(0.18rem);
 }
 
 .choiceArrow svg {
@@ -207,86 +224,31 @@
   height: 1.8rem;
 }
 
-.footerActions {
-  display: grid;
-  width: 100%;
-  min-height: 5.1rem;
-  grid-template-columns: 2.6rem minmax(0, 1fr);
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2.1rem;
-  padding: 0.85rem 1rem;
-  border-radius: 1rem;
-  background: linear-gradient(110deg, #e4f2ff, #dceeff);
+.existingAccount {
+  margin: 0.75rem 0 0;
+  color: #536f9b;
+  font-size: 0.82rem;
+  text-align: center;
 }
 
-.loginIcon {
-  display: grid;
-  width: 2.6rem;
-  height: 2.6rem;
-  place-items: center;
-  border-radius: 50%;
-  color: #fff;
-  background: #2089e9;
-  font-size: 1.7rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.login {
-  display: flex;
-  width: 100%;
-  min-width: 0;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.2rem;
+.loginLink {
   padding: 0;
   border: 0;
-  color: #104d9d;
+  color: #1479d4;
   background: transparent;
-  text-align: left;
+  font: inherit;
+  font-weight: 800;
   cursor: pointer;
 }
 
-.loginCopy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.18rem;
-}
-
-.loginCopy strong {
-  font-size: 0.9rem;
-  font-weight: 900;
-}
-
-.loginCopy > span {
-  color: #365f92;
-  font-size: 0.78rem;
-  line-height: 1.35;
-}
-
-.loginArrow {
-  display: grid;
-  flex: 0 0 auto;
-  width: 1.8rem;
-  height: 1.8rem;
-  place-items: center;
-  color: #1387ec;
-}
-
-.loginArrow svg {
-  width: 1.6rem;
-  height: 1.6rem;
-}
-
-.login:hover {
-  color: var(--color-primary-dark);
+.loginLink:hover {
+  color: #0759ad;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .back:focus-visible,
-.login:focus-visible,
+.loginLink:focus-visible,
 .choiceButton:focus-visible {
   outline: 3px solid #f0a500;
   outline-offset: 3px;
@@ -302,11 +264,11 @@
   }
 
   .selectionPanel {
-    padding-inline: 1.15rem;
+    padding: 3.5rem 1.15rem 1.5rem;
   }
 
   .heading {
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.1rem;
   }
 
   .heading h1 {
@@ -371,22 +333,26 @@
     width: 2.8rem;
     height: 2.8rem;
   }
-
-  .footerActions {
-    min-height: 4.5rem;
-    margin-top: 1.1rem;
-  }
 }
 
 @media (max-width: 560px) {
   .page {
     display: flex;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
     flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .page::-webkit-scrollbar {
+    display: none;
   }
 
   .hero {
-    min-height: 13rem;
-    flex: 0 0 13rem;
+    min-height: 11.5rem;
+    flex: 0 0 11.5rem;
     justify-content: center;
     padding: 0.75rem;
     background-position: center 58%;
@@ -399,10 +365,17 @@
 
   .selectionPanel {
     display: flex;
+    flex-direction: column;
     flex: 1;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 4rem 1.1rem 1.75rem;
+    min-height: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 3rem 1.1rem 1rem;
+  }
+
+  .content {
+    padding: 1.15rem 1rem;
+    border-radius: 1.1rem;
   }
 
   .back {
@@ -413,7 +386,7 @@
   }
 
   .heading {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.85rem;
   }
 
   .heading h1 {
@@ -421,11 +394,11 @@
   }
 
   .choices {
-    gap: 0.75rem;
+    gap: 0.6rem;
   }
 
   .choiceButton {
-    min-height: 5.25rem;
+    min-height: 4.8rem;
     grid-template-columns: 3.65rem minmax(0, 1fr) 2.2rem;
     gap: 0.55rem;
     padding: 0.55rem 0.65rem;
@@ -465,38 +438,18 @@
     height: 1.4rem;
   }
 
-  .footerActions {
-    min-height: 4.5rem;
-    grid-template-columns: 2.5rem minmax(0, 1fr);
-    gap: 0.65rem;
-    margin-top: 1.35rem;
-    padding: 0.7rem;
-    border-radius: 0.8rem;
-  }
-
-  .loginIcon {
-    width: 2.35rem;
-    height: 2.35rem;
-    font-size: 1.5rem;
-  }
-
-  .loginCopy strong {
+  .existingAccount {
+    margin-top: 0.6rem;
     font-size: 0.76rem;
-  }
-
-  .loginCopy > span {
-    font-size: 0.66rem;
-  }
-
-  .loginArrow svg {
-    width: 1.35rem;
-    height: 1.35rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .choiceButton,
-  .back {
+  .back,
+  .loginLink,
+  .choiceIconWrap,
+  .choiceArrow {
     transition: none;
   }
 }

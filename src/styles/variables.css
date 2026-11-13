@@ -46,6 +46,10 @@
   --radius-pill: 999px;
   --shadow-panel: 0 0.2rem 0.7rem rgb(29 85 142 / 7%);
   --shadow-dialog: 0 1rem 3rem rgb(14 50 88 / 22%);
+  --auth-card-surface: rgb(255 255 255 / 96%);
+  --auth-card-border: #d5e8fb;
+  --auth-card-shadow:
+    0 1.2rem 3rem rgb(26 72 125 / 11%), 0 0.15rem 0.55rem rgb(26 72 125 / 5%);
 
   --icon-size-sm: 1rem;
   --icon-size-md: 1.25rem;

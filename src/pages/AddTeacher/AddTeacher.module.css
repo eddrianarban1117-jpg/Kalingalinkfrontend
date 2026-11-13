@@ -13,12 +13,16 @@
   margin: 0;
   padding: 0 clamp(1rem, 3vw, 2.5rem) 2rem;
   background:
-    radial-gradient(circle at top left, rgb(207 233 255 / 35%), transparent 24rem),
+    radial-gradient(
+      circle at top left,
+      rgb(207 233 255 / 35%),
+      transparent 24rem
+    ),
     #f4f9ff;
 }
 
 .publicPage > :not(.brandBar) {
-  width: min(100%, 88rem);
+  width: min(100%, 76rem);
   margin-right: auto;
   margin-left: auto;
 }
@@ -176,6 +180,31 @@
   min-width: 0;
   flex-direction: column;
   gap: 1rem;
+}
+
+.publicPage .form {
+  padding: clamp(1rem, 2.5vw, 2rem);
+  border: 1px solid var(--auth-card-border);
+  border-radius: 1.25rem;
+  background: var(--auth-card-surface);
+  box-shadow: var(--auth-card-shadow);
+  animation: auth-card-enter var(--dur-slow) var(--ease-out) both;
+}
+
+.publicPage .cardGrid > * {
+  animation: auth-fade-up var(--dur-slow) var(--ease-out) both;
+}
+
+.publicPage .cardGrid > :nth-child(2) {
+  animation-delay: var(--stagger-step);
+}
+
+.publicPage .cardGrid > :nth-child(3) {
+  animation-delay: calc(var(--stagger-step) * 2);
+}
+
+.publicPage .cardGrid > :nth-child(4) {
+  animation-delay: calc(var(--stagger-step) * 3);
 }
 
 .cardGrid {
@@ -663,6 +692,11 @@
     padding: 0 0.8rem 2rem;
   }
 
+  .publicPage .form {
+    padding: 0.85rem;
+    border-radius: 1rem;
+  }
+
   .brandBar {
     min-height: 3.8rem;
   }
@@ -750,6 +784,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .publicPage .form,
+  .publicPage .cardGrid > * {
+    animation: none;
+  }
+
   .sectionCard,
   .field input,
   .field select,

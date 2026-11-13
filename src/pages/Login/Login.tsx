@@ -219,8 +219,8 @@ export function Login() {
           Need help? Contact Support <Icon name="help" />
         </a>
 
-        <div className={styles.loginContent}>
-          <header className={styles.loginHeader}>
+        <div className={`${styles.loginContent} anim-card-enter`}>
+          <header className={`${styles.loginHeader} anim-fade-up`}>
             <h2 id="login-title">Welcome Back!</h2>
             <p>
               Log in to your MSWDO account to continue managing child
@@ -228,7 +228,7 @@ export function Login() {
             </p>
           </header>
 
-          <form className={styles.form} onSubmit={submitLogin}>
+          <form className={`${styles.form} anim-stagger`} onSubmit={submitLogin}>
             <div className={styles.inputGroup}>
               <span className={styles.inputIcon}>
                 <Icon name="mail" />

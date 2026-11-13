@@ -1,7 +1,7 @@
 .page {
   display: grid;
   min-height: 100dvh;
-  grid-template-columns: minmax(0, 1.15fr) minmax(32rem, 1fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   background: #fff;
   color: #174b91;
 }
@@ -40,10 +40,16 @@
   position: relative;
   display: grid;
   min-width: 0;
-  min-height: 100%;
+  min-height: 100dvh;
   place-items: center;
-  padding: 5rem clamp(2rem, 5vw, 4.5rem) 3rem;
-  background: linear-gradient(135deg, #fff 0%, #f8fcff 100%);
+  padding: 5rem clamp(1.25rem, 3vw, 2.5rem) 2rem;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgb(213 235 255 / 55%),
+      transparent 25rem
+    ),
+    #f5f9ff;
 }
 
 .backButton {
@@ -98,6 +104,11 @@
 
 .loginContent {
   width: min(100%, 31rem);
+  padding: clamp(1.45rem, 3vw, 2.25rem);
+  border: 1px solid var(--auth-card-border);
+  border-radius: 1.35rem;
+  background: var(--auth-card-surface);
+  box-shadow: var(--auth-card-shadow);
 }
 
 .loginHeader {
@@ -136,7 +147,7 @@
   padding: 0.5rem 0.65rem;
   border: 1px solid #c8e2fb;
   border-radius: 0.85rem;
-  background: #fff;
+  background: #fbfdff;
   transition:
     border-color 150ms ease,
     box-shadow 150ms ease;
@@ -144,7 +155,10 @@
 
 .inputGroup:focus-within {
   border-color: #258be6;
-  box-shadow: 0 0 0 3px rgb(37 139 230 / 12%);
+  background: #fff;
+  box-shadow:
+    0 0 0 3px rgb(37 139 230 / 12%),
+    0 0.3rem 0.75rem rgb(37 139 230 / 6%);
 }
 
 .inputIcon {
@@ -218,6 +232,13 @@
 .passwordToggle svg {
   width: 1.15rem;
   height: 1.15rem;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-spring);
+}
+
+.passwordToggle:active svg {
+  transform: scale(0.9);
 }
 
 .formOptions {
@@ -302,6 +323,7 @@
   background: #fff8e8;
   font-size: 0.72rem;
   line-height: 1.4;
+  animation: auth-fade-up var(--dur-base) var(--ease-out) both;
 }
 
 .divider {
@@ -335,13 +357,20 @@
   font-weight: 750;
   cursor: pointer;
   transition:
-    background 150ms ease,
-    border-color 150ms ease;
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 
 .googleButton:hover {
   border-color: #80baf0;
   background: #f6fbff;
+  box-shadow: 0 0.25rem 0.7rem rgb(23 109 190 / 9%);
+}
+
+.googleButton:active:not(:disabled) {
+  transform: scale(0.99);
 }
 
 .googleMark {
@@ -381,7 +410,7 @@
 
 @media (max-width: 900px) {
   .page {
-    grid-template-columns: minmax(0, 0.85fr) minmax(25rem, 1fr);
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
   }
 
   .brandContent {
@@ -389,19 +418,28 @@
   }
 
   .loginPanel {
-    padding-inline: 2rem;
+    padding-inline: 1.25rem;
   }
 }
 
 @media (max-width: 680px) {
   .page {
     display: flex;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
     flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .page::-webkit-scrollbar {
+    display: none;
   }
 
   .brandPanel {
-    min-height: 13rem;
-    flex: 0 0 13rem;
+    min-height: 11rem;
+    flex: 0 0 11rem;
     justify-content: center;
     padding: 0.75rem;
     background-position: center 58%;
@@ -414,7 +452,14 @@
 
   .loginPanel {
     flex: 1;
-    padding: 4.2rem 1.25rem 2rem;
+    min-height: 0;
+    padding: 3rem 1.25rem 1rem;
+  }
+
+  .loginContent {
+    width: min(100%, 31rem);
+    padding: 1.1rem 1rem;
+    border-radius: 1.1rem;
   }
 
   .supportLink {
@@ -431,7 +476,7 @@
   }
 
   .loginHeader {
-    margin-bottom: 1.4rem;
+    margin-bottom: 1.1rem;
   }
 
   .loginHeader h2 {
@@ -443,7 +488,7 @@
   }
 
   .form {
-    gap: 1rem;
+    gap: 0.8rem;
   }
 }
 
@@ -453,8 +498,8 @@
   }
 
   .brandPanel {
-    min-height: 11rem;
-    flex-basis: 11rem;
+    min-height: 10rem;
+    flex-basis: 10rem;
   }
 }
 

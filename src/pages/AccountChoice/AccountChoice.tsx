@@ -4,8 +4,6 @@ import {
   accountChoiceHeading,
   accountChoiceDescription,
   backButtonLabel,
-  existingAccountButtonLabel,
-  existingAccountDescription,
   logoAltText,
   parentChoiceDescription,
   parentAccountTitle,
@@ -49,13 +47,15 @@ export function AccountChoice() {
             />
           </svg>
         </button>
-        <div className={styles.content}>
+        <div className={`${styles.content} anim-card-enter`}>
           <header className={styles.heading}>
-            <span className={styles.eyebrow}>GET STARTED</span>
             <h1>{accountChoiceHeading}</h1>
             <p>{accountChoiceDescription}</p>
           </header>
-          <div aria-label="Choose account type" className={styles.choices}>
+          <div
+            aria-label="Parent and Teacher account options"
+            className={`${styles.choices} anim-stagger`}
+          >
             <Button
               className={styles.choiceButton}
               type="button"
@@ -135,33 +135,17 @@ export function AccountChoice() {
               </span>
             </Button>
           </div>
-          <div className={styles.footerActions}>
-            <span aria-hidden="true" className={styles.loginIcon}>
-              i
-            </span>
-            <button
-              className={styles.login}
-              type="button"
-              onClick={() => navigate(routePaths.login)}
-            >
-              <span className={styles.loginCopy}>
-                <strong>{existingAccountButtonLabel}</strong>
-                <span>{existingAccountDescription}</span>
-              </span>
-              <span aria-hidden="true" className={styles.loginArrow}>
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="m9 5 7 7-7 7"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                  />
-                </svg>
-              </span>
-            </button>
-          </div>
         </div>
+        <p className={styles.existingAccount}>
+          Already have an account?{' '}
+          <button
+            className={styles.loginLink}
+            type="button"
+            onClick={() => navigate(routePaths.login)}
+          >
+            Log in
+          </button>
+        </p>
       </section>
     </main>
   );

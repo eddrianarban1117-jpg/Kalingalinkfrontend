@@ -20,7 +20,7 @@ export function Welcome() {
         { '--welcome-background': `url("${introBackground}")` } as CSSProperties
       }
     >
-      <div className={styles.content}>
+      <div className={`${styles.content} anim-card-enter`}>
         <img className={styles.logo} src={logo} alt={logoAltText} />
         <span aria-hidden="true" className={styles.accent} />
         <p className={styles.description}>

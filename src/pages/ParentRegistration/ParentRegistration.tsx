@@ -209,7 +209,7 @@ export function ParentRegistration() {
   if (registrationComplete) {
     return (
       <main className={styles.page}>
-        <div className={styles.container}>
+        <div className={`${styles.container} anim-card-enter`}>
           <header className={styles.topBar}>
             <div className={styles.brand}>
               <img src={logo} alt="KalingaLink" />
@@ -247,7 +247,7 @@ export function ParentRegistration() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.container}>
+      <div className={`${styles.container} anim-card-enter`}>
         <header className={styles.topBar}>
           <div className={styles.brand}>
             <img src={logo} alt="KalingaLink" />
@@ -274,7 +274,11 @@ export function ParentRegistration() {
           </div>
         </header>
 
-        <form className={styles.form} noValidate onSubmit={handleSubmit}>
+        <form
+          className={`${styles.form} anim-stagger`}
+          noValidate
+          onSubmit={handleSubmit}
+        >
           <FormSection
             number="01"
             title="Parent / Guardian Personal Information"
