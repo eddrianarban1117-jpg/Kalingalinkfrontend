@@ -259,13 +259,6 @@ export function ParentRegistration() {
 
         <header className={styles.pageHeader}>
           <div className={styles.headerCopy}>
-            <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
-              <Link to={routePaths.welcome}>Welcome</Link>
-              <span aria-hidden="true">/</span>
-              <Link to={routePaths.accountChoice}>Account Type</Link>
-              <span aria-hidden="true">/</span>
-              <span aria-current="page">Parent Registration</span>
-            </nav>
             <h1>Parent Registration</h1>
             <p>
               Create your parent account first. Add child information and apply
