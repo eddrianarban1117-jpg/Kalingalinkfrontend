@@ -223,7 +223,7 @@
   margin-top: 0.25rem;
   padding: 0.5rem 0.68rem;
   border: 0;
-  color: #fff;
+  color: var(--sidebar-text);
   background: transparent;
   font: inherit;
   font-size: 0.72rem;
@@ -235,7 +235,13 @@
 }
 
 .logout:hover {
-  color: #fff4d2;
+  color: var(--sidebar-text);
+  background: var(--sidebar-hover);
+}
+
+.logout:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .sidebarFooter {
