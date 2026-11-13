@@ -15,6 +15,12 @@
   height: auto;
 }
 
+.lightSidebar {
+  width: var(--role-sidebar-logo-width);
+  max-width: 100%;
+  height: auto;
+}
+
 .login {
   width: var(--role-sidebar-logo-width);
   max-width: 100%;

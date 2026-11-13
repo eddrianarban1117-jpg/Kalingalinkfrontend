@@ -911,7 +911,7 @@ export function ParentDashboard() {
           type="button"
           onClick={() => navigate(routePaths.parentDashboard)}
         >
-          <Logo alt="KalingaLink" variant="sidebar" />
+          <Logo alt="KalingaLink" variant="lightSidebar" />
         </button>
         <nav aria-label="Parent workspace" className={styles.navigation}>
           {navigationGroups.map((group) => (

@@ -19,8 +19,9 @@
   flex-direction: column;
   padding: 0.75rem;
   overflow: hidden;
-  color: #fff;
-  background: linear-gradient(160deg, #07529e, #064483 70%, #083e79);
+  color: #174481;
+  background: #fff;
+  border-right: 1px solid #dfeaf5;
   transition: transform 240ms cubic-bezier(0.2, 0.75, 0.25, 1);
 }
 
@@ -32,7 +33,6 @@
   gap: 0.8rem;
   overflow-x: hidden;
   overflow-y: auto;
-  color: #fff;
 }
 
 .brand {
@@ -63,7 +63,7 @@
 .navigationHeading {
   margin: 0.35rem 0 0.1rem;
   padding: 0 0.6rem;
-  color: rgb(218 237 255 / 72%);
+  color: #6d87a5;
   font-size: 0.56rem;
   font-weight: 850;
   letter-spacing: 0.12em;
@@ -78,7 +78,7 @@
   padding: 0.45rem 0.6rem;
   border: 0;
   border-radius: 0.5rem;
-  color: rgb(255 255 255 / 96%);
+  color: #174481;
   background: transparent;
   font: inherit;
   font-size: 0.66rem;
@@ -102,7 +102,7 @@
 
 .navItem:hover,
 .logout:hover {
-  background: rgb(255 255 255 / 12%);
+  background: #eff7ff;
 }
 
 .navItem:hover {
@@ -130,8 +130,9 @@
 }
 
 .activeNav {
-  background: #1685e9;
-  box-shadow: 0 0.2rem 0.45rem rgb(0 35 82 / 16%);
+  color: #0b4da0;
+  background: #e6f3ff;
+  box-shadow: inset 0 0 0 1px #d4e9fb;
 }
 
 .logout {
@@ -143,7 +144,7 @@
   flex: 0 0 auto;
   margin-top: 0.5rem;
   padding-top: 0.55rem;
-  border-top: 1px solid rgb(255 255 255 / 18%);
+  border-top: 1px solid #dfeaf5;
 }
 
 .profileSummary {
@@ -155,7 +156,7 @@
   padding: 0.45rem 0.5rem;
   border: 0;
   border-radius: 0.55rem;
-  color: #fff;
+  color: #174481;
   background: transparent;
   font: inherit;
   text-align: left;
@@ -164,7 +165,7 @@
 }
 
 .profileSummary:hover {
-  background: rgb(255 255 255 / 10%);
+  background: #eff7ff;
 }
 
 .profileInitial {
@@ -173,10 +174,10 @@
   height: 2rem;
   flex: 0 0 2rem;
   place-items: center;
-  border: 1px solid rgb(255 255 255 / 35%);
+  border: 1px solid #cfe2f5;
   border-radius: 50%;
   color: #0b4d91;
-  background: #e7f3ff;
+  background: #e6f3ff;
   font-size: 0.82rem;
   font-weight: 900;
 }
@@ -200,7 +201,7 @@
 }
 
 .profileCopy > span {
-  color: rgb(218 237 255 / 76%);
+  color: #6d87a5;
   font-size: 0.6rem;
 }
 

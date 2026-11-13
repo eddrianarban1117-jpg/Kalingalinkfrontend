@@ -6,7 +6,7 @@ import styles from './Logo.module.css';
 type LogoProps = {
   className?: string;
   alt?: string;
-  variant?: 'sidebar' | 'adminSidebar' | 'login' | 'default';
+  variant?: 'sidebar' | 'lightSidebar' | 'adminSidebar' | 'login' | 'default';
 };
 
 export function Logo({
@@ -14,6 +14,16 @@ export function Logo({
   alt = 'KalingaLink',
   variant = 'default',
 }: LogoProps) {
+  if (variant === 'lightSidebar') {
+    return (
+      <img
+        alt={alt}
+        className={`${styles.logo} ${styles.lightSidebar} ${className}`.trim()}
+        src={skyBlueLogo}
+      />
+    );
+  }
+
   if (variant === 'adminSidebar') {
     return (
       <span aria-label={alt} className={`${styles.adminSidebar} ${className}`.trim()} role="img">
