@@ -48,6 +48,8 @@ body {
   [class*='Panel'],
   [class*='card'],
   [class*='Card'],
+  button,
+  a,
   input,
   select,
   textarea
@@ -70,7 +72,7 @@ html[data-theme='dark'] #root {
     color 300ms ease;
 }
 
-html[data-theme='dark'] :where(input, select, textarea) {
+html[data-theme='dark'] body :is(input, select, textarea) {
   border-color: var(--theme-border);
   color: var(--theme-text-primary);
   background-color: var(--theme-surface-raised);
@@ -82,17 +84,17 @@ html[data-theme='dark'] :where(input, select, textarea) {
     box-shadow 300ms ease;
 }
 
-html[data-theme='dark'] :where(input, select, textarea)::placeholder {
+html[data-theme='dark'] body :is(input, select, textarea)::placeholder {
   color: var(--theme-text-muted);
   opacity: 1;
 }
 
-html[data-theme='dark'] :where(option) {
+html[data-theme='dark'] body option {
   color: var(--theme-text-primary);
   background-color: var(--theme-surface-raised);
 }
 
-html[data-theme='dark'] :where([class*='dashboard'], [class*='workspace']) {
+html[data-theme='dark'] body :is([class*='dashboard'], [class*='workspace']) {
   color: var(--theme-text-primary);
   background-color: var(--theme-bg-primary);
   transition:
@@ -101,20 +103,27 @@ html[data-theme='dark'] :where([class*='dashboard'], [class*='workspace']) {
 }
 
 html[data-theme='dark']
-  :where([class*='mainArea'], [class*='mainContent'], [class*='main']) {
+  body
+  :is([class*='mainArea'], [class*='mainContent'], [class*='main']) {
   background-color: var(--theme-bg-content);
 }
 
-html[data-theme='dark'] :where([class*='sidebar']:not(img)) {
+html[data-theme='dark'] body [class*='sidebar_'] {
   border-color: var(--theme-border);
   color: var(--theme-text-primary);
   background:
     radial-gradient(
       ellipse at 50% 100%,
-      rgb(8 116 209 / 22%) 0%,
+      var(--theme-sidebar-glow) 0%,
       rgb(8 116 209 / 0%) 58%
     ),
-    linear-gradient(180deg, #020817 0%, #061a35 40%, #073b78 75%, #0874d1 100%);
+    linear-gradient(
+      180deg,
+      var(--theme-sidebar-start) 0%,
+      var(--theme-sidebar-mid) 40%,
+      var(--theme-sidebar-lower) 75%,
+      var(--theme-sidebar-end) 100%
+    );
   transition:
     background-color 300ms ease,
     color 300ms ease,
@@ -122,11 +131,12 @@ html[data-theme='dark'] :where([class*='sidebar']:not(img)) {
 }
 
 html[data-theme='dark']
-  :where([class*='navItem'], [class*='NavItem'], [class*='logout']) {
+  body
+  :is([class*='navItem'], [class*='NavItem'], [class*='logout']) {
   color: var(--theme-text-secondary);
 }
 
-html[data-theme='dark'] :where([class*='activeNav'], [class*='selectedNav']) {
+html[data-theme='dark'] body :is([class*='activeNav'], [class*='selectedNav']) {
   border-color: transparent;
   color: #fff;
   background: linear-gradient(110deg, #1683f8, #1168cf);
@@ -134,7 +144,8 @@ html[data-theme='dark'] :where([class*='activeNav'], [class*='selectedNav']) {
 }
 
 html[data-theme='dark']
-  :where([class*='topbar'], [class*='topBar'], [class*='navbar']) {
+  body
+  :is([class*='topbar'], [class*='topBar'], [class*='navbar']) {
   border-color: var(--theme-border);
   color: var(--theme-text-primary);
   background-color: rgb(19 31 50 / 96%);
@@ -147,7 +158,8 @@ html[data-theme='dark']
 }
 
 html[data-theme='dark']
-  :where(
+  body
+  :is(
     [class*='panel'],
     [class*='Panel'],
     [class*='card'],
@@ -157,7 +169,7 @@ html[data-theme='dark']
   ) {
   border-color: var(--theme-border);
   color: var(--theme-text-primary);
-  background-color: var(--theme-surface);
+  background: var(--theme-surface);
   box-shadow: 0 0.25rem 0.8rem rgb(0 0 0 / 22%);
   transition:
     background-color 300ms ease,
@@ -167,7 +179,8 @@ html[data-theme='dark']
 }
 
 html[data-theme='dark']
-  :where(
+  body
+  :is(
     [class*='panelHeader'],
     [class*='cardHeader'],
     [class*='sectionHeader'],
@@ -178,24 +191,28 @@ html[data-theme='dark']
 }
 
 html[data-theme='dark']
-  :where([class*='panel'], [class*='Panel'], [class*='card'], [class*='Card'])
-  :where(p, small, label, dt, dd, li) {
+  body
+  :is([class*='panel'], [class*='Panel'], [class*='card'], [class*='Card'])
+  :is(p, small, label, dt, dd, li) {
   color: var(--theme-text-secondary);
 }
 
 html[data-theme='dark']
-  :where([class*='panel'], [class*='Panel'], [class*='card'], [class*='Card'])
+  body
+  :is([class*='panel'], [class*='Panel'], [class*='card'], [class*='Card'])
   strong {
   color: var(--theme-text-primary);
 }
 
 html[data-theme='dark']
-  :where([class*='title'], [class*='Title'], h1, h2, h3, h4) {
+  body
+  :is([class*='title'], [class*='Title'], h1, h2, h3, h4) {
   color: var(--theme-text-primary);
 }
 
 html[data-theme='dark']
-  :where(
+  body
+  :is(
     [class*='description'],
     [class*='Description'],
     [class*='subtitle'],
@@ -208,7 +225,8 @@ html[data-theme='dark']
 }
 
 html[data-theme='dark']
-  :where(
+  body
+  :is(
     [class*='search'],
     [class*='Search'],
     [class*='field'],
@@ -221,32 +239,37 @@ html[data-theme='dark']
   background-color: var(--theme-surface-raised);
 }
 
-html[data-theme='dark'] :where([class*='table'], [class*='Table']) {
+html[data-theme='dark'] body :is([class*='table'], [class*='Table']) {
   border-color: var(--theme-border);
   color: var(--theme-text-secondary);
 }
 
-html[data-theme='dark'] :where([class*='table'], [class*='Table']) th {
+html[data-theme='dark'] body :is([class*='table'], [class*='Table']) th {
   color: var(--theme-text-primary);
   background-color: var(--theme-surface-raised);
 }
 
-html[data-theme='dark'] :where([class*='table'], [class*='Table']) td {
+html[data-theme='dark'] body :is([class*='table'], [class*='Table']) td {
   border-color: var(--theme-border);
   color: var(--theme-text-secondary);
 }
 
-html[data-theme='dark'] :where([class*='table'], [class*='Table']) tr:hover td {
+html[data-theme='dark']
+  body
+  :is([class*='table'], [class*='Table'])
+  tr:hover
+  td {
   background-color: rgb(34 51 77 / 58%);
 }
 
-html[data-theme='dark'] :where([class*='chart'], [class*='Chart']) svg text {
+html[data-theme='dark'] body :is([class*='chart'], [class*='Chart']) svg text {
   fill: var(--theme-text-secondary);
 }
 
 html[data-theme='dark']
-  :where([class*='chart'], [class*='Chart'])
-  :where(
+  body
+  :is([class*='chart'], [class*='Chart'])
+  :is(
     [class*='axis'],
     [class*='Axis'],
     [class*='legend'],
@@ -258,7 +281,43 @@ html[data-theme='dark']
 }
 
 html[data-theme='dark']
-  :where(
+  body
+  :is([class*='YAxis'], [class*='yAxis'], [class*='monthLabels']) {
+  color: var(--theme-text-secondary);
+}
+
+html[data-theme='dark']
+  body
+  :is([class*='chartGrid'], [class*='gridLines'], [class*='centerGrid'])
+  span {
+  background-color: var(--theme-border);
+}
+
+html[data-theme='dark'] body :is([class*='Donut'], [class*='donut'])::before {
+  background-color: var(--theme-surface-raised);
+}
+
+html[data-theme='dark'] body :is([class*='Donut'], [class*='donut']) > span {
+  color: var(--theme-text-secondary);
+}
+
+html[data-theme='dark'] body :is([class*='Donut'], [class*='donut']) strong {
+  color: var(--theme-text-primary);
+}
+
+html[data-theme='dark']
+  body
+  :is([class*='sidebarFooter'], [class*='sidebar-footer']) {
+  border-color: var(--theme-border);
+}
+
+html[data-theme='dark'] body :is([class*='logout'], [class*='Logout']):hover {
+  color: var(--theme-text-primary);
+  background-color: rgb(255 255 255 / 10%);
+}
+
+html[data-theme='dark']
+  :is(
     [class*='modal']:not([class*='Backdrop']),
     [class*='Modal']:not([class*='Backdrop']),
     [role='dialog']
@@ -274,7 +333,7 @@ html[data-theme='dark'] :where([class*='Backdrop']) {
 }
 
 html[data-theme='dark']
-  :where(
+  :is(
     [class*='dropdown'],
     [class*='Dropdown'],
     [class*='popover'],

@@ -83,6 +83,7 @@
   --admin-error: #b4233d;
   --admin-panel-shadow: 0 0.25rem 0.8rem rgb(29 85 142 / 3%);
   --admin-panel-shadow-hover: 0 0.25rem 0.8rem rgb(29 85 142 / 7%);
+  --theme-chart-empty: #e8eff8;
 }
 
 [data-theme='dark'] {
@@ -144,8 +145,12 @@
   --theme-warning: #f5b942;
   --theme-danger: #f15b70;
   --theme-purple: #a970f5;
-  --theme-sidebar-start: #071b3b;
-  --theme-sidebar-end: #103b78;
+  --theme-sidebar-start: #020817;
+  --theme-sidebar-mid: #061a35;
+  --theme-sidebar-lower: #073b78;
+  --theme-sidebar-end: #0874d1;
+  --theme-sidebar-glow: rgb(8 116 209 / 22%);
+  --theme-chart-empty: #263a57;
 
   --color-background: var(--bg);
   --color-text: var(--text);

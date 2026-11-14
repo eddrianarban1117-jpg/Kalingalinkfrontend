@@ -215,7 +215,7 @@ function ParticipantChart({ gender }: { gender: LearningOverview['data']['gender
         style={{
           background: total
             ? `conic-gradient(#3299f5 0deg ${maleAngle}deg, #42cbb2 ${maleAngle}deg ${maleAngle + femaleAngle}deg, #b47af1 ${maleAngle + femaleAngle}deg 360deg)`
-            : '#e8eff8',
+            : 'var(--theme-chart-empty)',
         }}
         role="img"
       >
@@ -250,7 +250,7 @@ function ProgramStatusChart({ active, inactive }: { active: number; inactive: nu
         style={{
           background: total
             ? `conic-gradient(#42cbb2 0deg ${activeAngle}deg, #b47af1 ${activeAngle}deg 360deg)`
-            : '#e8eff8',
+            : 'var(--theme-chart-empty)',
         }}
         role="img"
       >
