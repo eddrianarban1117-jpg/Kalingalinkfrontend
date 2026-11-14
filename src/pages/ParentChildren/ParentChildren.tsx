@@ -55,6 +55,7 @@ type ChildProfile = {
   emergencyPhone: string;
   center: string;
   teacher: string;
+  hasPhoto: boolean;
 };
 
 type EditableChildKey =
@@ -104,6 +105,7 @@ type ApiChildProfile = {
   parent_relationship: string;
   parent_phone: string;
   parent_email: string;
+  has_profile_photo: boolean | number | string;
 };
 
 function formatDate(value: string) {
@@ -194,6 +196,7 @@ function mapChildProfile(record: ApiChildProfile): ChildProfile {
     emergencyPhone: record.emergency_phone ?? '',
     center: record.center_name ?? '',
     teacher: record.teacher_name.trim(),
+    hasPhoto: Number(record.has_profile_photo) === 1,
   };
 }
 
@@ -350,6 +353,12 @@ function Icon({ name }: { name: string }) {
           <path d="m5 12 4 4L19 6" />
         </svg>
       );
+    case 'upload':
+      return (
+        <svg {...shared}>
+          <path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4" />
+        </svg>
+      );
     default:
       return (
         <svg {...shared}>
@@ -419,12 +428,28 @@ export function ParentChildren({ search }: { search: string }) {
   const [draft, setDraft] = useState<ChildProfile | null>(null);
   const [parentPhotoUrl, setParentPhotoUrl] = useState('');
   const [parentPhotoError, setParentPhotoError] = useState('');
+  const [childPhotoUrls, setChildPhotoUrls] = useState<Record<number, string>>(
+    {},
+  );
+  const [photoError, setPhotoError] = useState('');
+  const [uploadingPhotoFor, setUploadingPhotoFor] = useState<number | null>(
+    null,
+  );
+  const [photoRefresh, setPhotoRefresh] = useState(0);
   const [notice, setNotice] = useState('');
   const [loadError, setLoadError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const requestId = useRef(0);
+  const photoIds = useMemo(
+    () =>
+      profiles
+        .filter((child) => child.hasPhoto)
+        .map((child) => child.id)
+        .join(','),
+    [profiles],
+  );
 
   useEffect(() => {
     let active = true;
@@ -453,6 +478,42 @@ export function ParentChildren({ search }: { search: string }) {
       if (photoUrl) URL.revokeObjectURL(photoUrl);
     };
   }, [download, user?.profile_photo]);
+
+  useEffect(() => {
+    let active = true;
+    const loadedUrls: Record<number, string> = {};
+    setChildPhotoUrls({});
+    setPhotoError('');
+    if (!photoIds) return;
+
+    const childIds = photoIds.split(',').map(Number);
+    void Promise.all(
+      childIds.map(async (childId) => {
+        try {
+          const blob = await download(
+            `/api/parent/children/${childId}/photo?v=${photoRefresh}`,
+          );
+          if (!active) return;
+          if (blob.size === 0) {
+            setPhotoError('A child profile photo could not be loaded.');
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          loadedUrls[childId] = url;
+        } catch {
+          if (active)
+            setPhotoError('A child profile photo could not be loaded.');
+        }
+      }),
+    ).then(() => {
+      if (active) setChildPhotoUrls(loadedUrls);
+    });
+
+    return () => {
+      active = false;
+      Object.values(loadedUrls).forEach(URL.revokeObjectURL);
+    };
+  }, [download, photoIds, photoRefresh]);
 
   const loadProfiles = useCallback(
     async (isActive: () => boolean = () => true) => {
@@ -576,6 +637,39 @@ export function ParentChildren({ search }: { search: string }) {
     }
   }
 
+  async function uploadChildPhoto(childId: number, file: File) {
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      setPhotoError('Choose a JPG or PNG image for the child profile photo.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setPhotoError('Child profile photos must be no larger than 2 MB.');
+      return;
+    }
+
+    setUploadingPhotoFor(childId);
+    setPhotoError('');
+    try {
+      const payload = new FormData();
+      payload.append('profile_photo', file);
+      await request(`/api/parent/children/${childId}/photo`, {
+        method: 'POST',
+        body: payload,
+      });
+      setNotice('Child profile photo updated.');
+      setPhotoRefresh((current) => current + 1);
+      await loadProfiles();
+    } catch (error) {
+      setPhotoError(
+        error instanceof Error
+          ? error.message
+          : 'Child profile photo could not be uploaded.',
+      );
+    } finally {
+      setUploadingPhotoFor(null);
+    }
+  }
+
   const currentEditTab =
     editingChild === null
       ? null
@@ -629,6 +723,11 @@ export function ParentChildren({ search }: { search: string }) {
           {notice}
         </p>
       )}
+      {photoError && (
+        <p className={styles.error} role="alert">
+          {photoError}
+        </p>
+      )}
 
       {viewingChild && activeTab ? (
         <section
@@ -653,11 +752,31 @@ export function ParentChildren({ search }: { search: string }) {
           </div>
 
           <header className={styles.profileHeader}>
-            <Avatar
-              className={styles.childAvatar}
-              name={viewingChild.fullName || 'Child profile'}
-              size="large"
-            />
+            <div className={styles.childPhotoControl}>
+              <Avatar
+                className={styles.childAvatar}
+                name={viewingChild.fullName || 'Child profile'}
+                size="large"
+                src={childPhotoUrls[viewingChild.id] ?? null}
+              />
+              <label className={styles.photoUpload}>
+                <Icon name="upload" />
+                {uploadingPhotoFor === viewingChild.id
+                  ? 'Uploading…'
+                  : 'Change photo'}
+                <input
+                  accept="image/jpeg,image/png"
+                  aria-label={`Upload a profile photo for ${viewingChild.fullName}`}
+                  disabled={uploadingPhotoFor !== null}
+                  type="file"
+                  onChange={(event) => {
+                    const file = event.currentTarget.files?.[0];
+                    event.currentTarget.value = '';
+                    if (file) void uploadChildPhoto(viewingChild.id, file);
+                  }}
+                />
+              </label>
+            </div>
             <div className={styles.profileHeaderDetails}>
               <div className={styles.profileNameRow}>
                 <h2>{viewingChild.fullName || 'Child profile'}</h2>
@@ -944,6 +1063,7 @@ export function ParentChildren({ search }: { search: string }) {
                 className={styles.listAvatar}
                 name={child.fullName || 'Child profile'}
                 size="large"
+                src={childPhotoUrls[child.id] ?? null}
               />
               <div className={styles.listIdentity}>
                 <h2>{child.fullName || 'Child profile'}</h2>

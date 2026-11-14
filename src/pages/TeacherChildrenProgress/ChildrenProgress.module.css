@@ -375,6 +375,15 @@
   font-size: 2.6rem;
 }
 
+.studentAvatar img,
+.profileAvatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .profileCopy {
   display: grid;
   min-width: 0;

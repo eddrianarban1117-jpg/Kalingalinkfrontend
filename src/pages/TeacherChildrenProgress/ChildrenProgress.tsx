@@ -27,6 +27,7 @@ type StudentProgress = {
   name: string;
   age: number;
   birthday: string | null;
+  hasProfilePhoto: boolean;
   overall: number;
   status: DomainStatus | null;
   domains: Array<{
@@ -41,8 +42,12 @@ type StudentProgress = {
   records: ProgressEntry[];
 };
 
-type ApiStudentProgress = Omit<StudentProgress, 'birthday' | 'domains'> & {
+type ApiStudentProgress = Omit<
+  StudentProgress,
+  'birthday' | 'domains' | 'hasProfilePhoto'
+> & {
   birthday: string | null;
+  has_profile_photo: boolean | number | string;
   domains: Array<{
     name: string;
     score: number;
@@ -82,9 +87,11 @@ function formatDate(value: string | null) {
 }
 
 function mapStudent(record: ApiStudentProgress): StudentProgress {
+  const { has_profile_photo, ...student } = record;
   return {
-    ...record,
-    domains: record.domains.map((domain) => ({
+    ...student,
+    hasProfilePhoto: Number(has_profile_photo) === 1,
+    domains: student.domains.map((domain) => ({
       ...domain,
       recordCount: domain.record_count,
     })),
@@ -182,7 +189,7 @@ function progressGradient(student: StudentProgress) {
 }
 
 export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
-  const { request } = useAuth();
+  const { request, download } = useAuth();
   const [students, setStudents] = useState<StudentProgress[]>([]);
   const [availableDomains, setAvailableDomains] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -195,6 +202,10 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
   const [showAllNotes, setShowAllNotes] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [photoError, setPhotoError] = useState('');
+  const [studentPhotoUrls, setStudentPhotoUrls] = useState<
+    Record<number, string>
+  >({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<ProgressNotice | null>(null);
@@ -206,6 +217,14 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
   const [formDate, setFormDate] = useState(() => `${currentMonth()}-01`);
   const latestRequest = useRef(0);
   const isMounted = useRef(false);
+  const photoIds = useMemo(
+    () =>
+      students
+        .filter((student) => student.hasProfilePhoto)
+        .map((student) => student.id)
+        .join(','),
+    [students],
+  );
 
   const reloadProgress = useCallback(async () => {
     const requestId = ++latestRequest.current;
@@ -247,6 +266,43 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
     };
   }, [reloadProgress]);
 
+  useEffect(() => {
+    let active = true;
+    const loadedUrls: Record<number, string> = {};
+    setStudentPhotoUrls({});
+    setPhotoError('');
+    if (!photoIds) return;
+
+    void Promise.all(
+      photoIds.split(',').map(async (value) => {
+        const studentId = Number(value);
+        try {
+          const blob = await download(
+            `/api/teacher/children-progress/${studentId}/photo`,
+          );
+          if (blob.size === 0) {
+            if (active)
+              setPhotoError('A student profile photo could not be loaded.');
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          if (active) loadedUrls[studentId] = url;
+          else URL.revokeObjectURL(url);
+        } catch {
+          if (active)
+            setPhotoError('A student profile photo could not be loaded.');
+        }
+      }),
+    ).then(() => {
+      if (active) setStudentPhotoUrls(loadedUrls);
+    });
+
+    return () => {
+      active = false;
+      Object.values(loadedUrls).forEach(URL.revokeObjectURL);
+    };
+  }, [download, photoIds]);
+
   const filteredStudents = useMemo(() => {
     const term = `${search} ${globalSearch}`.trim().toLowerCase();
     return students.filter((student) => {
@@ -264,12 +320,13 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
   }, [ageFilter, domainFilter, globalSearch, search, statusFilter, students]);
 
   const selectedStudent =
-    filteredStudents.find(({ id }) => id === selectedId) ??
-    filteredStudents[0];
+    filteredStudents.find(({ id }) => id === selectedId) ?? filteredStudents[0];
 
   function openProgressDialog() {
     setFormChildId(
-      selectedStudent ? String(selectedStudent.id) : String(students[0]?.id ?? ''),
+      selectedStudent
+        ? String(selectedStudent.id)
+        : String(students[0]?.id ?? ''),
     );
     setFormDomain(availableDomains[0] ?? '');
     setFormSkill('');
@@ -305,15 +362,16 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
         kind: response.warning ? 'warning' : 'success',
         message: response.warning
           ? `${response.message ?? 'Progress record saved.'} ${response.warning}`
-          : response.message ?? 'Progress record saved.',
+          : (response.message ?? 'Progress record saved.'),
       });
       setDialogOpen(false);
     } catch (error) {
       setNotice({
         kind: 'error',
-        message: error instanceof Error
-          ? error.message
-          : 'Progress record could not be saved.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Progress record could not be saved.',
       });
     } finally {
       setSaving(false);
@@ -324,9 +382,11 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
     if (!selectedStudent) {
       return (
         <p className={styles.emptyStudents}>
-          {loading
-            ? <BouncingDots label="Loading progress records" />
-            : 'No student is available for this selection.'}
+          {loading ? (
+            <BouncingDots label="Loading progress records" />
+          ) : (
+            'No student is available for this selection.'
+          )}
         </p>
       );
     }
@@ -376,51 +436,45 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
         </div>
       ) : (
         <p className={styles.emptyStudents}>
-          No skills are recorded for this child during the selected
-          month.
+          No skills are recorded for this child during the selected month.
         </p>
       );
     }
-    return (
-      selectedStudent.domains.length ? (
-        <div className={styles.domainList}>
-          {selectedStudent.domains.map((domain, index) => {
-            const color = domainColors[index % domainColors.length];
-            return (
-              <article className={styles.domainCard} key={domain.name}>
-                <span className={`${styles.domainIcon} ${styles[color]}`}>
-                  {domain.name.slice(0, 1)}
+    return selectedStudent.domains.length ? (
+      <div className={styles.domainList}>
+        {selectedStudent.domains.map((domain, index) => {
+          const color = domainColors[index % domainColors.length];
+          return (
+            <article className={styles.domainCard} key={domain.name}>
+              <span className={`${styles.domainIcon} ${styles[color]}`}>
+                {domain.name.slice(0, 1)}
+              </span>
+              <span className={styles.domainInfo}>
+                <strong>{domain.name}</strong>
+                <small>
+                  {domain.recordCount} recorded{' '}
+                  {domain.recordCount === 1 ? 'rating' : 'ratings'} ·{' '}
+                  {domain.skills.join(', ')}
+                </small>
+                <span className={styles.progressTrack}>
+                  <span
+                    className={`${styles.progressBar} ${styles[color]}`}
+                    style={{ width: `${domain.score}%` }}
+                  />
+                  <b>{domain.score}%</b>
                 </span>
-                <span className={styles.domainInfo}>
-                  <strong>{domain.name}</strong>
-                  <small>
-                    {domain.recordCount} recorded{' '}
-                    {domain.recordCount === 1 ? 'rating' : 'ratings'} ·{' '}
-                    {domain.skills.join(', ')}
-                  </small>
-                  <span className={styles.progressTrack}>
-                    <span
-                      className={`${styles.progressBar} ${styles[color]}`}
-                      style={{ width: `${domain.score}%` }}
-                    />
-                    <b>{domain.score}%</b>
-                  </span>
-                </span>
-                <span
-                  className={styles.domainStatus}
-                  data-status={domain.status}
-                >
-                  {domain.status}
-                </span>
-              </article>
-            );
-          })}
-        </div>
-      ) : (
-        <p className={styles.emptyStudents}>
-          No progress has been recorded for this child during the selected month.
-        </p>
-      )
+              </span>
+              <span className={styles.domainStatus} data-status={domain.status}>
+                {domain.status}
+              </span>
+            </article>
+          );
+        })}
+      </div>
+    ) : (
+      <p className={styles.emptyStudents}>
+        No progress has been recorded for this child during the selected month.
+      </p>
     );
   }
 
@@ -475,6 +529,11 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
           {loadError}
         </p>
       )}
+      {photoError && (
+        <p aria-live="polite" className={styles.errorNotice} role="status">
+          {photoError}
+        </p>
+      )}
 
       <section aria-label="Progress filters" className={styles.filters}>
         <label className={styles.searchFilter}>
@@ -496,13 +555,13 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
           onChange={(event) => setAgeFilter(event.target.value)}
         >
           <option value="">All Age Groups</option>
-          {[...new Set(students.map(({ age }) => String(age)))].sort().map(
-            (age) => (
+          {[...new Set(students.map(({ age }) => String(age)))]
+            .sort()
+            .map((age) => (
               <option key={age} value={age}>
                 Age {age} years old
               </option>
-            ),
-          )}
+            ))}
         </select>
         <label className={styles.visuallyHidden} htmlFor="progress-domain">
           Learning domain
@@ -561,7 +620,11 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
                 <span
                   className={`${styles.studentAvatar} ${styles.blueAvatar}`}
                 >
-                  {initials(student.name)}
+                  {studentPhotoUrls[student.id] ? (
+                    <img alt="" src={studentPhotoUrls[student.id]} />
+                  ) : (
+                    initials(student.name)
+                  )}
                 </span>
                 <span className={styles.studentCopy}>
                   <strong>{student.name}</strong>
@@ -573,13 +636,17 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
               </button>
             ))}
             {loading ? (
-              <p className={styles.emptyStudents}><BouncingDots label="Loading students" /></p>
-            ) : filteredStudents.length === 0 && (
               <p className={styles.emptyStudents}>
-                {students.length === 0
-                  ? 'No enrolled students are assigned to your active classes.'
-                  : 'No students match these filters.'}
+                <BouncingDots label="Loading students" />
               </p>
+            ) : (
+              filteredStudents.length === 0 && (
+                <p className={styles.emptyStudents}>
+                  {students.length === 0
+                    ? 'No enrolled students are assigned to your active classes.'
+                    : 'No students match these filters.'}
+                </p>
+              )
             )}
           </div>
         </section>
@@ -589,185 +656,186 @@ export function ChildrenProgress({ globalSearch }: { globalSearch: string }) {
             aria-label={`${selectedStudent.name} progress`}
             className={styles.profilePanel}
           >
-          <header className={styles.profileHeader}>
-            <span
-              className={`${styles.profileAvatar} ${styles.blueAvatar}`}
+            <header className={styles.profileHeader}>
+              <span className={`${styles.profileAvatar} ${styles.blueAvatar}`}>
+                {studentPhotoUrls[selectedStudent.id] ? (
+                  <img alt="" src={studentPhotoUrls[selectedStudent.id]} />
+                ) : (
+                  initials(selectedStudent.name)
+                )}
+              </span>
+              <span className={styles.profileCopy}>
+                <strong>{selectedStudent.name}</strong>
+                <span>♟ &nbsp;Age: {selectedStudent.age} years old</span>
+                <span>
+                  <ProgressIcon name="calendar" /> Birthday:{' '}
+                  {formatDate(selectedStudent.birthday)}
+                </span>
+              </span>
+              {selectedStudent.status && (
+                <span
+                  className={styles.overallStatus}
+                  data-status={selectedStudent.status}
+                >
+                  {selectedStudent.status}
+                </span>
+              )}
+            </header>
+            <div
+              aria-label="Student progress tabs"
+              className={styles.progressTabs}
             >
-              {initials(selectedStudent.name)}
-            </span>
-            <span className={styles.profileCopy}>
-              <strong>{selectedStudent.name}</strong>
-              <span>♟ &nbsp;Age: {selectedStudent.age} years old</span>
-              <span>
-                <ProgressIcon name="calendar" /> Birthday:{' '}
-                {formatDate(selectedStudent.birthday)}
-              </span>
-            </span>
-            {selectedStudent.status && (
-              <span
-                className={styles.overallStatus}
-                data-status={selectedStudent.status}
-              >
-                {selectedStudent.status}
-              </span>
-            )}
-          </header>
-          <div
-            aria-label="Student progress tabs"
-            className={styles.progressTabs}
-          >
-            {progressTabs.map((tab) => (
-              <button
-                aria-pressed={activeTab === tab}
-                className={activeTab === tab ? styles.activeTab : ''}
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div className={styles.domainSection}>
-            <h2>
-              {activeTab === 'Overview' || activeTab === 'Domain Progress'
-                ? 'Learning Domain Progress'
-                : activeTab}
-            </h2>
-            {renderProgressContent()}
-          </div>
+              {progressTabs.map((tab) => (
+                <button
+                  aria-pressed={activeTab === tab}
+                  className={activeTab === tab ? styles.activeTab : ''}
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+            <div className={styles.domainSection}>
+              <h2>
+                {activeTab === 'Overview' || activeTab === 'Domain Progress'
+                  ? 'Learning Domain Progress'
+                  : activeTab}
+              </h2>
+              {renderProgressContent()}
+            </div>
           </section>
         ) : (
           <section className={styles.profilePanel}>
             <p className={styles.emptyStudents}>
-              {loading
-                ? <BouncingDots label="Loading progress" />
-                : 'Select an enrolled student to view recorded progress.'}
+              {loading ? (
+                <BouncingDots label="Loading progress" />
+              ) : (
+                'Select an enrolled student to view recorded progress.'
+              )}
             </p>
           </section>
         )}
 
         {selectedStudent && (
-        <aside
-          aria-label="Progress summary and recent notes"
-          className={styles.rightColumn}
-        >
-          <section className={styles.summaryPanel}>
-            <h2>
-              <ProgressIcon name="chart" />
-              Progress Summary
-            </h2>
-            <div className={styles.summaryBody}>
-              <div
-                aria-label={`Overall progress ${selectedStudent.overall}%`}
-                className={styles.progressDonut}
-                style={{
-                  background: `conic-gradient(${progressGradient(selectedStudent)})`,
-                }}
-              >
-                <span>
-                  <small>
-                    Overall
-                    <br />
-                    Progress
-                  </small>
-                  <strong>{selectedStudent.overall}%</strong>
-                </span>
-              </div>
-              <ul className={styles.summaryLegend}>
-                <li>
-                  <i className={styles.legendOnTrack} />
-                  <span>On Track</span>
-                  <strong>
-                    {
-                      selectedStudent.domains.filter(
-                        ({ status }) => status === 'On Track',
-                      ).length
-                    }
-                  </strong>
-                </li>
-                <li>
-                  <i className={styles.legendSupport} />
-                  <span>Needs Support</span>
-                  <strong>
-                    {
-                      selectedStudent.domains.filter(
-                        ({ status }) => status === 'Needs Support',
-                      ).length
-                    }
-                  </strong>
-                </li>
-                <li>
-                  <i className={styles.legendAttention} />
-                  <span>Needs Attention</span>
-                  <strong>
-                    {
-                      selectedStudent.domains.filter(
-                        ({ status }) => status === 'Needs Attention',
-                      ).length
-                    }
-                  </strong>
-                </li>
-              </ul>
-            </div>
-            <div className={styles.encouragement}>
-              <ProgressIcon name="bulb" />
-              <p>
-                <strong>
-                  {selectedStudent.domains.length
-                    ? 'Recorded progress'
-                    : 'No progress records'}
-                </strong>
-                {selectedStudent.domains.length
-                  ? `${selectedStudent.domains.reduce((total, domain) => total + domain.recordCount, 0)} ratings recorded for ${selectedStudent.name} during ${dateRange}.`
-                  : `No ratings or observations have been recorded for ${selectedStudent.name} during ${dateRange}.`}
-              </p>
-            </div>
-          </section>
-          <section className={styles.notesPanel}>
-            <header>
+          <aside
+            aria-label="Progress summary and recent notes"
+            className={styles.rightColumn}
+          >
+            <section className={styles.summaryPanel}>
               <h2>
-                <ProgressIcon name="note" />
-                Recent Notes
+                <ProgressIcon name="chart" />
+                Progress Summary
               </h2>
-              <button
-                type="button"
-                onClick={() => setShowAllNotes((value) => !value)}
-              >
-                {showAllNotes ? 'Show Less' : 'View All'}{' '}
-                <span aria-hidden="true">›</span>
-              </button>
-            </header>
-            <div className={styles.noteList}>
-              {(showAllNotes
-                ? selectedStudent.notes
-                : selectedStudent.notes.slice(0, 4)
-              ).map((note, index) => (
-                <article
-                  className={styles.noteRow}
-                  key={note.id}
+              <div className={styles.summaryBody}>
+                <div
+                  aria-label={`Overall progress ${selectedStudent.overall}%`}
+                  className={styles.progressDonut}
+                  style={{
+                    background: `conic-gradient(${progressGradient(selectedStudent)})`,
+                  }}
                 >
-                  <span
-                    className={`${styles.noteIcon} ${styles[noteColors[index % noteColors.length]]}`}
-                  >
-                    <ProgressIcon name="note" />
-                  </span>
                   <span>
-                    <strong>{formatDate(note.date)}</strong>
                     <small>
-                      {note.domain} · {note.skill}: {note.observation}
+                      Overall
+                      <br />
+                      Progress
                     </small>
+                    <strong>{selectedStudent.overall}%</strong>
                   </span>
-                </article>
-              ))}
-              {selectedStudent.notes.length === 0 && (
-                <p className={styles.emptyStudents}>
-                  No observations recorded this month.
+                </div>
+                <ul className={styles.summaryLegend}>
+                  <li>
+                    <i className={styles.legendOnTrack} />
+                    <span>On Track</span>
+                    <strong>
+                      {
+                        selectedStudent.domains.filter(
+                          ({ status }) => status === 'On Track',
+                        ).length
+                      }
+                    </strong>
+                  </li>
+                  <li>
+                    <i className={styles.legendSupport} />
+                    <span>Needs Support</span>
+                    <strong>
+                      {
+                        selectedStudent.domains.filter(
+                          ({ status }) => status === 'Needs Support',
+                        ).length
+                      }
+                    </strong>
+                  </li>
+                  <li>
+                    <i className={styles.legendAttention} />
+                    <span>Needs Attention</span>
+                    <strong>
+                      {
+                        selectedStudent.domains.filter(
+                          ({ status }) => status === 'Needs Attention',
+                        ).length
+                      }
+                    </strong>
+                  </li>
+                </ul>
+              </div>
+              <div className={styles.encouragement}>
+                <ProgressIcon name="bulb" />
+                <p>
+                  <strong>
+                    {selectedStudent.domains.length
+                      ? 'Recorded progress'
+                      : 'No progress records'}
+                  </strong>
+                  {selectedStudent.domains.length
+                    ? `${selectedStudent.domains.reduce((total, domain) => total + domain.recordCount, 0)} ratings recorded for ${selectedStudent.name} during ${dateRange}.`
+                    : `No ratings or observations have been recorded for ${selectedStudent.name} during ${dateRange}.`}
                 </p>
-              )}
-            </div>
-          </section>
-        </aside>
+              </div>
+            </section>
+            <section className={styles.notesPanel}>
+              <header>
+                <h2>
+                  <ProgressIcon name="note" />
+                  Recent Notes
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setShowAllNotes((value) => !value)}
+                >
+                  {showAllNotes ? 'Show Less' : 'View All'}{' '}
+                  <span aria-hidden="true">›</span>
+                </button>
+              </header>
+              <div className={styles.noteList}>
+                {(showAllNotes
+                  ? selectedStudent.notes
+                  : selectedStudent.notes.slice(0, 4)
+                ).map((note, index) => (
+                  <article className={styles.noteRow} key={note.id}>
+                    <span
+                      className={`${styles.noteIcon} ${styles[noteColors[index % noteColors.length]]}`}
+                    >
+                      <ProgressIcon name="note" />
+                    </span>
+                    <span>
+                      <strong>{formatDate(note.date)}</strong>
+                      <small>
+                        {note.domain} · {note.skill}: {note.observation}
+                      </small>
+                    </span>
+                  </article>
+                ))}
+                {selectedStudent.notes.length === 0 && (
+                  <p className={styles.emptyStudents}>
+                    No observations recorded this month.
+                  </p>
+                )}
+              </div>
+            </section>
+          </aside>
         )}
       </div>
       {dialogOpen && (

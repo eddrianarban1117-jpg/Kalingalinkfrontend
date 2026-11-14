@@ -260,6 +260,55 @@
   background: #e3f4ff;
 }
 
+.childPhotoControl {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.photoUpload {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #cfe5fb;
+  border-radius: 999px;
+  color: #0872d3;
+  background: #edf7ff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.photoUpload:hover {
+  border-color: #9dcdf7;
+  background: #e1f1ff;
+}
+
+.photoUpload:focus-within {
+  outline: 2px solid #1685ed;
+  outline-offset: 2px;
+}
+
+.photoUpload svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.photoUpload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 .profileHeaderDetails {
   min-width: 0;
 }
