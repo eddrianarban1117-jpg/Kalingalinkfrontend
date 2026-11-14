@@ -433,85 +433,111 @@ export function MswdoDashboard({
         </div>
 
         <nav className={styles.navigation} aria-label="Admin navigation">
-          {navigationGroups.map((group) => (
+          {navigationGroups
+            .filter((group) => group.label !== 'SYSTEM')
+            .map((group) => (
+              <section className={styles.navigationGroup} key={group.label}>
+                <h2 className={styles.navigationHeading}>{group.label}</h2>
+                {group.items.map((item) => (
+                  <button
+                    aria-current={
+                      activeNavigation === item.label ? 'page' : undefined
+                    }
+                    className={`${styles.navItem} ${activeNavigation === item.label ? styles.activeNavItem : ''}`}
+                    key={item.label}
+                    onClick={() => {
+                      setIsNavigationOpen(false);
+                      if (item.label === 'Dashboard') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.mswdoAdmin);
+                      } else if (item.label === 'Events') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.adminEvents);
+                      } else if (item.label === 'Child Development Centers') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.childDevelopmentCenters);
+                      } else if (item.label === 'Enrollment Management') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.enrollmentManagement);
+                      } else if (item.label === 'Children Records') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.childrenRecords);
+                      } else if (item.label === 'Attendance and Monitoring') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.attendanceMonitoring);
+                      } else if (item.label === 'Learning and Development') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.learningDevelopment);
+                      } else if (item.label === 'Reports and Analytics') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.reportsAnalytics);
+                      } else if (item.label === 'Notification and Alerts') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.notificationsAlerts);
+                      } else if (item.label === 'Teacher Management') {
+                        setActiveNavigation(item.label);
+                        navigate(routePaths.teacherManagement);
+                      }
+                    }}
+                    type="button"
+                  >
+                    <Icon className={styles.navIcon} name={item.icon} />
+                    <span>
+                      {item.label === 'Attendance and Monitoring'
+                        ? 'Attendance & Monitoring'
+                        : item.label === 'Learning and Development'
+                          ? 'Learning & Development'
+                          : item.label === 'Reports and Analytics'
+                            ? 'Reports & Analytics'
+                            : item.label === 'Notification and Alerts'
+                              ? 'Notifications & Alerts'
+                              : item.label}
+                    </span>
+                    {item.label === 'Notification and Alerts' &&
+                      unreadNotifications > 0 && (
+                        <span
+                          aria-label={`${unreadNotifications} unread notifications`}
+                          className={styles.eventBadge}
+                        >
+                          {unreadNotifications}
+                        </span>
+                      )}
+                  </button>
+                ))}
+              </section>
+            ))}
+        </nav>
+        {navigationGroups
+          .filter((group) => group.label === 'SYSTEM')
+          .map((group) => (
             <section
-              className={`${styles.navigationGroup} ${group.label === 'SYSTEM' ? styles.systemNavigationGroup : ''}`}
+              aria-label="System"
+              className={`${styles.navigationGroup} ${styles.systemNavigationGroup}`}
               key={group.label}
             >
               <h2 className={styles.navigationHeading}>{group.label}</h2>
               {group.items.map((item) => (
-            <button
-              aria-current={
-                activeNavigation === item.label ? 'page' : undefined
-              }
-              className={`${styles.navItem} ${activeNavigation === item.label ? styles.activeNavItem : ''}`}
-              key={item.label}
-              onClick={() => {
-                setIsNavigationOpen(false);
-                if (item.label === 'Log Out') {
-                  setIsLogoutDialogOpen(true);
-                } else if (item.label === 'Dashboard') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.mswdoAdmin);
-                } else if (item.label === 'Events') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.adminEvents);
-                } else if (item.label === 'Child Development Centers') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.childDevelopmentCenters);
-                } else if (item.label === 'Enrollment Management') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.enrollmentManagement);
-                } else if (item.label === 'Children Records') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.childrenRecords);
-                } else if (item.label === 'Attendance and Monitoring') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.attendanceMonitoring);
-                } else if (item.label === 'Learning and Development') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.learningDevelopment);
-                } else if (item.label === 'Reports and Analytics') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.reportsAnalytics);
-                } else if (item.label === 'Notification and Alerts') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.notificationsAlerts);
-                } else if (item.label === 'Settings') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.settings);
-                } else if (item.label === 'Teacher Management') {
-                  setActiveNavigation(item.label);
-                  navigate(routePaths.teacherManagement);
-                }
-              }}
-              type="button"
-            >
-              <Icon className={styles.navIcon} name={item.icon} />
-              <span>
-                {item.label === 'Attendance and Monitoring'
-                  ? 'Attendance & Monitoring'
-                  : item.label === 'Learning and Development'
-                    ? 'Learning & Development'
-                    : item.label === 'Reports and Analytics'
-                      ? 'Reports & Analytics'
-                      : item.label === 'Notification and Alerts'
-                        ? 'Notifications & Alerts'
-                        : item.label}
-              </span>
-              {item.label === 'Notification and Alerts' && unreadNotifications > 0 && (
-                <span
-                  aria-label={`${unreadNotifications} unread notifications`}
-                  className={styles.eventBadge}
+                <button
+                  aria-current={activeNavigation === item.label ? 'page' : undefined}
+                  className={`${styles.navItem} ${activeNavigation === item.label ? styles.activeNavItem : ''}`}
+                  key={item.label}
+                  onClick={() => {
+                    setIsNavigationOpen(false);
+                    if (item.label === 'Log Out') {
+                      setIsLogoutDialogOpen(true);
+                    } else if (item.label === 'Settings') {
+                      setActiveNavigation(item.label);
+                      navigate(routePaths.settings);
+                    }
+                  }}
+                  type="button"
                 >
-                  {unreadNotifications}
-                </span>
-              )}
-            </button>
+                  <Icon className={styles.navIcon} name={item.icon} />
+                  <span>{item.label}</span>
+                </button>
               ))}
             </section>
           ))}
-        </nav>
       </aside>
 
       <LogoutConfirmation
