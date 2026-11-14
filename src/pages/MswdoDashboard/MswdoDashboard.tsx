@@ -221,6 +221,7 @@ type DashboardData = {
     centers: number;
     enrolled_children: number;
     teachers: number;
+    parents: number;
     active_children: number;
   };
   monthly_enrollments: { month: number; total: number }[];
@@ -263,6 +264,13 @@ const summaryCards = [
     detail: 'Active accounts',
     icon: 'teachers',
     color: 'pink',
+  },
+  {
+    key: 'parents',
+    label: 'Parents',
+    detail: 'Active accounts',
+    icon: 'user',
+    color: 'blue',
   },
   {
     key: 'active_children',

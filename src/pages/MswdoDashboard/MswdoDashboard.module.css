@@ -390,7 +390,7 @@
 
 .summaryGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.8rem;
 }
 
@@ -424,10 +424,16 @@
   --tone-bg: #f0edff;
 }
 
+.blue {
+  --tone: #3484d8;
+  --tone-bg: #e8f3ff;
+}
+
 .summaryCard.teal,
 .summaryCard.gold,
 .summaryCard.pink,
-.summaryCard.purple {
+.summaryCard.purple,
+.summaryCard.blue {
   border-color: color-mix(in srgb, var(--tone) 8%, white);
   background: linear-gradient(
     125deg,
