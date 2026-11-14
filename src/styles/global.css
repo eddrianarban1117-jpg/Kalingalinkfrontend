@@ -108,12 +108,13 @@ html[data-theme='dark']
 html[data-theme='dark'] :where([class*='sidebar']) {
   border-color: var(--theme-border);
   color: var(--theme-text-primary);
-  background: linear-gradient(
-    165deg,
-    var(--theme-sidebar-start) 0%,
-    #0b2b58 55%,
-    var(--theme-sidebar-end) 100%
-  );
+  background:
+    radial-gradient(
+      ellipse at 50% 100%,
+      rgb(8 116 209 / 22%) 0%,
+      rgb(8 116 209 / 0%) 58%
+    ),
+    linear-gradient(180deg, #020817 0%, #061a35 40%, #073b78 75%, #0874d1 100%);
   transition:
     background-color 300ms ease,
     color 300ms ease,
