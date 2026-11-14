@@ -20,6 +20,7 @@ import { useAnnouncementFeed } from '../../hooks/useAnnouncementFeed';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
 import { StudentIdViewer } from './StudentIdViewer';
 import { studentCode } from './student-id-utils';
+import { applyThemePreference, saveThemePreference } from '../../styles/theme';
 
 type IconName =
   | 'home'
@@ -47,7 +48,9 @@ type IconName =
   | 'back'
   | 'check'
   | 'clock'
-  | 'menu';
+  | 'menu'
+  | 'sun'
+  | 'moon';
 
 function Icon({ name }: { name: IconName }) {
   const shared = {
@@ -65,6 +68,19 @@ function Icon({ name }: { name: IconName }) {
       return (
         <svg {...shared}>
           <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      );
+    case 'sun':
+      return (
+        <svg {...shared}>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+        </svg>
+      );
+    case 'moon':
+      return (
+        <svg {...shared}>
+          <path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z" />
         </svg>
       );
     case 'home':
@@ -438,13 +454,17 @@ function dateInputValue(date = new Date()) {
 }
 
 function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, (character) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  })[character] ?? character);
+  return value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[character] ?? character,
+  );
 }
 
 function csvCell(value: string) {
@@ -455,6 +475,11 @@ function csvCell(value: string) {
 export function TeacherDashboard() {
   const navigate = useNavigate();
   const { request, user, logout } = useAuth();
+  const [theme, setTheme] = useState<'light' | 'dark'>(() =>
+    document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
+  );
+  const [themeSaving, setThemeSaving] = useState(false);
+  const [themeError, setThemeError] = useState('');
   const unreadNotifications = useNotificationCount();
   const { announcements: announcementFeed, error: announcementsError } =
     useAnnouncementFeed(false);
@@ -524,6 +549,35 @@ export function TeacherDashboard() {
     }
   }
 
+  async function toggleTheme() {
+    const previousTheme: 'light' | 'dark' =
+      document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+    const nextTheme = previousTheme === 'dark' ? 'light' : 'dark';
+
+    setThemeSaving(true);
+    setThemeError('');
+    saveThemePreference(user?.id, nextTheme);
+    applyThemePreference(nextTheme);
+    setTheme(nextTheme);
+    try {
+      await request('/api/settings', {
+        method: 'PUT',
+        body: JSON.stringify({ settings: { theme: nextTheme } }),
+      });
+    } catch (error) {
+      saveThemePreference(user?.id, previousTheme);
+      applyThemePreference(previousTheme);
+      setTheme(previousTheme);
+      setThemeError(
+        error instanceof Error
+          ? `Theme preference could not be saved: ${error.message}`
+          : 'Theme preference could not be saved. Please try again.',
+      );
+    } finally {
+      setThemeSaving(false);
+    }
+  }
+
   const reloadDashboard = useCallback(async () => {
     setDashboardError('');
     try {
@@ -562,7 +616,9 @@ export function TeacherDashboard() {
   const [attendanceDate, setAttendanceDate] = useState(() => dateInputValue());
   const [attendanceTime, setAttendanceTime] = useState('07:30');
   const [attendanceClass, setAttendanceClass] = useState('');
-  const [attendanceEntries, setAttendanceEntries] = useState<AttendanceEntry[]>([]);
+  const [attendanceEntries, setAttendanceEntries] = useState<AttendanceEntry[]>(
+    [],
+  );
   const [attendanceLoading, setAttendanceLoading] = useState(false);
   const [attendanceSaving, setAttendanceSaving] = useState(false);
   const attendanceDirtyKeys = useRef(new Set<string>());
@@ -710,8 +766,9 @@ export function TeacherDashboard() {
             const classId = String(record.class_id);
             const key = `${attendanceDate}:${classId}:${studentId}`;
             const current = currentByKey.get(key);
-            const isSaved = record.attendance_id !== null
-              && record.attendance_id !== undefined;
+            const isSaved =
+              record.attendance_id !== null &&
+              record.attendance_id !== undefined;
             const preserveLocalChanges =
               !isSaved && attendanceDirtyKeys.current.has(key);
             if (isSaved) attendanceDirtyKeys.current.delete(key);
@@ -816,9 +873,10 @@ export function TeacherDashboard() {
     0,
   ];
   const filteredClassStudents = classStudents.filter((student) => {
-    const matchesQuery = `${student.name} ${student.nickname ?? ''} ${studentCode(student.id)}`
-      .toLowerCase()
-      .includes(query.trim().toLowerCase());
+    const matchesQuery =
+      `${student.name} ${student.nickname ?? ''} ${studentCode(student.id)}`
+        .toLowerCase()
+        .includes(query.trim().toLowerCase());
     const matchesClass =
       !studentClass || student.className.split(', ').includes(studentClass);
     return matchesQuery && matchesClass;
@@ -990,9 +1048,7 @@ export function TeacherDashboard() {
   function toggleAllAttendanceSelection() {
     const visibleIds: string[] = attendanceStudents
       .filter(({ saved }) => !saved)
-      .map(
-      ({ student }) => student.id,
-    );
+      .map(({ student }) => student.id);
     const selectedIds = new Set<string>(selectedAttendanceIds);
     const allVisibleSelected = visibleIds.every((id) => selectedIds.has(id));
     const visibleIdSet = new Set(visibleIds);
@@ -1004,8 +1060,9 @@ export function TeacherDashboard() {
   }
 
   async function saveAttendance() {
-    const visibleEntries = attendanceEntries
-      .filter(({ classId }) => !attendanceClass || classId === attendanceClass)
+    const visibleEntries = attendanceEntries.filter(
+      ({ classId }) => !attendanceClass || classId === attendanceClass,
+    );
     if (!visibleEntries.length) {
       setAttendanceNotice(
         'There are no students in the selected class to save.',
@@ -1014,7 +1071,9 @@ export function TeacherDashboard() {
     }
     const pendingEntries = visibleEntries.filter(({ saved }) => !saved);
     if (!pendingEntries.length) {
-      setAttendanceNotice('Attendance has already been saved for all students in this selection.');
+      setAttendanceNotice(
+        'Attendance has already been saved for all students in this selection.',
+      );
       return;
     }
     const unrecordedCount = pendingEntries.filter(
@@ -1040,7 +1099,9 @@ export function TeacherDashboard() {
       ({ status, remarks }) => status === 'excused' && !remarks.trim(),
     );
     if (incompleteExcuse) {
-      setAttendanceNotice('Enter a note explaining why each excused student is excused.');
+      setAttendanceNotice(
+        'Enter a note explaining why each excused student is excused.',
+      );
       return;
     }
     const entries = pendingEntries
@@ -1110,7 +1171,9 @@ export function TeacherDashboard() {
         remarks: entry.remarks,
       }));
     if (!savedEntries.length) {
-      setAttendanceNotice(`No saved attendance is available to export for ${attendanceDate}.`);
+      setAttendanceNotice(
+        `No saved attendance is available to export for ${attendanceDate}.`,
+      );
       return;
     }
 
@@ -1153,7 +1216,9 @@ export function TeacherDashboard() {
         .map((header) => `<th>${escapeHtml(header)}</th>`)
         .join('');
       const documentContent = `<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}th,td{border:1px solid #777;padding:6px;text-align:left}th{background:#e8f1fb}</style></head><body><h1>KalingaLink Daily Attendance</h1><p>Date: ${escapeHtml(attendanceDate)}</p><table><thead><tr>${tableHeaders}</tr></thead><tbody>${tableRows}</tbody></table></body></html>`;
-      file = new Blob([documentContent], { type: 'application/msword;charset=utf-8' });
+      file = new Blob([documentContent], {
+        type: 'application/msword;charset=utf-8',
+      });
       extension = 'doc';
     }
     const objectUrl = URL.createObjectURL(file);
@@ -1201,155 +1266,155 @@ export function TeacherDashboard() {
                 <h2 className={styles.navigationHeading}>{item.section}</h2>
               )}
               <button
-              aria-current={
-                (isTeacherEnrollmentPage &&
-                  item.label === 'Enrollment Management') ||
-                (isStudentsPage && item.label === 'Students') ||
-                (isAttendancePage && item.label === 'Daily Attendance') ||
-                (isLearningActivitiesPage &&
-                  item.label === 'Learning Activities') ||
-                (isLessonPlansPage &&
-                  item.label === 'Lesson Plans and Materials') ||
-                (isChildrenProgressPage &&
-                  item.label === 'Children Progress') ||
-                (isTeacherTasksPage &&
-                  item.label === 'My Task and Submissions') ||
-                (isTeacherNotificationsPage &&
-                  item.label === 'Notifications') ||
-                (isTeacherProfilePage && item.label === 'Profile') ||
-                (isTeacherEventsPage && item.label === 'Events') ||
-                (!isStudentsPage &&
-                  !isTeacherEventsPage &&
-                  !isTeacherEnrollmentPage &&
-                  !isAttendancePage &&
-                  !isLearningActivitiesPage &&
-                  !isLessonPlansPage &&
-                  !isChildrenProgressPage &&
-                  !isTeacherTasksPage &&
-                  !isTeacherNotificationsPage &&
-                  !isTeacherProfilePage &&
-                  item.label === 'Dashboard')
-                  ? 'page'
-                  : undefined
-              }
-              className={`${styles.navItem} ${
-                (isTeacherEnrollmentPage &&
-                  item.label === 'Enrollment Management') ||
-                (isStudentsPage && item.label === 'Students') ||
-                (isAttendancePage && item.label === 'Daily Attendance') ||
-                (isLearningActivitiesPage &&
-                  item.label === 'Learning Activities') ||
-                (isLessonPlansPage &&
-                  item.label === 'Lesson Plans and Materials') ||
-                (isChildrenProgressPage &&
-                  item.label === 'Children Progress') ||
-                (isTeacherTasksPage &&
-                  item.label === 'My Task and Submissions') ||
-                (isTeacherNotificationsPage &&
-                  item.label === 'Notifications') ||
-                (isTeacherProfilePage && item.label === 'Profile') ||
-                (isTeacherEventsPage && item.label === 'Events') ||
-                (!isStudentsPage &&
-                  !isTeacherEventsPage &&
-                  !isTeacherEnrollmentPage &&
-                  !isAttendancePage &&
-                  !isLearningActivitiesPage &&
-                  !isLessonPlansPage &&
-                  !isChildrenProgressPage &&
-                  !isTeacherTasksPage &&
-                  !isTeacherNotificationsPage &&
-                  !isTeacherProfilePage &&
-                  item.label === 'Dashboard')
-                  ? styles.activeNavItem
-                  : ''
-              }`}
-              type="button"
-              disabled={
-                ![
-                  'Dashboard',
-                  'Events',
-                  'Enrollment Management',
-                  'Students',
-                  'Daily Attendance',
-                  'Learning Activities',
-                  'Lesson Plans and Materials',
-                  'Children Progress',
-                  'My Task and Submissions',
-                  'Notifications',
-                  'Profile',
-                ].includes(item.label)
-              }
-              onClick={() => {
-                setIsNavigationOpen(false);
-                if (item.label === 'Dashboard') {
-                  setQuery('');
-                  navigate(routePaths.teacherDashboard);
-                } else if (item.label === 'Events') {
-                  setQuery('');
-                  navigate(routePaths.teacherEvents);
-                } else if (item.label === 'Enrollment Management') {
-                  setQuery('');
-                  navigate(routePaths.teacherEnrollment);
-                } else if (item.label === 'Students') {
-                  setQuery('');
-                  navigate(routePaths.teacherStudents);
-                } else if (item.label === 'Daily Attendance') {
-                  setQuery('');
-                  navigate(routePaths.teacherAttendance);
-                } else if (item.label === 'Learning Activities') {
-                  setQuery('');
-                  navigate(routePaths.teacherLearningActivities);
-                } else if (item.label === 'Lesson Plans and Materials') {
-                  setQuery('');
-                  navigate(routePaths.teacherLessonPlans);
-                } else if (item.label === 'Children Progress') {
-                  setQuery('');
-                  navigate(routePaths.teacherChildrenProgress);
-                } else if (item.label === 'My Task and Submissions') {
-                  setQuery('');
-                  navigate(routePaths.teacherTasks);
-                } else if (item.label === 'Notifications') {
-                  setQuery('');
-                  navigate(routePaths.teacherNotifications);
-                } else if (item.label === 'Profile') {
-                  setQuery('');
-                  navigate(routePaths.teacherProfile);
+                aria-current={
+                  (isTeacherEnrollmentPage &&
+                    item.label === 'Enrollment Management') ||
+                  (isStudentsPage && item.label === 'Students') ||
+                  (isAttendancePage && item.label === 'Daily Attendance') ||
+                  (isLearningActivitiesPage &&
+                    item.label === 'Learning Activities') ||
+                  (isLessonPlansPage &&
+                    item.label === 'Lesson Plans and Materials') ||
+                  (isChildrenProgressPage &&
+                    item.label === 'Children Progress') ||
+                  (isTeacherTasksPage &&
+                    item.label === 'My Task and Submissions') ||
+                  (isTeacherNotificationsPage &&
+                    item.label === 'Notifications') ||
+                  (isTeacherProfilePage && item.label === 'Profile') ||
+                  (isTeacherEventsPage && item.label === 'Events') ||
+                  (!isStudentsPage &&
+                    !isTeacherEventsPage &&
+                    !isTeacherEnrollmentPage &&
+                    !isAttendancePage &&
+                    !isLearningActivitiesPage &&
+                    !isLessonPlansPage &&
+                    !isChildrenProgressPage &&
+                    !isTeacherTasksPage &&
+                    !isTeacherNotificationsPage &&
+                    !isTeacherProfilePage &&
+                    item.label === 'Dashboard')
+                    ? 'page'
+                    : undefined
                 }
-              }}
-              title={
-                [
-                  'Dashboard',
-                  'Events',
-                  'Enrollment Management',
-                  'Students',
-                  'Daily Attendance',
-                  'Learning Activities',
-                  'Lesson Plans and Materials',
-                  'Children Progress',
-                  'My Task and Submissions',
-                  'Notifications',
-                  'Profile',
-                ].includes(item.label)
-                  ? undefined
-                  : `${item.label} is not available yet`
-              }
-            >
-              <Icon name={item.icon} />
-              <span>
-                {item.label === 'Lesson Plans and Materials'
-                  ? 'Lesson Plans & Materials'
-                  : item.label === 'My Task and Submissions'
-                    ? 'My Task & Submissions'
-                    : item.label}
-              </span>
-              {item.label === 'Notifications' && unreadNotifications > 0 && (
-                <span
-                  aria-label={`${unreadNotifications} unread notifications`}
-                  className={styles.navBadge}
-                >
-                  {unreadNotifications}
+                className={`${styles.navItem} ${
+                  (isTeacherEnrollmentPage &&
+                    item.label === 'Enrollment Management') ||
+                  (isStudentsPage && item.label === 'Students') ||
+                  (isAttendancePage && item.label === 'Daily Attendance') ||
+                  (isLearningActivitiesPage &&
+                    item.label === 'Learning Activities') ||
+                  (isLessonPlansPage &&
+                    item.label === 'Lesson Plans and Materials') ||
+                  (isChildrenProgressPage &&
+                    item.label === 'Children Progress') ||
+                  (isTeacherTasksPage &&
+                    item.label === 'My Task and Submissions') ||
+                  (isTeacherNotificationsPage &&
+                    item.label === 'Notifications') ||
+                  (isTeacherProfilePage && item.label === 'Profile') ||
+                  (isTeacherEventsPage && item.label === 'Events') ||
+                  (!isStudentsPage &&
+                    !isTeacherEventsPage &&
+                    !isTeacherEnrollmentPage &&
+                    !isAttendancePage &&
+                    !isLearningActivitiesPage &&
+                    !isLessonPlansPage &&
+                    !isChildrenProgressPage &&
+                    !isTeacherTasksPage &&
+                    !isTeacherNotificationsPage &&
+                    !isTeacherProfilePage &&
+                    item.label === 'Dashboard')
+                    ? styles.activeNavItem
+                    : ''
+                }`}
+                type="button"
+                disabled={
+                  ![
+                    'Dashboard',
+                    'Events',
+                    'Enrollment Management',
+                    'Students',
+                    'Daily Attendance',
+                    'Learning Activities',
+                    'Lesson Plans and Materials',
+                    'Children Progress',
+                    'My Task and Submissions',
+                    'Notifications',
+                    'Profile',
+                  ].includes(item.label)
+                }
+                onClick={() => {
+                  setIsNavigationOpen(false);
+                  if (item.label === 'Dashboard') {
+                    setQuery('');
+                    navigate(routePaths.teacherDashboard);
+                  } else if (item.label === 'Events') {
+                    setQuery('');
+                    navigate(routePaths.teacherEvents);
+                  } else if (item.label === 'Enrollment Management') {
+                    setQuery('');
+                    navigate(routePaths.teacherEnrollment);
+                  } else if (item.label === 'Students') {
+                    setQuery('');
+                    navigate(routePaths.teacherStudents);
+                  } else if (item.label === 'Daily Attendance') {
+                    setQuery('');
+                    navigate(routePaths.teacherAttendance);
+                  } else if (item.label === 'Learning Activities') {
+                    setQuery('');
+                    navigate(routePaths.teacherLearningActivities);
+                  } else if (item.label === 'Lesson Plans and Materials') {
+                    setQuery('');
+                    navigate(routePaths.teacherLessonPlans);
+                  } else if (item.label === 'Children Progress') {
+                    setQuery('');
+                    navigate(routePaths.teacherChildrenProgress);
+                  } else if (item.label === 'My Task and Submissions') {
+                    setQuery('');
+                    navigate(routePaths.teacherTasks);
+                  } else if (item.label === 'Notifications') {
+                    setQuery('');
+                    navigate(routePaths.teacherNotifications);
+                  } else if (item.label === 'Profile') {
+                    setQuery('');
+                    navigate(routePaths.teacherProfile);
+                  }
+                }}
+                title={
+                  [
+                    'Dashboard',
+                    'Events',
+                    'Enrollment Management',
+                    'Students',
+                    'Daily Attendance',
+                    'Learning Activities',
+                    'Lesson Plans and Materials',
+                    'Children Progress',
+                    'My Task and Submissions',
+                    'Notifications',
+                    'Profile',
+                  ].includes(item.label)
+                    ? undefined
+                    : `${item.label} is not available yet`
+                }
+              >
+                <Icon name={item.icon} />
+                <span>
+                  {item.label === 'Lesson Plans and Materials'
+                    ? 'Lesson Plans & Materials'
+                    : item.label === 'My Task and Submissions'
+                      ? 'My Task & Submissions'
+                      : item.label}
                 </span>
-              )}
+                {item.label === 'Notifications' && unreadNotifications > 0 && (
+                  <span
+                    aria-label={`${unreadNotifications} unread notifications`}
+                    className={styles.navBadge}
+                  >
+                    {unreadNotifications}
+                  </span>
+                )}
               </button>
             </Fragment>
           ))}
@@ -1464,9 +1529,17 @@ export function TeacherDashboard() {
               onClick={() => navigate(routePaths.teacherNotifications)}
             >
               <Icon name="bell" />
-              {unreadNotifications > 0 && (
-                <span>{unreadNotifications}</span>
-              )}
+              {unreadNotifications > 0 && <span>{unreadNotifications}</span>}
+            </button>
+            <button
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              className={styles.themeToggle}
+              disabled={themeSaving}
+              title={`${theme === 'dark' ? 'Dark' : 'Light'} mode`}
+              type="button"
+              onClick={() => void toggleTheme()}
+            >
+              <Icon name={theme === 'dark' ? 'moon' : 'sun'} />
             </button>
             <button
               aria-label="View my profile"
@@ -1493,6 +1566,13 @@ export function TeacherDashboard() {
                 ⌄
               </span>
             </button>
+            <span
+              aria-live="polite"
+              className={styles.visuallyHidden}
+              role="status"
+            >
+              {themeError}
+            </span>
           </div>
         </header>
 
@@ -1530,7 +1610,10 @@ export function TeacherDashboard() {
                 </span>
                 <span>
                   <h1>Daily Attendance</h1>
-                  <p>Record and manage your students’ attendance for the selected date.</p>
+                  <p>
+                    Record and manage your students’ attendance for the selected
+                    date.
+                  </p>
                 </span>
               </div>
             </header>
@@ -1555,7 +1638,9 @@ export function TeacherDashboard() {
               </label>
               <label className={styles.attendanceControl}>
                 <Icon name="clock" />
-                <span className={styles.visuallyHidden}>Default late arrival time</span>
+                <span className={styles.visuallyHidden}>
+                  Default late arrival time
+                </span>
                 <input
                   aria-label="Default late arrival time"
                   type="time"
@@ -1610,7 +1695,10 @@ export function TeacherDashboard() {
                 <Icon name="file" />
                 {attendanceSaving ? 'Saving…' : 'Save Attendance'}
               </button>
-              <div aria-label="Export attendance" className={styles.attendanceExports}>
+              <div
+                aria-label="Export attendance"
+                className={styles.attendanceExports}
+              >
                 <button
                   className={styles.exportAttendance}
                   disabled={attendanceLoading}
@@ -1653,10 +1741,12 @@ export function TeacherDashboard() {
                               attendanceStudents
                                 .filter(({ saved }) => !saved)
                                 .every(({ student }) =>
-                                selectedAttendanceIds.includes(student.id),
-                              )
+                                  selectedAttendanceIds.includes(student.id),
+                                )
                             }
-                            disabled={!attendanceStudents.some(({ saved }) => !saved)}
+                            disabled={
+                              !attendanceStudents.some(({ saved }) => !saved)
+                            }
                             type="checkbox"
                             onChange={toggleAllAttendanceSelection}
                           />
@@ -1680,7 +1770,10 @@ export function TeacherDashboard() {
                         </tr>
                       )}
                       {attendanceStudents.map(
-                        ({ student, status, remarks, timeIn, saved }, index) => (
+                        (
+                          { student, status, remarks, timeIn, saved },
+                          index,
+                        ) => (
                           <tr key={student.id}>
                             <td>
                               <input
@@ -1776,7 +1869,9 @@ export function TeacherDashboard() {
                                 )}
                                 <input
                                   aria-label={`Notes for ${student.name}`}
-                                  aria-required={status === 'late' || status === 'excused'}
+                                  aria-required={
+                                    status === 'late' || status === 'excused'
+                                  }
                                   className={styles.attendanceRemarks}
                                   disabled={saved}
                                   maxLength={2000}
@@ -1787,7 +1882,9 @@ export function TeacherDashboard() {
                                         ? 'Reason for excuse'
                                         : 'Optional remarks'
                                   }
-                                  required={status === 'late' || status === 'excused'}
+                                  required={
+                                    status === 'late' || status === 'excused'
+                                  }
                                   type="text"
                                   value={remarks}
                                   onChange={(event) =>
@@ -1917,7 +2014,15 @@ export function TeacherDashboard() {
                 <span className={styles.studentCount}>
                   Total Students:{' '}
                   <strong>
-                    {studentsLoading ? <BouncingDots label="Loading student count" size="small" inline /> : classStudents.length}
+                    {studentsLoading ? (
+                      <BouncingDots
+                        label="Loading student count"
+                        size="small"
+                        inline
+                      />
+                    ) : (
+                      classStudents.length
+                    )}
                   </strong>
                 </span>
               </header>
@@ -2400,7 +2505,11 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Total Students</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.total_students ??
-                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
+                      (dashboardLoading ? (
+                        <BouncingDots size="small" inline />
+                      ) : (
+                        '—'
+                      ))}
                   </strong>
                   <span className={styles.statDetail}>
                     Enrolled in your class
@@ -2416,7 +2525,11 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Present Today</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.present_today ??
-                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
+                      (dashboardLoading ? (
+                        <BouncingDots size="small" inline />
+                      ) : (
+                        '—'
+                      ))}
                   </strong>
                   <span className={styles.statDetail}>
                     {dashboardData
@@ -2434,7 +2547,11 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Learning Activities</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.learning_activities ??
-                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
+                      (dashboardLoading ? (
+                        <BouncingDots size="small" inline />
+                      ) : (
+                        '—'
+                      ))}
                   </strong>
                   <span className={styles.statDetail}>Created this week</span>
                   <span aria-hidden="true" className={styles.statArrow}>
@@ -2448,7 +2565,11 @@ export function TeacherDashboard() {
                   <span className={styles.statLabel}>Pending Submissions</span>
                   <strong className={styles.statValue}>
                     {dashboardData?.pending_submissions ??
-                      (dashboardLoading ? <BouncingDots size="small" inline /> : '—')}
+                      (dashboardLoading ? (
+                        <BouncingDots size="small" inline />
+                      ) : (
+                        '—'
+                      ))}
                   </strong>
                   <span className={styles.statDetail}>From your tasks</span>
                   <span aria-hidden="true" className={styles.statArrow}>
@@ -2467,11 +2588,7 @@ export function TeacherDashboard() {
                       <Icon name="calendar" />
                       Attendance Overview
                     </h2>
-                    <span
-                      className={styles.periodButton}
-                    >
-                      This Week
-                    </span>
+                    <span className={styles.periodButton}>This Week</span>
                   </header>
                   <div
                     aria-label="Weekly attendance bar chart showing present and absent students"
@@ -2622,7 +2739,9 @@ export function TeacherDashboard() {
                       </li>
                     )}
                     {dashboardLoading && (
-                      <li className={styles.noResults}><BouncingDots label="Loading students" /></li>
+                      <li className={styles.noResults}>
+                        <BouncingDots label="Loading students" />
+                      </li>
                     )}
                   </ul>
                 </section>

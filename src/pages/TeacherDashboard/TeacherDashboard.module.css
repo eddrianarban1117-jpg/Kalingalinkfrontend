@@ -400,6 +400,7 @@
 }
 
 .notificationButton,
+.themeToggle,
 .profile {
   display: flex;
   align-items: center;
@@ -414,6 +415,34 @@
   width: 2rem;
   height: 2.5rem;
   justify-content: center;
+}
+
+.themeToggle {
+  width: 2rem;
+  height: 2.5rem;
+  flex: 0 0 2rem;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.themeToggle:hover:not(:disabled) {
+  color: #0b56a8;
+  background: #eaf4ff;
+}
+
+.themeToggle:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.themeToggle svg {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .notificationButton svg {
