@@ -384,7 +384,7 @@
 .backBrand {
   position: relative;
   z-index: 1;
-  min-height: 23%;
+  min-height: 20%;
   border-bottom: 1px solid #d9e8fa;
 }
 
@@ -421,8 +421,9 @@
 .backDetails {
   display: grid;
   min-width: 0;
-  grid-template-rows: repeat(6, minmax(0, 1fr));
-  align-items: center;
+  grid-template-rows: repeat(6, auto);
+  align-content: center;
+  gap: 0.55cqi;
   padding-right: 3cqi;
   border-right: 0.35cqi solid #bed9fb;
 }
@@ -433,7 +434,7 @@
   grid-template-columns: 3.2cqi 24cqi minmax(0, 1fr);
   align-items: center;
   gap: 1.1cqi;
-  padding: 0.65cqi 0;
+  padding: 0.2cqi 0;
   color: #0c438f;
 }
 
@@ -680,6 +681,35 @@
     flex: 1;
     padding-inline: 0.65rem;
     font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 621px) and (max-height: 760px) {
+  .viewer {
+    width: min(100%, 46rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .viewerBody {
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .cardStage {
+    width: min(100%, 36rem);
+  }
+
+  .sideSelector button {
+    min-height: 1.9rem;
+  }
+
+  .viewerActions {
+    padding-top: 0.2rem;
+  }
+
+  .viewerActions button {
+    min-height: 2.4rem;
+    padding-block: 0.4rem;
   }
 }
 
