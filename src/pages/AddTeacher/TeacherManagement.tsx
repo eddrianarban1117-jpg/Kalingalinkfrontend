@@ -861,75 +861,79 @@ export function TeacherManagement() {
                 )}
               </section>
 
-              <section className={styles.reviewSection}>
-                <h3>Notes &amp; Review</h3>
-                {['approved_awaiting_acceptance', 'active'].includes(selectedTeacher.status) && (
-                  <div className={styles.messageStatus}>
-                    <strong>Approval message</strong>
-                    <span>
-                      Email status: {selectedTeacher.email_status ?? 'not sent'}
-                      {selectedTeacher.message_sent_at
-                        ? ` · ${relativeTime(selectedTeacher.message_sent_at)}`
-                        : ''}
-                    </span>
-                    {selectedTeacher.email_error && <span>{selectedTeacher.email_error}</span>}
+              {!selectedTeacher.message_sent_at && (
+                <>
+                  <section className={styles.reviewSection}>
+                    <h3>Notes &amp; Review</h3>
+                    {['approved_awaiting_acceptance', 'active'].includes(selectedTeacher.status) && (
+                      <div className={styles.messageStatus}>
+                        <strong>Approval message</strong>
+                        <span>
+                          Email status: {selectedTeacher.email_status ?? 'not sent'}
+                          {selectedTeacher.message_sent_at
+                            ? ` · ${relativeTime(selectedTeacher.message_sent_at)}`
+                            : ''}
+                        </span>
+                        {selectedTeacher.email_error && <span>{selectedTeacher.email_error}</span>}
+                        <button
+                          className={styles.reviewButton}
+                          disabled={reviewSaving}
+                          onClick={() => void sendApprovalMessage()}
+                          type="button"
+                        >
+                          {reviewSaving ? 'Sending…' : 'Send message'}
+                        </button>
+                      </div>
+                    )}
+                    <label className={styles.reviewNoteField}>
+                      <span>Admin notes</span>
+                      <textarea
+                        maxLength={3000}
+                        onChange={(event) => setReviewNote(event.target.value)}
+                        placeholder="Add review notes or the reason for rejection."
+                        rows={4}
+                        value={reviewNote}
+                      />
+                    </label>
+                    {selectedTeacher.review_history.length > 0 && (
+                      <ol className={styles.reviewHistory}>
+                        {selectedTeacher.review_history.map((event) => (
+                          <li key={event.id}>
+                            <strong>{event.status}</strong>
+                            <time dateTime={event.created_at}>{relativeTime(event.created_at)}</time>
+                            <p>{event.message}</p>
+                            {(event.reviewer || event.reviewer_role) && (
+                              <small>
+                                {event.reviewer ?? 'KalingaLink'}
+                                {event.reviewer_role ? ` · ${event.reviewer_role}` : ''}
+                              </small>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </section>
+
+                  <div className={styles.reviewActions}>
                     <button
-                      className={styles.reviewButton}
-                      disabled={reviewSaving}
-                      onClick={() => void sendApprovalMessage()}
+                      className={styles.approveButton}
+                      disabled={reviewSaving || ['active', 'deactivated', 'approved_awaiting_acceptance'].includes(selectedTeacher.status)}
+                      onClick={() => void submitReview('approve')}
                       type="button"
                     >
-                      {reviewSaving ? 'Sending…' : 'Send message'}
+                      <Icon name="check" /> Approve
+                    </button>
+                    <button
+                      className={styles.rejectButton}
+                      disabled={reviewSaving || selectedTeacher.status === 'rejected'}
+                      onClick={() => void submitReview('reject')}
+                      type="button"
+                    >
+                      <Icon name="reject" /> Reject
                     </button>
                   </div>
-                )}
-                <label className={styles.reviewNoteField}>
-                  <span>Admin notes</span>
-                  <textarea
-                    maxLength={3000}
-                    onChange={(event) => setReviewNote(event.target.value)}
-                    placeholder="Add review notes or the reason for rejection."
-                    rows={4}
-                    value={reviewNote}
-                  />
-                </label>
-                {selectedTeacher.review_history.length > 0 && (
-                  <ol className={styles.reviewHistory}>
-                    {selectedTeacher.review_history.map((event) => (
-                      <li key={event.id}>
-                        <strong>{event.status}</strong>
-                        <time dateTime={event.created_at}>{relativeTime(event.created_at)}</time>
-                        <p>{event.message}</p>
-                        {(event.reviewer || event.reviewer_role) && (
-                          <small>
-                            {event.reviewer ?? 'KalingaLink'}
-                            {event.reviewer_role ? ` · ${event.reviewer_role}` : ''}
-                          </small>
-                        )}
-                      </li>
-                    ))}
-                  </ol>
-                )}
-              </section>
-
-              <div className={styles.reviewActions}>
-                <button
-                  className={styles.approveButton}
-                  disabled={reviewSaving || ['active', 'deactivated', 'approved_awaiting_acceptance'].includes(selectedTeacher.status)}
-                  onClick={() => void submitReview('approve')}
-                  type="button"
-                >
-                  <Icon name="check" /> Approve
-                </button>
-                <button
-                  className={styles.rejectButton}
-                  disabled={reviewSaving || selectedTeacher.status === 'rejected'}
-                  onClick={() => void submitReview('reject')}
-                  type="button"
-                >
-                  <Icon name="reject" /> Reject
-                </button>
-              </div>
+                </>
+              )}
               {reviewMessage && (
                 <p className={reviewError ? styles.errorState : styles.reviewSuccess} role={reviewError ? 'alert' : 'status'}>
                   {reviewMessage}
