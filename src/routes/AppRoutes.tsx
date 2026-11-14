@@ -27,7 +27,7 @@ export function AppRoutes() {
   return (
     <PageTransition>
     <Routes>
-      <Route path={routePaths.welcome} element={<GuestOnlyRoute><Welcome /></GuestOnlyRoute>} />
+      <Route path={routePaths.welcome} element={<Welcome />} />
       <Route path={routePaths.accountChoice} element={<GuestOnlyRoute><AccountChoice /></GuestOnlyRoute>} />
       <Route path={routePaths.signup} element={<GuestOnlyRoute redirectAuthenticated={false}><Login /></GuestOnlyRoute>} />
       <Route path={routePaths.parentSignup} element={<ParentRegistration />} />
