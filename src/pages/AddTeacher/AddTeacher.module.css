@@ -434,6 +434,47 @@
   line-height: 1.4;
 }
 
+.emailVerificationError,
+.emailVerificationMessage {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.63rem;
+  line-height: 1.45;
+}
+
+.emailVerificationError {
+  color: var(--admin-error);
+}
+
+.emailVerificationMessage {
+  color: var(--admin-blue-dark);
+}
+
+.emailVerificationShake {
+  animation: email-verification-shake 360ms ease;
+}
+
+@keyframes email-verification-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-0.3rem);
+  }
+
+  75% {
+    transform: translateX(0.3rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emailVerificationShake {
+    animation: none;
+  }
+}
+
 .inputWithAction {
   display: flex;
   min-width: 0;

@@ -202,6 +202,15 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
   const [showRegistrationPassword, setShowRegistrationPassword] = useState(false);
   const [showConfirmRegistrationPassword, setShowConfirmRegistrationPassword] =
     useState(false);
+  const [emailCodeSent, setEmailCodeSent] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailVerificationChallengeId, setEmailVerificationChallengeId] =
+    useState('');
+  const [emailVerificationCode, setEmailVerificationCode] = useState('');
+  const [emailVerificationLoading, setEmailVerificationLoading] =
+    useState(false);
+  const [emailVerificationError, setEmailVerificationError] = useState('');
+  const [emailVerificationMessage, setEmailVerificationMessage] = useState('');
   const [selectedCdc, setSelectedCdc] = useState('');
   const [photoPreview, setPhotoPreview] = useState('');
   const [photoError, setPhotoError] = useState('');
@@ -259,10 +268,116 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
     setPhotoPreview(URL.createObjectURL(file));
   }
 
+  function resetEmailVerification() {
+    setEmailCodeSent(false);
+    setEmailVerified(false);
+    setEmailVerificationChallengeId('');
+    setEmailVerificationCode('');
+    setEmailVerificationError('');
+    setEmailVerificationMessage('');
+  }
+
+  async function sendTeacherEmailCode() {
+    const emailInput = document.getElementById('loginEmail');
+    if (
+      emailInput instanceof HTMLInputElement &&
+      !emailInput.reportValidity()
+    ) {
+      return;
+    }
+
+    setEmailVerificationLoading(true);
+    setEmailVerificationError('');
+    setEmailVerificationMessage('');
+    try {
+      const result = await request<{
+        message?: string;
+        data?: { challenge_id?: string };
+      }>('/api/register/teacher/email-code', {
+        method: 'POST',
+        body: JSON.stringify({ email: loginEmail.trim() }),
+      });
+      const challengeId = result.data?.challenge_id;
+      if (!challengeId) {
+        throw new Error(
+          'The verification service returned an invalid challenge. Request a new code.',
+        );
+      }
+      setEmailCodeSent(true);
+      setEmailVerified(false);
+      setEmailVerificationChallengeId(challengeId);
+      setEmailVerificationCode('');
+      setEmailVerificationMessage(
+        result.message ??
+          'A verification code was sent. Check your inbox and spam folder.',
+      );
+    } catch (error) {
+      setEmailVerificationError(
+        error instanceof Error
+          ? error.message
+          : 'We could not send a verification code. Check the email address and try again.',
+      );
+    } finally {
+      setEmailVerificationLoading(false);
+    }
+  }
+
+  async function verifyTeacherEmailCode() {
+    if (!emailVerificationChallengeId) {
+      setEmailVerificationError(
+        'Request a new verification code before continuing.',
+      );
+      setEmailVerificationMessage('');
+      return;
+    }
+    if (!/^\d{6}$/.test(emailVerificationCode)) {
+      setEmailVerificationError('Enter the 6-digit code sent to your email.');
+      setEmailVerificationMessage('');
+      return;
+    }
+
+    setEmailVerificationLoading(true);
+    setEmailVerificationError('');
+    setEmailVerificationMessage('');
+    try {
+      const result = await request<{ message?: string }>(
+        '/api/register/teacher/verify-email',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            email: loginEmail.trim(),
+            code: emailVerificationCode,
+            challenge_id: emailVerificationChallengeId,
+          }),
+        },
+      );
+      setEmailVerified(true);
+      setEmailVerificationMessage(result.message ?? 'Email address verified.');
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Email verification failed.';
+      setEmailVerificationError(
+        /incorrect or expired/i.test(errorMessage)
+          ? 'This email address could not be verified. Make sure the account exists, that you can access it, and that the code is correct.'
+          : errorMessage,
+      );
+      setEmailVerificationMessage('');
+    } finally {
+      setEmailVerificationLoading(false);
+    }
+  }
+
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage('');
 
+    if (isPublicRegistration && !emailVerified) {
+      setEmailVerificationError(
+        'Verify your login email before creating your account.',
+      );
+      setEmailVerificationMessage('');
+      return;
+    }
     if (!event.currentTarget.reportValidity()) return;
     if (photoError) {
       setMessage(photoError);
@@ -299,6 +414,7 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
           cdc: selectedCdc,
           password: registrationPassword,
           confirmPassword: confirmRegistrationPassword,
+          email_verification_challenge_id: emailVerificationChallengeId,
         }).forEach(([key, value]) => registrationPayload.append(key, value));
         formData.getAll('teacher_documents[]').forEach((value) => {
           if (value instanceof File) registrationPayload.append('teacher_documents[]', value);
@@ -340,7 +456,10 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
 
   function updatePersonalEmail(value: string) {
     setPersonalEmail(value);
-    if (!loginEmailEdited) setLoginEmail(value);
+    if (!loginEmailEdited) {
+      setLoginEmail(value);
+      resetEmailVerification();
+    }
   }
 
   return (
@@ -675,21 +794,123 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
                   </button>
                 </div>
               </Field>
-              <Field id="loginEmail" label={fieldCopy.loginEmail} required>
-                <input
-                  autoComplete="email"
-                  id="loginEmail"
-                  maxLength={254}
-                  onChange={(event) => {
-                    setLoginEmailEdited(true);
-                    setLoginEmail(event.target.value);
-                  }}
-                  placeholder={placeholders.loginEmail}
-                  required
-                  type="email"
-                  value={loginEmail}
-                />
+              <Field
+                id="loginEmail"
+                label={fieldCopy.loginEmail}
+                required
+                hint={
+                  isPublicRegistration
+                    ? 'Use an email account you can access. A verification code is required.'
+                    : undefined
+                }
+              >
+                <div
+                  className={`${styles.inputWithAction} ${emailVerificationError ? styles.emailVerificationShake : ''}`}
+                >
+                  <input
+                    autoComplete="email"
+                    aria-invalid={
+                      isPublicRegistration && Boolean(emailVerificationError)
+                    }
+                    aria-describedby={
+                      isPublicRegistration
+                        ? emailVerificationError
+                          ? 'teacherEmailVerificationError'
+                          : 'loginEmail-hint'
+                        : undefined
+                    }
+                    disabled={isPublicRegistration && emailVerificationLoading}
+                    id="loginEmail"
+                    maxLength={254}
+                    onChange={(event) => {
+                      setLoginEmailEdited(true);
+                      setLoginEmail(event.target.value);
+                      resetEmailVerification();
+                    }}
+                    placeholder={placeholders.loginEmail}
+                    required
+                    type="email"
+                    value={loginEmail}
+                  />
+                  {isPublicRegistration && (
+                    <button
+                      disabled={emailVerificationLoading || emailVerified}
+                      onClick={() => void sendTeacherEmailCode()}
+                      type="button"
+                    >
+                      {emailVerificationLoading
+                        ? 'Sending…'
+                        : emailCodeSent
+                          ? 'Resend Code'
+                          : 'Send Code'}
+                    </button>
+                  )}
+                </div>
               </Field>
+              {isPublicRegistration && emailCodeSent && !emailVerified && (
+                <Field
+                  id="teacherEmailVerificationCode"
+                  label="Email Verification Code"
+                  required
+                  hint="Enter the 6-digit code sent to your login email."
+                >
+                  <div
+                    className={`${styles.inputWithAction} ${emailVerificationError ? styles.emailVerificationShake : ''}`}
+                  >
+                    <input
+                      id="teacherEmailVerificationCode"
+                      autoComplete="one-time-code"
+                      aria-invalid={Boolean(emailVerificationError)}
+                      aria-describedby={
+                        emailVerificationError
+                          ? 'teacherEmailVerificationError'
+                          : 'teacherEmailVerificationCode-hint'
+                      }
+                      inputMode="numeric"
+                      maxLength={6}
+                      onChange={(event) => {
+                        setEmailVerificationCode(
+                          event.target.value.replace(/\D/g, '').slice(0, 6),
+                        );
+                        setEmailVerificationError('');
+                      }}
+                      pattern="\d{6}"
+                      placeholder="6-digit code"
+                      required
+                      value={emailVerificationCode}
+                    />
+                    <button
+                      disabled={emailVerificationLoading}
+                      onClick={() => void verifyTeacherEmailCode()}
+                      type="button"
+                    >
+                      {emailVerificationLoading ? 'Checking…' : 'Verify'}
+                    </button>
+                  </div>
+                </Field>
+              )}
+              {isPublicRegistration && emailVerificationError && (
+                <p
+                  className={styles.emailVerificationError}
+                  id="teacherEmailVerificationError"
+                  key={emailVerificationError}
+                  role="alert"
+                >
+                  {emailVerificationError}
+                </p>
+              )}
+              {isPublicRegistration &&
+                emailVerificationMessage &&
+                !emailVerified && (
+                  <p className={styles.emailVerificationMessage} role="status">
+                    {emailVerificationMessage}
+                  </p>
+                )}
+              {isPublicRegistration && emailVerified && (
+                <p className={styles.emailVerificationMessage} role="status">
+                  Email verified. You can create your account.
+                </p>
+              )}
               {isPublicRegistration && (
                 <>
                   <Field id="teacherRegistrationPassword" label="Password" required>
@@ -776,7 +997,6 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
               )}
             </div>
           </SectionCard>
-
         </div>
 
         <div aria-live="polite" className={styles.formMessage} role="alert">
