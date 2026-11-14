@@ -105,7 +105,7 @@ html[data-theme='dark']
   background-color: var(--theme-bg-content);
 }
 
-html[data-theme='dark'] :where([class*='sidebar']) {
+html[data-theme='dark'] :where([class*='sidebar']:not(img)) {
   border-color: var(--theme-border);
   color: var(--theme-text-primary);
   background:
