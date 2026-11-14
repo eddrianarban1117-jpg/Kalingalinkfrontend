@@ -40,6 +40,11 @@ const navigationGroups: {
     items: [
       { label: 'Dashboard', path: routePaths.parentDashboard, icon: 'home' },
       { label: 'Events', path: routePaths.parentEvents, icon: 'calendar' },
+      {
+        label: 'Activities & Assignments',
+        path: routePaths.parentActivities,
+        icon: 'tasks',
+      },
     ],
   },
   {
