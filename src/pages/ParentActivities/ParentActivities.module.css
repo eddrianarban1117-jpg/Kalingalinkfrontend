@@ -616,12 +616,25 @@
 
 .dialog {
   position: relative;
-  width: min(100%, 27rem);
+  display: grid;
+  width: min(100%, 64rem);
+  max-height: min(90dvh, 52rem);
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.4fr);
+  align-content: start;
+  gap: 0 1.5rem;
   padding: 1.4rem;
+  overflow-y: auto;
   border: 1px solid #d4e9fa;
   border-radius: 0.8rem;
   background: #fff;
   box-shadow: 0 1rem 2.5rem rgb(10 37 71 / 25%);
+}
+
+.dialog > .activityIcon,
+.dialog > .subjectTag,
+.dialog > h2,
+.dialog > p {
+  grid-column: 1 / -1;
 }
 
 .dialog .activityIcon {
@@ -642,8 +655,31 @@
 
 .dialog dl {
   display: grid;
+  grid-column: 1;
+  align-content: start;
   gap: 0.5rem;
   margin: 1rem 0;
+}
+
+.dialog > section {
+  grid-column: 2;
+  min-width: 0;
+  align-self: start;
+}
+
+.dialog > section h3 {
+  margin: 0.75rem 0 0.35rem;
+  color: #104d95;
+  font-size: 0.9rem;
+}
+
+.dialog > section ul,
+.dialog > section ol {
+  margin: 0;
+  padding-left: 1.4rem;
+  color: #285d9f;
+  font-size: 0.68rem;
+  line-height: 1.55;
 }
 
 .dialog dl div {
@@ -773,6 +809,17 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: start;
+  }
+
+  .dialog {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 1rem;
+  }
+
+  .dialog dl,
+  .dialog > section {
+    grid-column: 1;
   }
 
   .reminders {
