@@ -221,7 +221,7 @@ type DashboardData = {
     centers: number;
     enrolled_children: number;
     teachers: number;
-    parents: number;
+    parents?: number;
     active_children: number;
   };
   monthly_enrollments: { month: number; total: number }[];
@@ -640,11 +640,15 @@ export function MswdoDashboard({
                     <span className={styles.summaryLabel}>{card.label}</span>
                   </div>
                   <strong className={styles.summaryValue}>
-                    {dashboardLoading
-                      ? <BouncingDots label={`Loading ${card.label.toLowerCase()}`} size="small" inline />
-                      : dashboardData
-                        ? dashboardData.stats[card.key].toLocaleString()
-                        : '—'}
+                    {dashboardLoading ? (
+                      <BouncingDots
+                        label={`Loading ${card.label.toLowerCase()}`}
+                        size="small"
+                        inline
+                      />
+                    ) : (
+                      (dashboardData?.stats[card.key]?.toLocaleString() ?? '—')
+                    )}
                   </strong>
                   <span className={styles.summaryDetail}>{card.detail}</span>
                   <span className={styles.summaryArrow}>
