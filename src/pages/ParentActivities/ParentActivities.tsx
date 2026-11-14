@@ -515,7 +515,7 @@ export function ParentActivities({ search }: { search: string }) {
                       type="button"
                       onClick={() => setSelectedActivity(activity)}
                     >
-                      <span aria-hidden="true">⊙</span> View Details
+                      <span aria-hidden="true">⊙</span> View
                     </button>
                   </article>
                 ))
