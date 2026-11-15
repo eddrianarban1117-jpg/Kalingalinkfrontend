@@ -1100,14 +1100,12 @@ export function TeacherDashboard() {
     }
   }
 
-  async function reviewTransfer(action: 'approve' | 'reject' | 'dismiss' | 'accept' | 'decline') {
+  async function reviewTransfer(action: 'approve' | 'dismiss' | 'accept') {
     if (!selectedTransfer) return;
     const confirmations: Record<typeof action, string> = {
       approve: 'Approve this transfer request and send it to the receiving CDC?',
-      reject: 'Reject this transfer request? The child will remain enrolled here.',
-      dismiss: 'Hide this request from the pending review list without rejecting it?',
+      dismiss: 'Hide this request from your pending list without rejecting it?',
       accept: 'Accept this transfer and move the child to your CDC?',
-      decline: 'Decline this transfer? The child will remain enrolled at the previous CDC.',
     };
     if (!window.confirm(confirmations[action])) return;
     setTransferActionBusy(true);
@@ -2376,6 +2374,11 @@ export function TeacherDashboard() {
                             {transfer.previous_cdc_name} → {transfer.destination_cdc_name}
                           </span>
                           <small>
+                            Reason: {transfer.reason === 'Other'
+                              ? transfer.other_reason || 'Other'
+                              : transfer.reason}
+                          </small>
+                          <small>
                             {transfer.status === 'pending'
                               ? 'Awaiting your review'
                               : 'Awaiting your CDC decision'}
@@ -2984,14 +2987,22 @@ export function TeacherDashboard() {
                           <span>This transfer record is read-only.</span>
                         ) : selectedTransfer.status === 'pending' ? (
                           <>
-                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('dismiss')}>Dismiss</button>
-                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('reject')}>Reject</button>
-                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('approve')}>Approve for receiving CDC</button>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('dismiss')}>Cancel</button>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('approve')}>Approve</button>
                           </>
                         ) : selectedTransfer.status === 'awaiting_receiving_cdc' ? (
                           <>
-                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('decline')}>Decline</button>
-                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('accept')}>Accept transfer</button>
+                            <button
+                              disabled={transferActionBusy}
+                              type="button"
+                              onClick={() => {
+                                setSelectedTransfer(null);
+                                setTransferNotice('');
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('accept')}>Accept</button>
                           </>
                         ) : (
                           <span>This transfer record is read-only.</span>
