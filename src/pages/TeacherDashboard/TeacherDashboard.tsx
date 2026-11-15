@@ -396,6 +396,9 @@ type TeacherTransfer = {
     | 'rejected_current_teacher'
     | 'cancelled_by_parent';
   completed_at: string | null;
+  previous_teacher_user_id?: number | null;
+  receiving_teacher_user_id?: number;
+  receiving_teacher_accepted_at?: string | null;
   previous_cdc_name: string;
   destination_cdc_name: string;
   parent_name: string;
@@ -720,6 +723,7 @@ export function TeacherDashboard() {
   const [studentPhotoError, setStudentPhotoError] = useState('');
   const [studentsLoading, setStudentsLoading] = useState(true);
   const [studentsError, setStudentsError] = useState('');
+  const [studentsReloadKey, setStudentsReloadKey] = useState(0);
   const [teacherTransfers, setTeacherTransfers] = useState<TeacherTransfer[]>([]);
   const [transferListError, setTransferListError] = useState('');
   const [selectedTransfer, setSelectedTransfer] =
@@ -879,7 +883,7 @@ export function TeacherDashboard() {
       window.removeEventListener('focus', refresh);
       document.removeEventListener('visibilitychange', refresh);
     };
-  }, [isStudentsPage, request]);
+  }, [isStudentsPage, request, studentsReloadKey]);
 
   const studentPhotoIds = useMemo(
     () =>
@@ -1144,12 +1148,20 @@ export function TeacherDashboard() {
     }
   }
 
-  async function reviewTransfer(action: 'approve' | 'dismiss' | 'accept') {
+  const transferNeedsAcceptance = (transfer: TeacherTransfer) =>
+    transfer.status === 'awaiting_receiving_cdc' ||
+    (transfer.status === 'completed' && transfer.receiving_teacher_accepted_at === null && transfer.receiving_teacher_user_id === user?.id);
+
+  async function reviewTransfer(action: 'approve' | 'dismiss' | 'decline' | 'accept') {
     if (!selectedTransfer) return;
     const confirmations: Record<typeof action, string> = {
       approve: 'Approve this transfer request and send it to the receiving CDC?',
       dismiss: 'Hide this request from your pending list without rejecting it?',
-      accept: 'Accept this transfer and move the child to your CDC?',
+      decline: 'Decline this transfer? The child will remain enrolled at the previous CDC.',
+      accept:
+        selectedTransfer.status === 'completed'
+          ? 'Acknowledge this transferee, who is already on your roster?'
+          : 'Accept this transfer and move the child to your CDC?',
     };
     if (!window.confirm(confirmations[action])) return;
     setTransferActionBusy(true);
@@ -1160,11 +1172,18 @@ export function TeacherDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, remarks: transferRemarks }),
       });
-      setTeacherTransfers((current) =>
-        current.filter((transfer) => transfer.id !== selectedTransfer.id),
-      );
+      setTeacherTransfers((current) => current.filter((transfer) => transfer.id !== selectedTransfer.id));
+      if (action === 'accept') {
+        setStudentsReloadKey((key) => key + 1);
+      }
       setSelectedTransfer(null);
-      setTransferNotice('Transfer request updated.');
+      setTransferNotice(
+        action === 'accept'
+          ? 'The transferee was accepted.'
+          : action === 'decline'
+            ? 'The transfer was declined.'
+            : 'Transfer request updated.',
+      );
     } catch (error) {
       setTransferNotice(
         error instanceof Error
@@ -1226,12 +1245,10 @@ export function TeacherDashboard() {
           remarks: transferFormRemarks,
         }),
       });
-      setClassStudents((current) =>
-        current.filter((student) => student.id !== selectedStudent.id),
-      );
-      setSelectedStudentId(null);
       setTransferFormOpen(false);
-      setTransferNotice(`${selectedStudent.name} was transferred successfully.`);
+      setTransferNotice(
+        `Transfer request for ${selectedStudent.name} was sent to the receiving teacher. The student will stay on your roster until accepted.`,
+      );
     } catch (error) {
       setTransferFormError(
         error instanceof Error
@@ -1304,14 +1321,16 @@ export function TeacherDashboard() {
           }),
         });
       }
-      setClassStudents((current) =>
-        current.filter((student) => student.id !== selectedStudent.id),
-      );
-      setSelectedStudentId(null);
+      if (removalOutcome !== 'transfer') {
+        setClassStudents((current) => current.filter((student) => student.id !== selectedStudent.id));
+        setSelectedStudentId(null);
+      }
       setRemovalFormOpen(false);
-      setTransferNotice(removalOutcome === 'transfer'
-        ? `${selectedStudent.name} was transferred successfully.`
-        : `${selectedStudent.name} was removed from the active roster.`);
+      setTransferNotice(
+        removalOutcome === 'transfer'
+          ? `Transfer request for ${selectedStudent.name} was sent to the receiving teacher. The student will stay on your roster until accepted.`
+          : `${selectedStudent.name} was removed from the active roster.`,
+      );
     } catch (error) {
       setRemovalError(
         error instanceof Error ? error.message : 'The student could not be removed.',
@@ -2536,11 +2555,9 @@ export function TeacherDashboard() {
                   <header className={styles.transferQueueHeader}>
                     <div>
                       <h2>Child Transfers</h2>
-                      <p>Review transfer requests and view completed transfer history.</p>
+                      <p>Accept incoming transferees and review transfer history.</p>
                     </div>
-                    <span>
-                      {teacherTransfers.filter((transfer) => transfer.status !== 'completed').length} pending
-                    </span>
+                    <span>{teacherTransfers.filter(transferNeedsAcceptance).length} pending acceptance</span>
                   </header>
                   {transferListError && (
                     <p className={styles.transferError} role="alert">
@@ -2553,37 +2570,42 @@ export function TeacherDashboard() {
                     </p>
                   )}
                   <div className={styles.transferQueueList}>
-                    {teacherTransfers.map((transfer) => (
-                      <article className={styles.transferQueueCard} key={transfer.id}>
-                        <div>
-                          <strong>
-                            {[transfer.first_name, transfer.middle_name, transfer.last_name]
-                              .filter(Boolean)
-                              .join(' ')}
-                          </strong>
-                          <span>
-                            {transfer.previous_cdc_name} → {transfer.destination_cdc_name}
-                          </span>
-                          <small>
-                            Reason: {transfer.reason === 'Other'
-                              ? transfer.other_reason || 'Other'
-                              : transfer.reason}
-                          </small>
-                          <small>
-                            {transfer.status === 'completed'
-                              ? `Completed ${formatShortDate(transfer.completed_at?.slice(0, 10) || transfer.requested_date)}`
-                              : `${transfer.status === 'pending' ? 'Awaiting your review' : 'Awaiting your CDC decision'} · Requested ${formatShortDate(transfer.requested_date)}`}
-                          </small>
-                        </div>
-                        <button
-                          className={styles.transferReviewButton}
-                          type="button"
-                          onClick={() => void openTransfer(transfer, transfer.status === 'completed')}
-                        >
-                          {transfer.status === 'completed' ? 'View transfer record' : 'Review request'}
-                        </button>
-                      </article>
-                    ))}
+                    {teacherTransfers.map((transfer) => {
+                      const needsAcceptance = transferNeedsAcceptance(transfer);
+                      return (
+                        <article className={styles.transferQueueCard} key={transfer.id}>
+                          <div>
+                            <strong>{[transfer.first_name, transfer.middle_name, transfer.last_name].filter(Boolean).join(' ')}</strong>
+                            <span>
+                              {transfer.previous_cdc_name} → {transfer.destination_cdc_name}
+                            </span>
+                            <small>Reason: {transfer.reason === 'Other' ? transfer.other_reason || 'Other' : transfer.reason}</small>
+                            <small>
+                              {needsAcceptance && transfer.status === 'completed'
+                                ? `Already on your roster · awaiting your acknowledgement`
+                                : needsAcceptance
+                                  ? `Incoming transferee · awaiting your acceptance · Requested ${formatShortDate(transfer.requested_date)}`
+                                  : transfer.status === 'completed'
+                                    ? `Completed ${formatShortDate(transfer.completed_at?.slice(0, 10) || transfer.requested_date)}`
+                                    : `${transfer.status === 'pending' ? 'Awaiting your review' : 'Awaiting your CDC decision'} · Requested ${formatShortDate(transfer.requested_date)}`}
+                            </small>
+                          </div>
+                          <button
+                            className={styles.transferReviewButton}
+                            type="button"
+                            onClick={() => void openTransfer(transfer, transfer.status === 'completed' && !needsAcceptance)}
+                          >
+                            {needsAcceptance
+                              ? transfer.status === 'completed'
+                                ? 'Acknowledge transferee'
+                                : 'Review & accept'
+                              : transfer.status === 'completed'
+                                ? 'View transfer record'
+                                : 'Review request'}
+                          </button>
+                        </article>
+                      );
+                    })}
                   </div>
                 </section>
               )}
@@ -3120,137 +3142,140 @@ export function TeacherDashboard() {
                     <>
                       {!transferReview ? (
                         <>
-                      <div className={styles.transferDetailGrid}>
-                        <div>
-                          <small>Child Name</small>
-                          <strong>{selectedStudent?.name}</strong>
-                        </div>
-                        <div>
-                          <small>Current Teacher</small>
-                          <strong>{teacherTransferOptions?.current_teacher_name || 'Unavailable'}</strong>
-                        </div>
-                        <div>
-                          <small>Current CDC</small>
-                          <strong>{teacherTransferOptions?.current_cdc_name || 'Unavailable'}</strong>
-                        </div>
-                      </div>
-                      <label className={styles.transferRemarks}>
-                        Receiving CDC
-                        <select
-                          required
-                          value={transferDestinationId}
-                          onChange={(event) => {
-                            setTransferDestinationId(event.target.value);
-                            setTransferReceivingTeacherId('');
-                          }}
-                        >
-                          <option value="">Select a receiving CDC</option>
-                          {teacherTransferOptions?.destinations.map((destination) => (
-                            teacherTransferOptions.destinations.findIndex(
-                              (item) => item.id === destination.id,
-                            ) === teacherTransferOptions.destinations.indexOf(destination) && (
-                            <option key={destination.id} value={destination.id}>
-                              {destination.name}
-                            </option>
-                            )
-                          ))}
-                        </select>
-                      </label>
-                      <label className={styles.transferRemarks}>
-                        Receiving Teacher
-                        <select
-                          required
-                          value={transferReceivingTeacherId}
-                          onChange={(event) => setTransferReceivingTeacherId(event.target.value)}
-                        >
-                          <option value="">Select a receiving teacher</option>
-                          {teacherTransferOptions?.destinations
-                            .filter((destination, index, destinations) =>
-                              String(destination.id) === transferDestinationId
-                              && destinations.findIndex((item) =>
-                                item.id === destination.id
-                                && item.teacher_user_id === destination.teacher_user_id,
-                              ) === index,
-                            )
-                            .map((destination) => (
-                              <option key={destination.teacher_user_id} value={destination.teacher_user_id}>
-                                {destination.teacher_name}
-                              </option>
-                            ))}
-                        </select>
-                        {transferDestinationId
-                          && !teacherTransferOptions?.destinations.some(
-                            (destination) => String(destination.id) === transferDestinationId
-                              && String(destination.teacher_user_id) === transferReceivingTeacherId,
-                          ) && <small>Select a teacher assigned to the chosen CDC.</small>}
-                      </label>
-                      <label className={styles.transferRemarks}>
-                        Parent/Guardian Confirmation
-                        <select
-                          required
-                          value={transferParentConfirmation}
-                          onChange={(event) => setTransferParentConfirmation(event.target.value)}
-                        >
-                          <option value="">Select confirmation status</option>
-                          <option value="yes">Yes</option>
-                          <option value="no">No</option>
-                        </select>
-                        <small>This is recorded as your report, not independently verified consent.</small>
-                      </label>
-                      <label className={styles.transferRemarks}>
-                        Reason for Transfer
-                        <select
-                          required
-                          value={transferReason}
-                          onChange={(event) => {
-                            setTransferReason(event.target.value);
-                            setTransferOtherReason('');
-                          }}
-                        >
-                          <option value="">Select a reason</option>
-                          {[
-                            'Change of Residence',
-                            'Closer to Home',
-                            'Parent/Guardian Request',
-                            "Change in Parent's Workplace",
-                            'Family Circumstances',
-                            'Accessibility and Transportation',
-                            'CDC Preference',
-                            'Other',
-                          ].map((reason) => (
-                            <option key={reason} value={reason}>{reason}</option>
-                          ))}
-                        </select>
-                      </label>
-                      {transferReason === 'Other' && (
-                        <label className={styles.transferRemarks}>
-                          Other Reason
-                          <input
-                            required
-                            maxLength={500}
-                            value={transferOtherReason}
-                            onChange={(event) => setTransferOtherReason(event.target.value)}
-                          />
-                        </label>
-                      )}
-                      <label className={styles.transferRemarks}>
-                        Transfer Date
-                        <input readOnly type="date" value={transferDate} />
-                        <small>The transfer takes effect immediately when confirmed.</small>
-                      </label>
-                      <label className={styles.transferRemarks}>
-                        Additional Remarks (optional)
-                        <textarea
-                          maxLength={5000}
-                          value={transferFormRemarks}
-                          onChange={(event) => setTransferFormRemarks(event.target.value)}
-                        />
-                      </label>
-                      {teacherTransferOptions?.destinations.length === 0 && (
-                        <p className={styles.transferError} role="alert">
-                          No active receiving CDC with an approved teacher is available.
-                        </p>
-                      )}
+                          <div className={styles.transferDetailGrid}>
+                            <div>
+                              <small>Child Name</small>
+                              <strong>{selectedStudent?.name}</strong>
+                            </div>
+                            <div>
+                              <small>Current Teacher</small>
+                              <strong>{teacherTransferOptions?.current_teacher_name || 'Unavailable'}</strong>
+                            </div>
+                            <div>
+                              <small>Current CDC</small>
+                              <strong>{teacherTransferOptions?.current_cdc_name || 'Unavailable'}</strong>
+                            </div>
+                          </div>
+                          <label className={styles.transferRemarks}>
+                            Receiving CDC
+                            <select
+                              required
+                              value={transferDestinationId}
+                              onChange={(event) => {
+                                setTransferDestinationId(event.target.value);
+                                setTransferReceivingTeacherId('');
+                              }}
+                            >
+                              <option value="">Select a receiving CDC</option>
+                              {teacherTransferOptions?.destinations.map(
+                                (destination) =>
+                                  teacherTransferOptions.destinations.findIndex((item) => item.id === destination.id) ===
+                                    teacherTransferOptions.destinations.indexOf(destination) && (
+                                    <option key={destination.id} value={destination.id}>
+                                      {destination.name}
+                                    </option>
+                                  ),
+                              )}
+                            </select>
+                          </label>
+                          <label className={styles.transferRemarks}>
+                            Receiving Teacher
+                            <select
+                              required
+                              value={transferReceivingTeacherId}
+                              onChange={(event) => setTransferReceivingTeacherId(event.target.value)}
+                            >
+                              <option value="">Select a receiving teacher</option>
+                              {teacherTransferOptions?.destinations
+                                .filter(
+                                  (destination, index, destinations) =>
+                                    String(destination.id) === transferDestinationId &&
+                                    destinations.findIndex(
+                                      (item) => item.id === destination.id && item.teacher_user_id === destination.teacher_user_id,
+                                    ) === index,
+                                )
+                                .map((destination) => (
+                                  <option key={destination.teacher_user_id} value={destination.teacher_user_id}>
+                                    {destination.teacher_name}
+                                  </option>
+                                ))}
+                            </select>
+                            {transferDestinationId &&
+                              !teacherTransferOptions?.destinations.some(
+                                (destination) =>
+                                  String(destination.id) === transferDestinationId &&
+                                  String(destination.teacher_user_id) === transferReceivingTeacherId,
+                              ) && <small>Select a teacher assigned to the chosen CDC.</small>}
+                          </label>
+                          <label className={styles.transferRemarks}>
+                            Parent/Guardian Confirmation
+                            <select
+                              required
+                              value={transferParentConfirmation}
+                              onChange={(event) => setTransferParentConfirmation(event.target.value)}
+                            >
+                              <option value="">Select confirmation status</option>
+                              <option value="yes">Yes</option>
+                              <option value="no">No</option>
+                            </select>
+                            <small>This is recorded as your report, not independently verified consent.</small>
+                          </label>
+                          <label className={styles.transferRemarks}>
+                            Reason for Transfer
+                            <select
+                              required
+                              value={transferReason}
+                              onChange={(event) => {
+                                setTransferReason(event.target.value);
+                                setTransferOtherReason('');
+                              }}
+                            >
+                              <option value="">Select a reason</option>
+                              {[
+                                'Change of Residence',
+                                'Closer to Home',
+                                'Parent/Guardian Request',
+                                "Change in Parent's Workplace",
+                                'Family Circumstances',
+                                'Accessibility and Transportation',
+                                'CDC Preference',
+                                'Other',
+                              ].map((reason) => (
+                                <option key={reason} value={reason}>
+                                  {reason}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          {transferReason === 'Other' && (
+                            <label className={styles.transferRemarks}>
+                              Other Reason
+                              <input
+                                required
+                                maxLength={500}
+                                value={transferOtherReason}
+                                onChange={(event) => setTransferOtherReason(event.target.value)}
+                              />
+                            </label>
+                          )}
+                          <label className={styles.transferRemarks}>
+                            Transfer Date
+                            <input readOnly type="date" value={transferDate} />
+                            <small>The student will move to the new CDC only after its teacher accepts.</small>
+                          </label>
+                          <label className={styles.transferRemarks}>
+                            Additional Remarks (optional)
+                            <textarea
+                              maxLength={5000}
+                              value={transferFormRemarks}
+                              onChange={(event) => setTransferFormRemarks(event.target.value)}
+                            />
+                          </label>
+                          {teacherTransferOptions?.destinations.length === 0 && (
+                            <p className={styles.transferError} role="alert">
+                              No active receiving CDC with an approved teacher is available.
+                            </p>
+                          )}
                         </>
                       ) : (
                         <section className={styles.transferDetailGrid} aria-label="Transfer confirmation summary">
@@ -3285,7 +3310,10 @@ export function TeacherDashboard() {
                             <small>Additional remarks</small>
                             <strong>{transferFormRemarks || 'None'}</strong>
                           </div>
-                          <p>The transfer takes effect immediately. The parent confirmation shown is your report only and is not independently verified consent.</p>
+                          <p>
+                            The student will move to the new CDC only after its teacher accepts. The parent confirmation shown is your
+                            report only and is not independently verified consent.
+                          </p>
                         </section>
                       )}
                       {transferFormError && (
@@ -3311,9 +3339,7 @@ export function TeacherDashboard() {
                           }
                           type="submit"
                         >
-                          {transferFormSaving
-                            ? 'Transferring…'
-                            : transferReview ? 'Confirm Transfer' : 'Review Transfer'}
+                          {transferFormSaving ? 'Transferring…' : transferReview ? 'Send Transfer Request' : 'Review Transfer'}
                         </button>
                       </footer>
                     </>
@@ -3520,9 +3546,13 @@ export function TeacherDashboard() {
                       )}
                       type="submit"
                     >
-                      {removalSaving ? 'Saving…' : removalReview
-                        ? removalOutcome === 'transfer' ? 'Confirm Transfer' : 'Confirm Removal'
-                        : 'Review'}
+                      {removalSaving
+                        ? 'Saving…'
+                        : removalReview
+                          ? removalOutcome === 'transfer'
+                            ? 'Send Transfer Request'
+                            : 'Confirm Removal'
+                          : 'Review'}
                     </button>
                   </footer>
                 </form>
@@ -3609,7 +3639,8 @@ export function TeacherDashboard() {
                           <h3>Progress history</h3>
                           {selectedTransfer.progress.slice(0, 5).map((record, index) => (
                             <p key={`${record.recorded_at}-${index}`}>
-                              {record.domain}: {record.skill} ({record.rating}/5)
+                              {record.domain}: {record.skill} ({record.rating}
+                              /5)
                             </p>
                           ))}
                           {selectedTransfer.progress.length === 0 && <p>No progress records.</p>}
@@ -3633,7 +3664,10 @@ export function TeacherDashboard() {
                             <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('dismiss')}>Cancel</button>
                             <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('approve')}>Approve</button>
                           </>
-                        ) : selectedTransfer.status === 'awaiting_receiving_cdc' ? (
+                        ) : selectedTransfer.status === 'awaiting_receiving_cdc' ||
+                          (!transferReadOnly &&
+                            selectedTransfer.status === 'completed' &&
+                            selectedTransfer.receiving_teacher_accepted_at === null) ? (
                           <>
                             <button
                               disabled={transferActionBusy}
@@ -3643,9 +3677,16 @@ export function TeacherDashboard() {
                                 setTransferNotice('');
                               }}
                             >
-                              Cancel
+                              Close
                             </button>
-                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('accept')}>Accept</button>
+                            {selectedTransfer.status === 'awaiting_receiving_cdc' && (
+                              <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('decline')}>
+                                Decline
+                              </button>
+                            )}
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('accept')}>
+                              {selectedTransfer.status === 'completed' ? 'Acknowledge transferee' : 'Accept'}
+                            </button>
                           </>
                         ) : (
                           <span>This transfer record is read-only.</span>
