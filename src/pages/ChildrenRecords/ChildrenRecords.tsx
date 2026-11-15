@@ -32,6 +32,83 @@ type ChildrenResponse = {
   };
 };
 
+type RemovalRecord = {
+  id: number;
+  child_id: number;
+  child_name: string;
+  outcome: 'transfer' | 'dropped' | 'deceased' | 'other';
+  reason_details: string | null;
+  parent_confirmation: 'yes' | 'no';
+  notes: string | null;
+  created_at: string;
+  enrollment_status: string;
+  parent_name: string;
+  teacher_name: string | null;
+  previous_cdc_name: string | null;
+  destination_cdc_name: string | null;
+  receiving_teacher_name: string | null;
+};
+
+type AdminChildHistoryResponse = {
+  data: {
+    child: {
+      id: number;
+      first_name: string;
+      middle_name: string | null;
+      last_name: string;
+      birth_date: string;
+      gender: string;
+      address: string | null;
+      enrollment_status: string;
+      center_name: string;
+      class_name: string | null;
+      parent_first_name: string;
+      parent_last_name: string;
+      parent_account_email: string;
+      medical_notes: string | null;
+    };
+    history: {
+      attendance: Array<{
+        id: number;
+        attendance_date: string;
+        status: string;
+        class_name: string | null;
+        cdc_name: string | null;
+        teacher_name: string | null;
+      }>;
+      progress: Array<{
+        id: number;
+        domain: string;
+        skill: string;
+        rating: number;
+        observation: string | null;
+        recorded_at: string;
+        teacher_name: string | null;
+      }>;
+      transfers: Array<{
+        id: number;
+        reference: string;
+        reason: string;
+        status: string;
+        requested_date: string;
+        previous_cdc_name: string | null;
+        destination_cdc_name: string | null;
+      }>;
+      removals: Array<{
+        id: number;
+        outcome: string;
+        reason_details: string | null;
+        parent_confirmation: 'yes' | 'no';
+        notes: string | null;
+        created_at: string;
+        teacher_name: string | null;
+        previous_cdc_name: string | null;
+        destination_cdc_name: string | null;
+      }>;
+    } | null;
+  };
+};
+
 function relativeTime(value: string) {
   const timestamp = new Date(value.replace(' ', 'T')).getTime();
   if (Number.isNaN(timestamp)) return value;
@@ -169,7 +246,14 @@ export function ChildrenRecords() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [removalRecords, setRemovalRecords] = useState<RemovalRecord[]>([]);
+  const [removalRecordsError, setRemovalRecordsError] = useState('');
+  const [selectedChildHistory, setSelectedChildHistory] =
+    useState<AdminChildHistoryResponse['data'] | null>(null);
+  const [childHistoryLoading, setChildHistoryLoading] = useState(false);
+  const [childHistoryError, setChildHistoryError] = useState('');
   const latestRequest = useRef(0);
+  const childHistoryRequest = useRef(0);
 
   const reload = useCallback(async (isActive: () => boolean = () => true) => {
     const requestId = ++latestRequest.current;
@@ -192,6 +276,23 @@ export function ChildrenRecords() {
       setAgeGroups(response.data.age_groups);
       setRecentChildren(response.data.recent_children);
       setError('');
+      try {
+        const removalResponse = await request<{ data: RemovalRecord[] }>(
+          '/api/admin/child-removals',
+        );
+        if (requestId === latestRequest.current && isActive()) {
+          setRemovalRecords(removalResponse.data);
+          setRemovalRecordsError('');
+        }
+      } catch (removalError) {
+        if (requestId === latestRequest.current && isActive()) {
+          setRemovalRecordsError(
+            removalError instanceof Error
+              ? removalError.message
+              : 'Student removal records could not be loaded.',
+          );
+        }
+      }
     } catch (loadError) {
       if (requestId === latestRequest.current && isActive()) {
         setError(loadError instanceof Error ? loadError.message : 'Children could not be loaded.');
@@ -200,6 +301,32 @@ export function ChildrenRecords() {
       if (requestId === latestRequest.current && isActive()) setLoading(false);
     }
   }, [request]);
+
+  async function openChildHistory(childId: number) {
+    const requestId = ++childHistoryRequest.current;
+    setChildHistoryLoading(true);
+    setChildHistoryError('');
+    setSelectedChildHistory(null);
+    try {
+      const response = await request<AdminChildHistoryResponse>(
+        `/api/admin/children/${childId}`,
+      );
+      if (requestId !== childHistoryRequest.current) return;
+      if (!response.data?.child || !response.data.history) {
+        throw new Error('The server did not return this child’s history.');
+      }
+      setSelectedChildHistory(response.data);
+    } catch (historyError) {
+      if (requestId !== childHistoryRequest.current) return;
+      setChildHistoryError(
+        historyError instanceof Error
+          ? historyError.message
+          : 'Child profile and history could not be loaded.',
+      );
+    } finally {
+      if (requestId === childHistoryRequest.current) setChildHistoryLoading(false);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -630,6 +757,154 @@ export function ChildrenRecords() {
         </aside>
       </div>
 
+      <section aria-labelledby="student-removals-title" className={`${styles.panel} ${styles.removalsPanel}`}>
+        <div className={styles.panelHeader}>
+          <div>
+            <h2 id="student-removals-title">Student Removal & Transfer History</h2>
+            <p>Teacher-reported outcomes and parent/guardian confirmation status.</p>
+          </div>
+        </div>
+        {removalRecordsError ? (
+          <p className={styles.errorState} role="alert">{removalRecordsError}</p>
+        ) : removalRecords.length === 0 ? (
+          <p className={styles.sideState}>No student removal or transfer records are available.</p>
+        ) : (
+          <div className={styles.tableWrap}>
+            <table className={styles.removalsTable}>
+              <thead>
+                <tr>
+                  <th scope="col">Child</th>
+                  <th scope="col">Outcome</th>
+                  <th scope="col">Teacher</th>
+                  <th scope="col">Previous CDC</th>
+                  <th scope="col">Destination CDC</th>
+                  <th scope="col">Parent confirmation</th>
+                  <th scope="col">Recorded</th>
+                  <th scope="col">History</th>
+                </tr>
+              </thead>
+              <tbody>
+                {removalRecords.map((record) => (
+                  <tr key={record.id}>
+                    <td>
+                      <strong>{record.child_name}</strong>
+                      <small>{childNumber(record.child_id)} · Parent: {record.parent_name}</small>
+                      {record.reason_details && <small>Details: {record.reason_details}</small>}
+                      {record.notes && <small>Notes: {record.notes}</small>}
+                    </td>
+                    <td>{record.outcome === 'other'
+                      ? `Other: ${record.reason_details || 'Not specified'}`
+                      : record.outcome[0].toUpperCase() + record.outcome.slice(1)}</td>
+                    <td>{record.teacher_name || 'Unavailable'}</td>
+                    <td>{record.previous_cdc_name || 'Unassigned'}</td>
+                    <td>
+                      {record.destination_cdc_name
+                        ? `${record.destination_cdc_name}${record.receiving_teacher_name ? ` · ${record.receiving_teacher_name}` : ''}`
+                        : '—'}
+                    </td>
+                    <td>{record.parent_confirmation === 'yes' ? 'Yes' : 'No'} (teacher reported)</td>
+                    <td>{new Date(record.created_at.replace(' ', 'T')).toLocaleString()}</td>
+                    <td>
+                      <button
+                        className={styles.historyButton}
+                        type="button"
+                        onClick={() => void openChildHistory(record.child_id)}
+                      >
+                        View child history
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {(childHistoryLoading || childHistoryError || selectedChildHistory) && (
+        <div className={styles.dialogBackdrop}>
+          <section aria-labelledby="child-history-title" aria-modal="true" className={styles.childHistoryDialog} role="dialog">
+            <header className={styles.childHistoryHeader}>
+              <div>
+                <h2 id="child-history-title">
+                  {selectedChildHistory
+                    ? `${selectedChildHistory.child.first_name} ${selectedChildHistory.child.last_name}`
+                    : 'Child profile and history'}
+                </h2>
+                {selectedChildHistory && (
+                  <p>{childNumber(selectedChildHistory.child.id)} · {selectedChildHistory.child.center_name}</p>
+                )}
+              </div>
+              <button
+                aria-label="Close child history"
+                className={styles.closeDetails}
+                type="button"
+                onClick={() => {
+                  childHistoryRequest.current += 1;
+                  setSelectedChildHistory(null);
+                  setChildHistoryError('');
+                  setChildHistoryLoading(false);
+                }}
+              >
+                ×
+              </button>
+            </header>
+            {childHistoryLoading ? (
+              <BouncingDots label="Loading child history" />
+            ) : childHistoryError ? (
+              <p className={styles.errorState} role="alert">{childHistoryError}</p>
+            ) : selectedChildHistory ? (
+              <>
+                <dl className={styles.childProfileSummary}>
+                  <div><dt>Enrollment status</dt><dd>{selectedChildHistory.child.enrollment_status}</dd></div>
+                  <div><dt>Class</dt><dd>{selectedChildHistory.child.class_name || 'Unassigned'}</dd></div>
+                  <div><dt>Parent/guardian</dt><dd>{selectedChildHistory.child.parent_first_name} {selectedChildHistory.child.parent_last_name}</dd></div>
+                  <div><dt>Parent email</dt><dd>{selectedChildHistory.child.parent_account_email}</dd></div>
+                  <div><dt>Birth date / gender</dt><dd>{selectedChildHistory.child.birth_date} · {selectedChildHistory.child.gender}</dd></div>
+                  <div><dt>Address</dt><dd>{selectedChildHistory.child.address || 'Not provided'}</dd></div>
+                  <div><dt>Medical notes</dt><dd>{selectedChildHistory.child.medical_notes || 'None recorded'}</dd></div>
+                </dl>
+                <section className={styles.historySection}>
+                  <h3>Attendance history</h3>
+                  {selectedChildHistory.history?.attendance.length ? selectedChildHistory.history.attendance.map((item) => (
+                    <article key={item.id}>
+                      <strong>{item.attendance_date} · {item.status}</strong>
+                      <span>{item.class_name || 'Class unavailable'} · {item.cdc_name || 'CDC unavailable'} · {item.teacher_name || 'Teacher unavailable'}</span>
+                    </article>
+                  )) : <p>No attendance records.</p>}
+                </section>
+                <section className={styles.historySection}>
+                  <h3>Learning progress</h3>
+                  {selectedChildHistory.history?.progress.length ? selectedChildHistory.history.progress.map((item) => (
+                    <article key={item.id}>
+                      <strong>{item.domain} · {item.skill} · Rating {item.rating}</strong>
+                      <span>{item.recorded_at} · {item.teacher_name || 'Teacher unavailable'}{item.observation ? ` · ${item.observation}` : ''}</span>
+                    </article>
+                  )) : <p>No learning progress records.</p>}
+                </section>
+                <section className={styles.historySection}>
+                  <h3>Transfers</h3>
+                  {selectedChildHistory.history?.transfers.length ? selectedChildHistory.history.transfers.map((item) => (
+                    <article key={item.id}>
+                      <strong>{item.reference} · {item.status.replaceAll('_', ' ')}</strong>
+                      <span>{item.previous_cdc_name || 'Unassigned'} → {item.destination_cdc_name || 'Unassigned'} · {item.requested_date} · {item.reason}</span>
+                    </article>
+                  )) : <p>No transfer records.</p>}
+                </section>
+                <section className={styles.historySection}>
+                  <h3>Removal records</h3>
+                  {selectedChildHistory.history?.removals.length ? selectedChildHistory.history.removals.map((item) => (
+                    <article key={item.id}>
+                      <strong>{item.outcome === 'other' ? item.reason_details || 'Other' : item.outcome} · Parent confirmation: {item.parent_confirmation} (teacher reported)</strong>
+                      <span>{item.created_at} · {item.previous_cdc_name || 'Unassigned'} → {item.destination_cdc_name || 'Unassigned'} · {item.teacher_name || 'Teacher unavailable'}{item.notes ? ` · ${item.notes}` : ''}</span>
+                    </article>
+                  )) : <p>No removal records.</p>}
+                </section>
+              </>
+            ) : null}
+          </section>
+        </div>
+      )}
     </section>
   );
 }

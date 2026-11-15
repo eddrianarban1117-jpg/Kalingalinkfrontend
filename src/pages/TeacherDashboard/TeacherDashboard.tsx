@@ -741,10 +741,28 @@ export function TeacherDashboard() {
   const [transferFormSaving, setTransferFormSaving] = useState(false);
   const [transferFormError, setTransferFormError] = useState('');
   const [transferDestinationId, setTransferDestinationId] = useState('');
+  const [transferReceivingTeacherId, setTransferReceivingTeacherId] =
+    useState('');
   const [transferReason, setTransferReason] = useState('');
   const [transferOtherReason, setTransferOtherReason] = useState('');
+  const [transferParentConfirmation, setTransferParentConfirmation] =
+    useState('');
   const [transferFormRemarks, setTransferFormRemarks] = useState('');
   const [transferDate, setTransferDate] = useState('');
+  const [transferReview, setTransferReview] = useState(false);
+  const [removalFormOpen, setRemovalFormOpen] = useState(false);
+  const [removalOutcome, setRemovalOutcome] = useState('');
+  const [removalOtherReason, setRemovalOtherReason] = useState('');
+  const [removalDestinationId, setRemovalDestinationId] = useState('');
+  const [removalReceivingTeacherId, setRemovalReceivingTeacherId] = useState('');
+  const [removalTransferReason, setRemovalTransferReason] = useState('');
+  const [removalTransferOtherReason, setRemovalTransferOtherReason] = useState('');
+  const [removalParentConfirmation, setRemovalParentConfirmation] = useState('');
+  const [removalNotes, setRemovalNotes] = useState('');
+  const [removalReview, setRemovalReview] = useState(false);
+  const [removalOptionsLoading, setRemovalOptionsLoading] = useState(false);
+  const [removalSaving, setRemovalSaving] = useState(false);
+  const [removalError, setRemovalError] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null,
   );
@@ -1164,10 +1182,13 @@ export function TeacherDashboard() {
     setTransferFormError('');
     setTeacherTransferOptions(null);
     setTransferDestinationId('');
+    setTransferReceivingTeacherId('');
     setTransferReason('');
     setTransferOtherReason('');
+    setTransferParentConfirmation('');
     setTransferFormRemarks('');
     setTransferDate(dateInputValue());
+    setTransferReview(false);
     try {
       const response = await request<{ data: TeacherTransferOptions }>(
         '/api/teacher/child-transfers/options',
@@ -1186,7 +1207,11 @@ export function TeacherDashboard() {
 
   async function submitTeacherTransfer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedStudent || !transferDestinationId) return;
+    if (!transferReview) {
+      setTransferReview(true);
+      return;
+    }
+    if (!selectedStudent || !transferDestinationId || !transferReceivingTeacherId) return;
     setTransferFormSaving(true);
     setTransferFormError('');
     try {
@@ -1194,8 +1219,10 @@ export function TeacherDashboard() {
         method: 'POST',
         body: JSON.stringify({
           destination_cdc_id: Number(transferDestinationId),
+          receiving_teacher_user_id: Number(transferReceivingTeacherId),
           reason: transferReason,
           other_reason: transferOtherReason,
+          parent_confirmation: transferParentConfirmation,
           remarks: transferFormRemarks,
         }),
       });
@@ -1213,6 +1240,84 @@ export function TeacherDashboard() {
       );
     } finally {
       setTransferFormSaving(false);
+    }
+  }
+
+  async function openStudentRemoval() {
+    setRemovalOutcome('');
+    setRemovalOtherReason('');
+    setRemovalDestinationId('');
+    setRemovalReceivingTeacherId('');
+    setRemovalTransferReason('');
+    setRemovalTransferOtherReason('');
+    setRemovalParentConfirmation('');
+    setRemovalNotes('');
+    setRemovalReview(false);
+    setRemovalError('');
+    setTeacherTransferOptions(null);
+    setRemovalFormOpen(true);
+    setRemovalOptionsLoading(true);
+    try {
+      const response = await request<{ data: TeacherTransferOptions }>(
+        '/api/teacher/child-transfers/options',
+      );
+      setTeacherTransferOptions(response.data);
+    } catch (error) {
+      setRemovalError(
+        error instanceof Error ? error.message : 'Transfer options could not be loaded.',
+      );
+    } finally {
+      setRemovalOptionsLoading(false);
+    }
+  }
+
+  async function submitStudentRemoval(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!removalReview) {
+      setRemovalReview(true);
+      return;
+    }
+    if (!selectedStudent) return;
+    setRemovalSaving(true);
+    setRemovalError('');
+    try {
+      if (removalOutcome === 'transfer') {
+        await request(`/api/teacher/children/${selectedStudent.id}/transfers`, {
+          method: 'POST',
+          body: JSON.stringify({
+            destination_cdc_id: Number(removalDestinationId),
+            receiving_teacher_user_id: Number(removalReceivingTeacherId),
+            reason: removalTransferReason,
+            other_reason: removalTransferOtherReason,
+            parent_confirmation: removalParentConfirmation,
+            remarks: removalNotes,
+          }),
+        });
+      } else {
+        await request(`/api/teacher/children/${selectedStudent.id}/removal`, {
+          method: 'POST',
+          body: JSON.stringify({
+            outcome: removalOutcome,
+            reason_details: removalOtherReason,
+            parent_confirmation: removalParentConfirmation,
+            notes: removalNotes,
+          }),
+        });
+      }
+      setClassStudents((current) =>
+        current.filter((student) => student.id !== selectedStudent.id),
+      );
+      setSelectedStudentId(null);
+      setRemovalFormOpen(false);
+      setTransferNotice(removalOutcome === 'transfer'
+        ? `${selectedStudent.name} was transferred successfully.`
+        : `${selectedStudent.name} was removed from the active roster.`);
+    } catch (error) {
+      setRemovalError(
+        error instanceof Error ? error.message : 'The student could not be removed.',
+      );
+    } finally {
+      setRemovalSaving(false);
     }
   }
 
@@ -2896,6 +3001,13 @@ export function TeacherDashboard() {
                     Transfer
                   </button>
                   <button
+                    className={styles.transferReviewButton}
+                    type="button"
+                    onClick={openStudentRemoval}
+                  >
+                    Remove Student
+                  </button>
+                  <button
                     className={styles.viewStudentId}
                     type="button"
                     onClick={() => setIsStudentIdOpen(true)}
@@ -3006,6 +3118,8 @@ export function TeacherDashboard() {
                     <BouncingDots label="Loading transfer options" />
                   ) : (
                     <>
+                      {!transferReview ? (
+                        <>
                       <div className={styles.transferDetailGrid}>
                         <div>
                           <small>Child Name</small>
@@ -3025,26 +3139,63 @@ export function TeacherDashboard() {
                         <select
                           required
                           value={transferDestinationId}
-                          onChange={(event) => setTransferDestinationId(event.target.value)}
+                          onChange={(event) => {
+                            setTransferDestinationId(event.target.value);
+                            setTransferReceivingTeacherId('');
+                          }}
                         >
                           <option value="">Select a receiving CDC</option>
                           {teacherTransferOptions?.destinations.map((destination) => (
+                            teacherTransferOptions.destinations.findIndex(
+                              (item) => item.id === destination.id,
+                            ) === teacherTransferOptions.destinations.indexOf(destination) && (
                             <option key={destination.id} value={destination.id}>
                               {destination.name}
                             </option>
+                            )
                           ))}
                         </select>
                       </label>
                       <label className={styles.transferRemarks}>
                         Receiving Teacher
-                        <input
-                          readOnly
-                          value={
-                            teacherTransferOptions?.destinations.find(
-                              (destination) => String(destination.id) === transferDestinationId,
-                            )?.teacher_name ?? ''
-                          }
-                        />
+                        <select
+                          required
+                          value={transferReceivingTeacherId}
+                          onChange={(event) => setTransferReceivingTeacherId(event.target.value)}
+                        >
+                          <option value="">Select a receiving teacher</option>
+                          {teacherTransferOptions?.destinations
+                            .filter((destination, index, destinations) =>
+                              String(destination.id) === transferDestinationId
+                              && destinations.findIndex((item) =>
+                                item.id === destination.id
+                                && item.teacher_user_id === destination.teacher_user_id,
+                              ) === index,
+                            )
+                            .map((destination) => (
+                              <option key={destination.teacher_user_id} value={destination.teacher_user_id}>
+                                {destination.teacher_name}
+                              </option>
+                            ))}
+                        </select>
+                        {transferDestinationId
+                          && !teacherTransferOptions?.destinations.some(
+                            (destination) => String(destination.id) === transferDestinationId
+                              && String(destination.teacher_user_id) === transferReceivingTeacherId,
+                          ) && <small>Select a teacher assigned to the chosen CDC.</small>}
+                      </label>
+                      <label className={styles.transferRemarks}>
+                        Parent/Guardian Confirmation
+                        <select
+                          required
+                          value={transferParentConfirmation}
+                          onChange={(event) => setTransferParentConfirmation(event.target.value)}
+                        >
+                          <option value="">Select confirmation status</option>
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                        <small>This is recorded as your report, not independently verified consent.</small>
                       </label>
                       <label className={styles.transferRemarks}>
                         Reason for Transfer
@@ -3100,6 +3251,43 @@ export function TeacherDashboard() {
                           No active receiving CDC with an approved teacher is available.
                         </p>
                       )}
+                        </>
+                      ) : (
+                        <section className={styles.transferDetailGrid} aria-label="Transfer confirmation summary">
+                          <div>
+                            <small>Child</small>
+                            <strong>{selectedStudent?.name}</strong>
+                          </div>
+                          <div>
+                            <small>Transfer destination</small>
+                            <strong>
+                              {teacherTransferOptions?.destinations.find(
+                                (destination) => String(destination.id) === transferDestinationId,
+                              )?.name} · {teacherTransferOptions?.destinations.find(
+                                (destination) => String(destination.id) === transferDestinationId
+                                  && String(destination.teacher_user_id) === transferReceivingTeacherId,
+                              )?.teacher_name}
+                            </strong>
+                          </div>
+                          <div>
+                            <small>Reason</small>
+                            <strong>{transferReason === 'Other' ? transferOtherReason : transferReason}</strong>
+                          </div>
+                          <div>
+                            <small>Teacher-reported parent/guardian confirmation</small>
+                            <strong>{transferParentConfirmation === 'yes' ? 'Yes' : 'No'}</strong>
+                          </div>
+                          <div>
+                            <small>Effective date</small>
+                            <strong>{formatShortDate(transferDate)}</strong>
+                          </div>
+                          <div>
+                            <small>Additional remarks</small>
+                            <strong>{transferFormRemarks || 'None'}</strong>
+                          </div>
+                          <p>The transfer takes effect immediately. The parent confirmation shown is your report only and is not independently verified consent.</p>
+                        </section>
+                      )}
                       {transferFormError && (
                         <p className={styles.transferError} role="alert">{transferFormError}</p>
                       )}
@@ -3107,22 +3295,236 @@ export function TeacherDashboard() {
                         <button
                           disabled={transferFormSaving}
                           type="button"
-                          onClick={() => setTransferFormOpen(false)}
+                          onClick={() => transferReview ? setTransferReview(false) : setTransferFormOpen(false)}
                         >
-                          Cancel
+                          {transferReview ? 'Back to Details' : 'Cancel'}
                         </button>
                         <button
                           disabled={
                             transferFormSaving ||
-                            !teacherTransferOptions?.destinations.length
+                            !teacherTransferOptions?.destinations.length ||
+                            (transferReview && (
+                              !transferDestinationId ||
+                              !transferReceivingTeacherId ||
+                              !transferParentConfirmation
+                            ))
                           }
                           type="submit"
                         >
-                          {transferFormSaving ? 'Transferring…' : 'Confirm Transfer'}
+                          {transferFormSaving
+                            ? 'Transferring…'
+                            : transferReview ? 'Confirm Transfer' : 'Review Transfer'}
                         </button>
                       </footer>
                     </>
                   )}
+                </form>
+              </div>
+            )}
+            {removalFormOpen && (
+              <div className={styles.transferModalBackdrop}>
+                <form
+                  aria-labelledby="student-removal-title"
+                  aria-modal="true"
+                  className={styles.transferReviewModal}
+                  onSubmit={(event) => void submitStudentRemoval(event)}
+                  role="dialog"
+                >
+                  <header>
+                    <div>
+                      <p>Remove Student</p>
+                      <h2 id="student-removal-title">{selectedStudent?.name ?? 'Student removal'}</h2>
+                    </div>
+                    <button
+                      aria-label="Close student removal form"
+                      disabled={removalSaving}
+                      type="button"
+                      onClick={() => setRemovalFormOpen(false)}
+                    >
+                      <Icon name="close" />
+                    </button>
+                  </header>
+                  {removalOptionsLoading ? (
+                    <BouncingDots label="Loading removal options" />
+                  ) : !removalReview ? (
+                    <>
+                      <div className={styles.transferDetailGrid}>
+                        <div><small>Child</small><strong>{selectedStudent?.name}</strong></div>
+                        <div><small>Current class</small><strong>{selectedStudent?.className}</strong></div>
+                      </div>
+                      <label className={styles.transferRemarks}>
+                        Removal reason
+                        <select required value={removalOutcome} onChange={(event) => {
+                          setRemovalOutcome(event.target.value);
+                          setRemovalOtherReason('');
+                        }}>
+                          <option value="">Select a reason</option>
+                          <option value="transfer">Transfer</option>
+                          <option value="dropped">Dropped</option>
+                          <option value="deceased">Deceased</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </label>
+                      {removalOutcome === 'transfer' && (
+                        <>
+                          <label className={styles.transferRemarks}>
+                            Receiving CDC
+                            <select
+                              required
+                              value={removalDestinationId}
+                              onChange={(event) => {
+                                setRemovalDestinationId(event.target.value);
+                                setRemovalReceivingTeacherId('');
+                              }}
+                            >
+                              <option value="">Select a receiving CDC</option>
+                              {teacherTransferOptions?.destinations.map((destination, index, destinations) =>
+                                destinations.findIndex((item) => item.id === destination.id) === index && (
+                                  <option key={destination.id} value={destination.id}>{destination.name}</option>
+                                ),
+                              )}
+                            </select>
+                          </label>
+                          <label className={styles.transferRemarks}>
+                            Receiving Teacher
+                            <select
+                              required
+                              value={removalReceivingTeacherId}
+                              onChange={(event) => setRemovalReceivingTeacherId(event.target.value)}
+                            >
+                              <option value="">Select a receiving teacher</option>
+                              {teacherTransferOptions?.destinations
+                                .filter((destination, index, destinations) =>
+                                  String(destination.id) === removalDestinationId
+                                  && destinations.findIndex((item) =>
+                                    item.id === destination.id
+                                    && item.teacher_user_id === destination.teacher_user_id,
+                                  ) === index,
+                                )
+                                .map((destination) => (
+                                  <option key={destination.teacher_user_id} value={destination.teacher_user_id}>
+                                    {destination.teacher_name}
+                                  </option>
+                                ))}
+                            </select>
+                          </label>
+                          <label className={styles.transferRemarks}>
+                            Reason for Transfer
+                            <select required value={removalTransferReason} onChange={(event) => {
+                              setRemovalTransferReason(event.target.value);
+                              setRemovalTransferOtherReason('');
+                            }}>
+                              <option value="">Select a reason</option>
+                              {[
+                                'Change of Residence',
+                                'Closer to Home',
+                                'Parent/Guardian Request',
+                                "Change in Parent's Workplace",
+                                'Family Circumstances',
+                                'Accessibility and Transportation',
+                                'CDC Preference',
+                                'Other',
+                              ].map((reason) => <option key={reason} value={reason}>{reason}</option>)}
+                            </select>
+                          </label>
+                          {removalTransferReason === 'Other' && (
+                            <label className={styles.transferRemarks}>
+                              Other transfer reason
+                              <input
+                                required
+                                maxLength={500}
+                                value={removalTransferOtherReason}
+                                onChange={(event) => setRemovalTransferOtherReason(event.target.value)}
+                              />
+                            </label>
+                          )}
+                        </>
+                      )}
+                      {removalOutcome === 'other' && (
+                        <label className={styles.transferRemarks}>
+                          Other reason
+                          <input
+                            required
+                            maxLength={500}
+                            value={removalOtherReason}
+                            onChange={(event) => setRemovalOtherReason(event.target.value)}
+                          />
+                        </label>
+                      )}
+                      <label className={styles.transferRemarks}>
+                        Parent/Guardian Confirmation
+                        <select
+                          required
+                          value={removalParentConfirmation}
+                          onChange={(event) => setRemovalParentConfirmation(event.target.value)}
+                        >
+                          <option value="">Select confirmation status</option>
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                        <small>This is recorded as your report, not independently verified consent.</small>
+                      </label>
+                      <label className={styles.transferRemarks}>
+                        Notes (optional)
+                        <textarea
+                          maxLength={5000}
+                          value={removalNotes}
+                          onChange={(event) => setRemovalNotes(event.target.value)}
+                        />
+                      </label>
+                    </>
+                  ) : (
+                    <section className={styles.transferDetailGrid} aria-label="Student removal confirmation summary">
+                      <div><small>Child</small><strong>{selectedStudent?.name}</strong></div>
+                      {removalOutcome === 'transfer' ? (
+                        <>
+                          <div><small>Outcome</small><strong>Transfer</strong></div>
+                          <div><small>Receiving CDC and teacher</small><strong>
+                            {teacherTransferOptions?.destinations.find(
+                              (destination) => String(destination.id) === removalDestinationId,
+                            )?.name} · {teacherTransferOptions?.destinations.find(
+                              (destination) => String(destination.id) === removalDestinationId
+                                && String(destination.teacher_user_id) === removalReceivingTeacherId,
+                            )?.teacher_name}
+                          </strong></div>
+                          <div><small>Transfer reason</small><strong>
+                            {removalTransferReason === 'Other' ? removalTransferOtherReason : removalTransferReason}
+                          </strong></div>
+                        </>
+                      ) : (
+                        <div><small>Outcome</small><strong>
+                          {removalOutcome === 'other' ? removalOtherReason : removalOutcome === 'deceased' ? 'Deceased' : 'Dropped'}
+                        </strong></div>
+                      )}
+                      <div><small>Teacher-reported parent/guardian confirmation</small><strong>
+                        {removalParentConfirmation === 'yes' ? 'Yes' : 'No'}
+                      </strong></div>
+                      <div><small>Notes</small><strong>{removalNotes || 'None'}</strong></div>
+                      <p>{removalOutcome === 'transfer'
+                        ? 'The child will be moved to the selected receiving CDC and teacher immediately. The profile and history will be retained.'
+                        : 'The child will be unassigned from the active CDC roster and marked withdrawn. The child profile and historical records will be retained.'} Parent confirmation is recorded as your report only, not verified consent.</p>
+                    </section>
+                  )}
+                  {removalError && <p className={styles.transferError} role="alert">{removalError}</p>}
+                  <footer>
+                    <button
+                      disabled={removalSaving}
+                      type="button"
+                      onClick={() => removalReview ? setRemovalReview(false) : setRemovalFormOpen(false)}
+                    >
+                      {removalReview ? 'Back to Details' : 'Cancel'}
+                    </button>
+                    <button
+                      disabled={removalSaving || removalOptionsLoading || (
+                        removalOutcome === 'transfer' && !teacherTransferOptions?.destinations.length
+                      )}
+                      type="submit"
+                    >
+                      {removalSaving ? 'Saving…' : removalReview
+                        ? removalOutcome === 'transfer' ? 'Confirm Transfer' : 'Confirm Removal'
+                        : 'Review'}
+                    </button>
+                  </footer>
                 </form>
               </div>
             )}
