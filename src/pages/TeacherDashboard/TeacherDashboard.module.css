@@ -3420,6 +3420,28 @@
   resize: vertical;
 }
 
+.transferRemarks input,
+.transferRemarks select {
+  min-height: 2.2rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #d2e2f2;
+  border-radius: 0.5rem;
+  color: #204b7a;
+  background: #fff;
+  font: inherit;
+  font-size: 0.58rem;
+}
+
+.transferRemarks input[readonly] {
+  background: #f3f8fd;
+}
+
+.transferRemarks small {
+  color: #6986a8;
+  font-size: 0.52rem;
+  font-weight: 500;
+}
+
 .transferReviewModal > footer {
   display: flex;
   flex-wrap: wrap;
@@ -3514,7 +3536,9 @@
 :global(html[data-theme='dark']) .transferReviewModal,
 :global(html[data-theme='dark']) .transferDetailGrid > div,
 :global(html[data-theme='dark']) .transferDocuments button,
-:global(html[data-theme='dark']) .transferRemarks textarea {
+:global(html[data-theme='dark']) .transferRemarks textarea,
+:global(html[data-theme='dark']) .transferRemarks input,
+:global(html[data-theme='dark']) .transferRemarks select {
   border-color: #29496b;
   color: #d7e8fb;
   background: #142a42;

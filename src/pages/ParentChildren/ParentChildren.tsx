@@ -107,14 +107,6 @@ type ApiChildProfile = {
   has_profile_photo: boolean | number | string;
 };
 
-type TransferCenter = {
-  id: number;
-  name: string;
-  address: string | null;
-  barangay: string | null;
-  teacher_name: string;
-};
-
 type ChildTransfer = {
   id: number;
   reference: string;
@@ -147,19 +139,6 @@ type ChildTransfer = {
     actor_name: string | null;
     actor_role: string | null;
   }>;
-};
-
-type TransferDraft = {
-  destinationCdcId: string;
-  reason: string;
-  otherReason: string;
-  newAddress: string;
-  newBarangay: string;
-  newMunicipality: string;
-  requestedDate: string;
-  remarks: string;
-  documents: File[];
-  confirmed: boolean;
 };
 
 function formatDate(value: string) {
@@ -498,11 +477,10 @@ export function ParentChildren({ search }: { search: string }) {
   const [transferHistory, setTransferHistory] = useState<ChildTransfer[]>([]);
   const [transferHistoryError, setTransferHistoryError] = useState('');
   const [transferHistoryLoading, setTransferHistoryLoading] = useState(false);
-  const [transferCenters, setTransferCenters] = useState<TransferCenter[]>([]);
-  const [transferModalOpen, setTransferModalOpen] = useState(false);
-  const [transferDraft, setTransferDraft] = useState<TransferDraft | null>(null);
-  const [transferSaving, setTransferSaving] = useState(false);
-  const [transferError, setTransferError] = useState('');
+
+
+
+
   const [transferNotice, setTransferNotice] = useState('');
   const requestId = useRef(0);
   const photoIds = useMemo(
@@ -681,88 +659,10 @@ export function ParentChildren({ search }: { search: string }) {
   }, [activeTab, activeViewingChildId, request]);
 
   async function openTransferRequest() {
-    if (!viewingChild) return;
-    setTransferError('');
-    setTransferNotice('');
-    try {
-      const response = await request<{ data: TransferCenter[] }>(
-        '/api/parent/child-transfers/centers',
-      );
-      setTransferCenters(response.data);
-      setTransferDraft({
-        destinationCdcId: '',
-        reason: '',
-        otherReason: '',
-        newAddress: '',
-        newBarangay: '',
-        newMunicipality: '',
-        requestedDate: todayDateInputValue(),
-        remarks: '',
-        documents: [],
-        confirmed: false,
-      });
-      setTransferModalOpen(true);
-    } catch (error) {
-      setTransferError(
-        error instanceof Error
-          ? error.message
-          : 'Centers could not be loaded. Please try again.',
-      );
-    }
-  }
-
-  async function submitTransferRequest(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!viewingChild || !transferDraft) return;
-    if (!transferDraft.confirmed) {
-      setTransferError('Confirm that the transfer information is accurate before submitting.');
-      return;
-    }
-    if (transferDraft.documents.length > 5) {
-      setTransferError('Upload no more than five supporting documents.');
-      return;
-    }
-    if (
-      transferDraft.documents.some(
-        (file) =>
-          !['application/pdf', 'image/jpeg', 'image/png'].includes(file.type) ||
-          file.size > 5 * 1024 * 1024,
-      )
-    ) {
-      setTransferError('Each file must be a PDF, JPG, or PNG no larger than 5 MB.');
-      return;
-    }
-    setTransferSaving(true);
-    setTransferError('');
-    try {
-      const payload = new FormData();
-      payload.append('destination_cdc_id', transferDraft.destinationCdcId);
-      payload.append('reason', transferDraft.reason);
-      payload.append('other_reason', transferDraft.otherReason);
-      payload.append('new_address', transferDraft.newAddress);
-      payload.append('new_barangay', transferDraft.newBarangay);
-      payload.append('new_municipality', transferDraft.newMunicipality);
-      payload.append('requested_date', transferDraft.requestedDate);
-      payload.append('remarks', transferDraft.remarks);
-      payload.append('confirmed', transferDraft.confirmed ? '1' : '0');
-      transferDraft.documents.forEach((file) => payload.append('documents[]', file));
-      await request(`/api/parent/children/${viewingChild.id}/transfers`, {
-        method: 'POST',
-        body: payload,
-      });
-      setTransferModalOpen(false);
-      setTransferDraft(null);
-      setTransferNotice('Transfer request submitted. Your child remains enrolled at the current CDC until approval is complete.');
-      selectTab('Transfer History');
-    } catch (error) {
-      setTransferError(
-        error instanceof Error
-          ? error.message
-          : 'The transfer request could not be submitted.',
-      );
-    } finally {
-      setTransferSaving(false);
-    }
+    setTransferNotice(
+      'The current teacher processes child transfers directly. No additional parent approval is required.',
+    );
+    selectTab('Transfer History');
   }
 
   async function cancelTransfer(transfer: ChildTransfer) {
@@ -961,11 +861,7 @@ export function ParentChildren({ search }: { search: string }) {
           {photoError}
         </p>
       )}
-      {transferError && !transferModalOpen && (
-        <p className={styles.error} role="alert">
-          {transferError}
-        </p>
-      )}
+
 
       {viewingChild && activeTab ? (
         <section
@@ -993,7 +889,7 @@ export function ParentChildren({ search }: { search: string }) {
                 type="button"
                 onClick={() => void openTransferRequest()}
               >
-                Request CDC Transfer
+                Contact Current Teacher
               </button>
             )}
           </div>
@@ -1282,7 +1178,7 @@ export function ParentChildren({ search }: { search: string }) {
                         type="button"
                         onClick={() => void openTransferRequest()}
                       >
-                        Request transfer
+                        Contact current teacher
                       </button>
                     )}
                   </header>
@@ -1291,7 +1187,7 @@ export function ParentChildren({ search }: { search: string }) {
                   {transferHistoryLoading && <BouncingDots label="Loading transfer history" />}
                   {!transferHistoryLoading && transferHistory.length === 0 && (
                     <p className={styles.transferEmpty}>
-                      No transfer requests yet. Your child will remain enrolled at the current CDC until a transfer is approved by both centers.
+                      No completed transfers are recorded yet. The current teacher can process a transfer directly, and the history will appear here once it is complete.
                     </p>
                   )}
                   <div className={styles.transferHistoryList}>
@@ -1308,7 +1204,10 @@ export function ParentChildren({ search }: { search: string }) {
                         </div>
                         <dl>
                           <div><dt>Reason</dt><dd>{transfer.reason === 'Other' ? transfer.other_reason : transfer.reason}</dd></div>
-                          <div><dt>Requested</dt><dd>{formatDate(transfer.requested_date)}</dd></div>
+                          <div>
+                            <dt>{transfer.status === 'completed' ? 'Transfer date' : 'Requested'}</dt>
+                            <dd>{formatDate(transfer.requested_date)}</dd>
+                          </div>
                           {transfer.previous_teacher_remarks && <div><dt>Current CDC remarks</dt><dd>{transfer.previous_teacher_remarks}</dd></div>}
                           {transfer.receiving_teacher_remarks && <div><dt>Receiving CDC remarks</dt><dd>{transfer.receiving_teacher_remarks}</dd></div>}
                         </dl>
@@ -1398,227 +1297,6 @@ export function ParentChildren({ search }: { search: string }) {
                 : 'No child profiles are linked to your account yet. Submit an enrollment application to add a child.'}
             </p>
           )}
-        </div>
-      )}
-
-      {transferModalOpen && viewingChild && transferDraft && (
-        <div className={styles.dialogBackdrop}>
-          <form
-            aria-labelledby="request-transfer-title"
-            aria-modal="true"
-            className={`${styles.dialog} ${styles.transferDialog}`}
-            role="dialog"
-            onSubmit={submitTransferRequest}
-          >
-            <button
-              aria-label="Close transfer request"
-              className={styles.closeButton}
-              disabled={transferSaving}
-              type="button"
-              onClick={() => setTransferModalOpen(false)}
-            >
-              ×
-            </button>
-            <h2 id="request-transfer-title">Request a CDC Transfer</h2>
-            <p>
-              {viewingChild.fullName} remains enrolled at {viewingChild.center || 'the current CDC'} until all required reviews are complete.
-            </p>
-            <label className={styles.editField}>
-              Destination CDC
-              <select
-                required
-                value={transferDraft.destinationCdcId}
-                onChange={(event) =>
-                  setTransferDraft((current) =>
-                    current
-                      ? { ...current, destinationCdcId: event.target.value }
-                      : current,
-                  )
-                }
-              >
-                <option value="">Select a destination center</option>
-                {transferCenters
-                  .filter((center) => center.name !== viewingChild.center)
-                  .map((center) => (
-                    <option key={center.id} value={center.id}>
-                      {center.name} · {center.teacher_name}
-                    </option>
-                  ))}
-              </select>
-              {transferCenters.filter((center) => center.name !== viewingChild.center).length === 0 && (
-                <small>No active destination CDC with an approved teacher is available.</small>
-              )}
-            </label>
-            <label className={styles.editField}>
-              Reason for transfer
-              <select
-                required
-                value={transferDraft.reason}
-                onChange={(event) =>
-                  setTransferDraft((current) =>
-                    current
-                      ? {
-                          ...current,
-                          reason: event.target.value,
-                          otherReason: '',
-                          newAddress: '',
-                          newBarangay: '',
-                          newMunicipality: '',
-                        }
-                      : current,
-                  )
-                }
-              >
-                <option value="">Choose a reason</option>
-                {[
-                  'Change of Residence',
-                  'Closer to Home',
-                  'Parent/Guardian Request',
-                  "Change in Parent's Workplace",
-                  'Family Circumstances',
-                  'Accessibility and Transportation',
-                  'CDC Preference',
-                  'Other',
-                ].map((reason) => (
-                  <option key={reason} value={reason}>{reason}</option>
-                ))}
-              </select>
-            </label>
-            {transferDraft.reason === 'Other' && (
-              <label className={styles.editField}>
-                Other reason
-                <textarea
-                  required
-                  maxLength={500}
-                  value={transferDraft.otherReason}
-                  onChange={(event) =>
-                    setTransferDraft((current) =>
-                      current ? { ...current, otherReason: event.target.value } : current,
-                    )
-                  }
-                />
-              </label>
-            )}
-            {transferDraft.reason === 'Change of Residence' && (
-              <div className={styles.transferAddressFields}>
-                <label className={styles.editField}>
-                  New address
-                  <input
-                    maxLength={255}
-                    value={transferDraft.newAddress}
-                    onChange={(event) =>
-                      setTransferDraft((current) =>
-                        current ? { ...current, newAddress: event.target.value } : current,
-                      )
-                    }
-                  />
-                </label>
-                <label className={styles.editField}>
-                  Barangay
-                  <input
-                    maxLength={120}
-                    value={transferDraft.newBarangay}
-                    onChange={(event) =>
-                      setTransferDraft((current) =>
-                        current ? { ...current, newBarangay: event.target.value } : current,
-                      )
-                    }
-                  />
-                </label>
-                <label className={styles.editField}>
-                  Municipality / City
-                  <input
-                    maxLength={120}
-                    value={transferDraft.newMunicipality}
-                    onChange={(event) =>
-                      setTransferDraft((current) =>
-                        current ? { ...current, newMunicipality: event.target.value } : current,
-                      )
-                    }
-                  />
-                </label>
-              </div>
-            )}
-            <label className={styles.editField}>
-              Requested transfer date
-              <input
-                required
-                min={todayDateInputValue()}
-                type="date"
-                value={transferDraft.requestedDate}
-                onChange={(event) =>
-                  setTransferDraft((current) =>
-                    current ? { ...current, requestedDate: event.target.value } : current,
-                  )
-                }
-              />
-            </label>
-            <label className={styles.editField}>
-              Notes for reviewers
-              <textarea
-                maxLength={5000}
-                rows={3}
-                value={transferDraft.remarks}
-                onChange={(event) =>
-                  setTransferDraft((current) =>
-                    current ? { ...current, remarks: event.target.value } : current,
-                  )
-                }
-              />
-            </label>
-            <label className={styles.editField}>
-              Supporting documents (PDF, JPG, PNG; up to 5 files, 5 MB each)
-              <input
-                accept="application/pdf,image/jpeg,image/png"
-                multiple
-                type="file"
-                onChange={(event) => {
-                  const files = Array.from(event.currentTarget.files ?? []);
-                  event.currentTarget.value = '';
-                  if (files.length > 5) {
-                    setTransferError('Upload no more than five supporting documents.');
-                    return;
-                  }
-                  setTransferError('');
-                  setTransferDraft((current) =>
-                    current ? { ...current, documents: files } : current,
-                  );
-                }}
-              />
-            </label>
-            {transferDraft.documents.length > 0 && (
-              <p className={styles.transferSelectedFiles}>
-                Selected: {transferDraft.documents.map((file) => file.name).join(', ')}
-              </p>
-            )}
-            <label className={styles.transferConfirmation}>
-              <input
-                required
-                type="checkbox"
-                checked={transferDraft.confirmed}
-                onChange={(event) =>
-                  setTransferDraft((current) =>
-                    current ? { ...current, confirmed: event.target.checked } : current,
-                  )
-                }
-              />
-              I confirm these details are accurate and understand that the child will remain enrolled at the current CDC until transfer approval is completed.
-            </label>
-            {transferError && <p className={styles.error} role="alert">{transferError}</p>}
-            <div className={styles.dialogActions}>
-              <button
-                className={styles.secondaryButton}
-                disabled={transferSaving}
-                type="button"
-                onClick={() => setTransferModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button className={styles.addButton} disabled={transferSaving} type="submit">
-                {transferSaving ? 'Submitting…' : 'Submit Transfer Request'}
-              </button>
-            </div>
-          </form>
         </div>
       )}
 
