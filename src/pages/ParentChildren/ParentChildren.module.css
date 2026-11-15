@@ -969,3 +969,277 @@
     box-shadow: none;
   }
 }
+
+.transferButton {
+  display: inline-flex;
+  min-height: 2.45rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #1685ed;
+  border-radius: 0.6rem;
+  color: #fff;
+  background: #1685ed;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.transferButton:hover {
+  border-color: #0757ad;
+  background: #0757ad;
+}
+
+.transferHistoryPanel {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.transferHistoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.transferHistoryHeader h2,
+.transferHistoryHeader p {
+  margin: 0;
+}
+
+.transferHistoryHeader h2 {
+  color: #10458f;
+  font-size: 1rem;
+}
+
+.transferHistoryHeader p {
+  margin-top: 0.3rem;
+  color: #6282a7;
+  font-size: 0.76rem;
+}
+
+.transferSuccess,
+.transferEmpty {
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 0.65rem;
+  color: #087958;
+  background: #edfff8;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.transferHistoryList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.transferHistoryCard {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  border: 1px solid #dceafa;
+  border-radius: 0.75rem;
+  background: #fbfdff;
+}
+
+.transferHistoryCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.transferHistoryCardHeader > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.transferHistoryCardHeader strong {
+  color: #174b96;
+  font-size: 0.8rem;
+}
+
+.transferHistoryCardHeader span {
+  color: #607fa2;
+  font-size: 0.74rem;
+}
+
+.transferStatus {
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  color: #8a5a00;
+  background: #fff0cf;
+  font-size: 0.68rem;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.transferStatus_completed {
+  color: #11825f;
+  background: #d9f8eb;
+}
+
+.transferStatus_rejected_current_teacher,
+.transferStatus_declined_receiving_cdc,
+.transferStatus_cancelled_by_parent {
+  color: #a3273b;
+  background: #ffe2e6;
+}
+
+.transferHistoryCard dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.transferHistoryCard dl > div {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.35fr) minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.transferHistoryCard dt {
+  color: #708baa;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.transferHistoryCard dd {
+  margin: 0;
+  color: #315f99;
+  font-size: 0.74rem;
+}
+
+.transferFileList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.transferFileList button,
+.cancelTransferButton {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #cfe2f5;
+  border-radius: 0.45rem;
+  color: #1768b7;
+  background: #edf7ff;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.cancelTransferButton {
+  justify-self: end;
+  border-color: #efb8c2;
+  color: #a3273b;
+  background: #fff4f5;
+}
+
+.transferDialog {
+  width: min(42rem, 100%);
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.transferDialog .editField input[type='file'] {
+  height: auto;
+  padding: 0.45rem;
+}
+
+.transferAddressFields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.transferSelectedFiles {
+  margin: -0.3rem 0 0;
+  color: #55789f;
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+.transferConfirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: #315f99;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.transferConfirmation input {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+  margin: 0.1rem 0 0;
+}
+
+.transferEvents {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.6rem 0 0;
+  border-top: 1px solid #e1edf8;
+  list-style: none;
+}
+
+.transferEvents li {
+  display: grid;
+  gap: 0.16rem;
+  padding-left: 0.65rem;
+  border-left: 2px solid #7db8eb;
+}
+
+.transferEvents strong {
+  color: #315f99;
+  font-size: 0.68rem;
+  text-transform: capitalize;
+}
+
+.transferEvents span,
+.transferEvents p {
+  margin: 0;
+  color: #718baa;
+  font-size: 0.66rem;
+}
+
+:global(html[data-theme='dark']) .transferHistoryPanel,
+:global(html[data-theme='dark']) .transferHistoryCard,
+:global(html[data-theme='dark']) .transferDialog {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .transferHistoryCard {
+  border-color: #29496b;
+  background: #10243a;
+}
+
+:global(html[data-theme='dark']) .transferHistoryHeader h2,
+:global(html[data-theme='dark']) .transferHistoryCardHeader strong {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .transferHistoryHeader p,
+:global(html[data-theme='dark']) .transferHistoryCardHeader span,
+:global(html[data-theme='dark']) .transferHistoryCard dt,
+:global(html[data-theme='dark']) .transferHistoryCard dd,
+:global(html[data-theme='dark']) .transferEvents strong,
+:global(html[data-theme='dark']) .transferEvents span,
+:global(html[data-theme='dark']) .transferEvents p,
+:global(html[data-theme='dark']) .transferConfirmation {
+  color: #a9c2de;
+}
+
+@media (max-width: 700px) {
+  .transferAddressFields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .transferHistoryCardHeader {
+    flex-direction: column;
+  }
+}

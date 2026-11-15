@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
@@ -247,6 +247,17 @@ function Icon({ name }: { name: IconName }) {
   }
 }
 
+function formatShortDate(value: string) {
+  const date = new Date(`${value.slice(0, 10)}T00:00:00`);
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+}
+
 type NavigationItem = {
   label: string;
   icon: IconName;
@@ -295,6 +306,7 @@ type AttendanceEntry = {
 
 type TeacherStudent = {
   id: number;
+  hasProfilePhoto: boolean;
   firstName: string;
   middleName: string;
   lastName: string;
@@ -325,6 +337,7 @@ type TeacherStudent = {
 
 type TeacherStudentApiRecord = {
   id: number | string;
+  has_profile_photo: boolean | number | string;
   first_name: string;
   middle_name: string | null;
   last_name: string;
@@ -349,6 +362,89 @@ type TeacherStudentApiRecord = {
   emergency_name: string | null;
   emergency_relationship: string | null;
   emergency_phone: string | null;
+};
+
+type TeacherTransfer = {
+  id: number;
+  reference: string;
+  child_id: number;
+  first_name: string;
+  middle_name: string | null;
+  last_name: string;
+  nickname: string | null;
+  reason: string;
+  other_reason: string | null;
+  requested_date: string;
+  status:
+    | 'pending'
+    | 'awaiting_receiving_cdc'
+    | 'completed'
+    | 'declined_receiving_cdc'
+    | 'rejected_current_teacher'
+    | 'cancelled_by_parent';
+  previous_cdc_name: string;
+  destination_cdc_name: string;
+  parent_name: string;
+  source_dismissed_at: string | null;
+};
+
+type TeacherTransferDetail = TeacherTransfer & {
+  has_profile_photo: boolean | number | string;
+  parent_email: string;
+  parent_phone: string | null;
+  parent_address: string | null;
+  parent_relationship: string | null;
+  emergency_name: string | null;
+  emergency_relationship: string | null;
+  emergency_phone: string | null;
+  address: string | null;
+  medical_notes: string | null;
+  allergies: string | null;
+  blood_type: string | null;
+  immunization_status: string | null;
+  new_address: string | null;
+  new_barangay: string | null;
+  new_municipality: string | null;
+  remarks: string | null;
+  previous_teacher_remarks: string | null;
+  receiving_teacher_remarks: string | null;
+  documents: Array<{
+    id: number;
+    original_name: string;
+    download_url: string;
+  }>;
+  attendance: Array<{
+    attendance_date: string;
+    status: string;
+    class_name: string;
+    cdc_name: string;
+  }>;
+  progress: Array<{
+    domain: string;
+    skill: string;
+    rating: number;
+    observation: string | null;
+    recorded_at: string;
+    teacher_name: string;
+  }>;
+  events: Array<{
+    event_type: string;
+    remarks: string | null;
+    created_at: string;
+    actor_name: string | null;
+  }>;
+};
+
+type TeacherTransferHistory = {
+  id: number;
+  reference: string;
+  reason: string;
+  requested_date: string;
+  status: TeacherTransfer['status'];
+  previous_cdc_name: string;
+  destination_cdc_name: string;
+  source_dismissed_at: string | null;
+  created_at: string;
 };
 
 type TeacherDashboardData = {
@@ -474,7 +570,7 @@ function csvCell(value: string) {
 
 export function TeacherDashboard() {
   const navigate = useNavigate();
-  const { request, user, logout } = useAuth();
+  const { request, download, user, logout } = useAuth();
   const [theme, setTheme] = useState<'light' | 'dark'>(() =>
     document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   );
@@ -605,8 +701,24 @@ export function TeacherDashboard() {
   const [query, setQuery] = useState('');
   const [studentClass, setStudentClass] = useState('');
   const [classStudents, setClassStudents] = useState<TeacherStudent[]>([]);
+  const [studentPhotoUrls, setStudentPhotoUrls] = useState<Record<number, string>>({});
+  const [studentPhotoError, setStudentPhotoError] = useState('');
   const [studentsLoading, setStudentsLoading] = useState(true);
   const [studentsError, setStudentsError] = useState('');
+  const [teacherTransfers, setTeacherTransfers] = useState<TeacherTransfer[]>([]);
+  const [transferListError, setTransferListError] = useState('');
+  const [selectedTransfer, setSelectedTransfer] =
+    useState<TeacherTransferDetail | null>(null);
+  const [transferReadOnly, setTransferReadOnly] = useState(false);
+  const [transferModalLoading, setTransferModalLoading] = useState(false);
+  const [transferActionBusy, setTransferActionBusy] = useState(false);
+  const [transferRemarks, setTransferRemarks] = useState('');
+  const [transferNotice, setTransferNotice] = useState('');
+  const [transferHistory, setTransferHistory] = useState<
+    TeacherTransferHistory[]
+  >([]);
+  const [transferHistoryError, setTransferHistoryError] = useState('');
+  const [transferPhotoUrl, setTransferPhotoUrl] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null,
   );
@@ -650,6 +762,7 @@ export function TeacherDashboard() {
           }
           return {
             id: Number(record.id),
+            hasProfilePhoto: Number(record.has_profile_photo) === 1,
             firstName: record.first_name,
             middleName: record.middle_name ?? '',
             lastName: record.last_name,
@@ -723,6 +836,133 @@ export function TeacherDashboard() {
       document.removeEventListener('visibilitychange', refresh);
     };
   }, [isStudentsPage, request]);
+
+  const studentPhotoIds = useMemo(
+    () =>
+      classStudents
+        .filter((student) => student.hasProfilePhoto)
+        .map((student) => student.id)
+        .join(','),
+    [classStudents],
+  );
+
+  useEffect(() => {
+    let active = true;
+    const urls: Record<number, string> = {};
+    if (!studentPhotoIds) {
+      setStudentPhotoUrls({});
+      setStudentPhotoError('');
+      return;
+    }
+    setStudentPhotoError('');
+    void Promise.all(
+      studentPhotoIds.split(',').map(async (studentId) => {
+        const id = Number(studentId);
+        try {
+          const blob = await download(
+            `/api/teacher/children-progress/${id}/photo?v=${Date.now()}`,
+          );
+          if (active && blob.size > 0) urls[id] = URL.createObjectURL(blob);
+        } catch {
+          if (active) setStudentPhotoError('One or more student profile photos could not be loaded.');
+        }
+      }),
+    ).then(() => {
+      if (active) setStudentPhotoUrls(urls);
+      else Object.values(urls).forEach(URL.revokeObjectURL);
+    });
+    return () => {
+      active = false;
+      Object.values(urls).forEach(URL.revokeObjectURL);
+    };
+  }, [download, studentPhotoIds]);
+
+  useEffect(() => {
+    if (!isStudentsPage) return;
+    let active = true;
+    const loadTransfers = async () => {
+      try {
+        const response = await request<{ data: TeacherTransfer[] }>(
+          '/api/teacher/child-transfers',
+        );
+        if (active) {
+          setTeacherTransfers(response.data);
+          setTransferListError('');
+        }
+      } catch (error) {
+        if (active) {
+          setTransferListError(
+            error instanceof Error
+              ? error.message
+              : 'Transfer requests could not be loaded.',
+          );
+        }
+      }
+    };
+    void loadTransfers();
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void loadTransfers();
+    }, 20_000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [isStudentsPage, request]);
+
+  useEffect(() => {
+    if (!isStudentsPage || !selectedStudentId) {
+      setTransferHistory([]);
+      return;
+    }
+    let active = true;
+    setTransferHistoryError('');
+    void request<{ data: TeacherTransferHistory[] }>(
+      `/api/teacher/children/${selectedStudentId}/transfers`,
+    )
+      .then((response) => {
+        if (active) setTransferHistory(response.data);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setTransferHistoryError(
+            error instanceof Error
+              ? error.message
+              : 'Transfer history could not be loaded.',
+          );
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [isStudentsPage, request, selectedStudentId]);
+
+  useEffect(() => {
+    let active = true;
+    let photoUrl = '';
+    setTransferPhotoUrl('');
+    if (!selectedTransfer || Number(selectedTransfer.has_profile_photo) !== 1) {
+      return;
+    }
+    void download(`/api/teacher/children-progress/${selectedTransfer.child_id}/photo`)
+      .then((blob) => {
+        if (!active || blob.size === 0) return;
+        photoUrl = URL.createObjectURL(blob);
+        setTransferPhotoUrl(photoUrl);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setTransferNotice(
+            error instanceof Error
+              ? error.message
+              : 'The child profile photo could not be loaded.',
+          );
+        }
+      });
+    return () => {
+      active = false;
+      if (photoUrl) URL.revokeObjectURL(photoUrl);
+    };
+  }, [download, selectedTransfer]);
 
   useEffect(() => {
     if (!isAttendancePage) return;
@@ -837,6 +1077,83 @@ export function TeacherDashboard() {
       document.removeEventListener('visibilitychange', refreshOnFocus);
     };
   }, [attendanceDate, attendanceTime, isAttendancePage, request]);
+
+  async function openTransfer(transfer: TeacherTransfer, readOnly = false) {
+    setTransferModalLoading(true);
+    setSelectedTransfer(null);
+    setTransferReadOnly(readOnly);
+    setTransferRemarks('');
+    setTransferNotice('');
+    try {
+      const response = await request<{ data: TeacherTransferDetail }>(
+        `/api/teacher/child-transfers/${transfer.id}`,
+      );
+      setSelectedTransfer(response.data);
+    } catch (error) {
+      setTransferNotice(
+        error instanceof Error
+          ? error.message
+          : 'Transfer request details could not be loaded.',
+      );
+    } finally {
+      setTransferModalLoading(false);
+    }
+  }
+
+  async function reviewTransfer(action: 'approve' | 'reject' | 'dismiss' | 'accept' | 'decline') {
+    if (!selectedTransfer) return;
+    const confirmations: Record<typeof action, string> = {
+      approve: 'Approve this transfer request and send it to the receiving CDC?',
+      reject: 'Reject this transfer request? The child will remain enrolled here.',
+      dismiss: 'Hide this request from the pending review list without rejecting it?',
+      accept: 'Accept this transfer and move the child to your CDC?',
+      decline: 'Decline this transfer? The child will remain enrolled at the previous CDC.',
+    };
+    if (!window.confirm(confirmations[action])) return;
+    setTransferActionBusy(true);
+    setTransferNotice('');
+    try {
+      await request(`/api/teacher/child-transfers/${selectedTransfer.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, remarks: transferRemarks }),
+      });
+      setTeacherTransfers((current) =>
+        current.filter((transfer) => transfer.id !== selectedTransfer.id),
+      );
+      setSelectedTransfer(null);
+      setTransferNotice('Transfer request updated.');
+    } catch (error) {
+      setTransferNotice(
+        error instanceof Error
+          ? error.message
+          : 'The transfer request could not be updated.',
+      );
+    } finally {
+      setTransferActionBusy(false);
+    }
+  }
+
+  async function downloadTransferDocument(documentId: number, name: string) {
+    if (!selectedTransfer) return;
+    try {
+      const blob = await download(
+        `/api/child-transfers/${selectedTransfer.id}/documents/${documentId}`,
+      );
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setTransferNotice(
+        error instanceof Error
+          ? error.message
+          : 'The transfer document could not be downloaded.',
+      );
+    }
+  }
 
   const filteredStudents = (dashboardData?.recent_students ?? []).filter(
     (student) =>
@@ -2027,6 +2344,63 @@ export function TeacherDashboard() {
                 </span>
               </header>
 
+              {(teacherTransfers.length > 0 || transferListError || transferNotice) && (
+                <section aria-label="Child transfer requests" className={styles.transferQueue}>
+                  <header className={styles.transferQueueHeader}>
+                    <div>
+                      <h2>Child Transfer Requests</h2>
+                      <p>Review transfers involving your center.</p>
+                    </div>
+                    <span>{teacherTransfers.length} pending</span>
+                  </header>
+                  {transferListError && (
+                    <p className={styles.transferError} role="alert">
+                      {transferListError}
+                    </p>
+                  )}
+                  {transferNotice && !selectedTransfer && (
+                    <p className={styles.transferNotice} role="status">
+                      {transferNotice}
+                    </p>
+                  )}
+                  <div className={styles.transferQueueList}>
+                    {teacherTransfers.map((transfer) => (
+                      <article className={styles.transferQueueCard} key={transfer.id}>
+                        <div>
+                          <strong>
+                            {[transfer.first_name, transfer.middle_name, transfer.last_name]
+                              .filter(Boolean)
+                              .join(' ')}
+                          </strong>
+                          <span>
+                            {transfer.previous_cdc_name} → {transfer.destination_cdc_name}
+                          </span>
+                          <small>
+                            {transfer.status === 'pending'
+                              ? 'Awaiting your review'
+                              : 'Awaiting your CDC decision'}
+                            {' · '}
+                            Requested {formatShortDate(transfer.requested_date)}
+                          </small>
+                        </div>
+                        <button
+                          className={styles.transferReviewButton}
+                          type="button"
+                          onClick={() => void openTransfer(transfer)}
+                        >
+                          Review request
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {studentPhotoError && (
+                <p className={styles.transferError} role="status">
+                  {studentPhotoError}
+                </p>
+              )}
               <div className={styles.studentFilters}>
                 <label>
                   <span className={styles.visuallyHidden}>Filter by class</span>
@@ -2064,13 +2438,17 @@ export function TeacherDashboard() {
                     <div
                       className={`${styles.studentPortrait} ${styles.bluePortrait}`}
                     >
-                      <span aria-hidden="true">
-                        {student.name
-                          .split(' ')
-                          .map((part) => part[0])
-                          .slice(0, 2)
-                          .join('')}
-                      </span>
+                      {studentPhotoUrls[student.id] ? (
+                        <img alt="" src={studentPhotoUrls[student.id]} />
+                      ) : (
+                        <span aria-hidden="true">
+                          {student.name
+                            .split(' ')
+                            .map((part) => part[0])
+                            .slice(0, 2)
+                            .join('')}
+                        </span>
+                      )}
                       <span className={styles.nickname}>
                         {student.nickname || 'No nickname'}
                       </span>
@@ -2137,13 +2515,17 @@ export function TeacherDashboard() {
                   <div
                     className={`${styles.profilePortrait} ${styles.bluePortrait}`}
                   >
-                    <span aria-hidden="true">
-                      {selectedStudent.name
-                        .split(' ')
-                        .map((part) => part[0])
-                        .slice(0, 2)
-                        .join('')}
-                    </span>
+                    {studentPhotoUrls[selectedStudent.id] ? (
+                      <img alt="" src={studentPhotoUrls[selectedStudent.id]} />
+                    ) : (
+                      <span aria-hidden="true">
+                        {selectedStudent.name
+                          .split(' ')
+                          .map((part) => part[0])
+                          .slice(0, 2)
+                          .join('')}
+                      </span>
+                    )}
                   </div>
                   <div className={styles.profileHeading}>
                     <span
@@ -2453,7 +2835,174 @@ export function TeacherDashboard() {
                     Back to Students
                   </button>
                 </div>
+                <section aria-label="Transfer history" className={styles.profileTransferHistory}>
+                  <h3>Transfer History</h3>
+                  {transferHistoryError && (
+                    <p role="alert">{transferHistoryError}</p>
+                  )}
+                  {!transferHistoryError && transferHistory.length === 0 && (
+                    <p>No transfer requests are recorded for this child.</p>
+                  )}
+                  {transferHistory.map((transfer) => (
+                    <article key={transfer.id}>
+                      <strong>{transfer.reference}</strong>
+                      <span>
+                        {transfer.previous_cdc_name} → {transfer.destination_cdc_name}
+                      </span>
+                      <small>
+                        {transfer.status.replaceAll('_', ' ')} · {formatShortDate(transfer.requested_date)}
+                        {transfer.source_dismissed_at ? ' · Review dismissed' : ''}
+                      </small>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          void openTransfer({
+                            id: transfer.id,
+                            reference: transfer.reference,
+                            child_id: selectedStudent.id,
+                            first_name: selectedStudent.firstName,
+                            middle_name: selectedStudent.middleName || null,
+                            last_name: selectedStudent.lastName,
+                            nickname: selectedStudent.nickname,
+                            reason: transfer.reason,
+                            other_reason: null,
+                            requested_date: transfer.requested_date,
+                            status: transfer.status,
+                            previous_cdc_name: transfer.previous_cdc_name,
+                            destination_cdc_name: transfer.destination_cdc_name,
+                            parent_name: selectedStudent.guardian,
+                            source_dismissed_at: transfer.source_dismissed_at,
+                          }, true)
+                        }
+                      >
+                        View request history
+                      </button>
+                    </article>
+                  ))}
+                </section>
               </aside>
+            )}
+            {(transferModalLoading || selectedTransfer) && (
+              <div className={styles.transferModalBackdrop}>
+                <section
+                  aria-labelledby="transfer-review-title"
+                  aria-modal="true"
+                  className={styles.transferReviewModal}
+                  role="dialog"
+                >
+                  <header>
+                    <div>
+                      <p>Child transfer · {selectedTransfer?.reference ?? 'Loading'}</p>
+                      <h2 id="transfer-review-title">
+                        {selectedTransfer
+                          ? `${selectedTransfer.first_name} ${selectedTransfer.last_name}`
+                          : 'Loading request'}
+                      </h2>
+                    </div>
+                    {selectedTransfer && transferPhotoUrl && (
+                      <img
+                        alt={`${selectedTransfer.first_name} ${selectedTransfer.last_name} profile`}
+                        className={styles.transferChildPhoto}
+                        src={transferPhotoUrl}
+                      />
+                    )}
+                    <button
+                      aria-label="Close transfer review"
+                      disabled={transferActionBusy}
+                      type="button"
+                      onClick={() => setSelectedTransfer(null)}
+                    >
+                      <Icon name="close" />
+                    </button>
+                  </header>
+                  {transferModalLoading ? (
+                    <BouncingDots label="Loading transfer request" />
+                  ) : selectedTransfer ? (
+                    <>
+                      <div className={styles.transferDetailGrid}>
+                        <div><small>From</small><strong>{selectedTransfer.previous_cdc_name}</strong></div>
+                        <div><small>To</small><strong>{selectedTransfer.destination_cdc_name}</strong></div>
+                        <div><small>Parent / Guardian</small><strong>{selectedTransfer.parent_name}</strong></div>
+                        <div><small>Reason</small><strong>{selectedTransfer.reason === 'Other' ? selectedTransfer.other_reason : selectedTransfer.reason}</strong></div>
+                        <div><small>Requested date</small><strong>{formatShortDate(selectedTransfer.requested_date)}</strong></div>
+                        <div><small>Parent contact</small><strong>{selectedTransfer.parent_phone || selectedTransfer.parent_email}</strong></div>
+                      </div>
+                      <div className={styles.transferSensitiveDetails}>
+                        <h3>Child and enrollment information</h3>
+                        <p>Current address: {selectedTransfer.address || 'Not provided'}</p>
+                        <p>Requested address: {[selectedTransfer.new_address, selectedTransfer.new_barangay, selectedTransfer.new_municipality].filter(Boolean).join(', ') || 'No change provided'}</p>
+                        <p>Health: {selectedTransfer.medical_notes || 'No medical notes'}{selectedTransfer.allergies ? ` · Allergies: ${selectedTransfer.allergies}` : ''}{selectedTransfer.blood_type ? ` · Blood type: ${selectedTransfer.blood_type}` : ''}</p>
+                        <p>Emergency contact: {selectedTransfer.emergency_name || 'Not provided'}{selectedTransfer.emergency_phone ? ` · ${selectedTransfer.emergency_phone}` : ''}</p>
+                        {selectedTransfer.remarks && <p>Parent notes: {selectedTransfer.remarks}</p>}
+                      </div>
+                      {selectedTransfer.documents.length > 0 && (
+                        <div className={styles.transferDocuments}>
+                          <h3>Supporting documents</h3>
+                          {selectedTransfer.documents.map((file) => (
+                            <button
+                              key={file.id}
+                              type="button"
+                              onClick={() => void downloadTransferDocument(file.id, file.original_name)}
+                            >
+                              {file.original_name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <div className={styles.transferHistoryColumns}>
+                        <section>
+                          <h3>Attendance history</h3>
+                          {selectedTransfer.attendance.slice(0, 5).map((record, index) => (
+                            <p key={`${record.attendance_date}-${index}`}>
+                              {formatShortDate(record.attendance_date)} · {record.status} · {record.cdc_name}
+                            </p>
+                          ))}
+                          {selectedTransfer.attendance.length === 0 && <p>No attendance records.</p>}
+                        </section>
+                        <section>
+                          <h3>Progress history</h3>
+                          {selectedTransfer.progress.slice(0, 5).map((record, index) => (
+                            <p key={`${record.recorded_at}-${index}`}>
+                              {record.domain}: {record.skill} ({record.rating}/5)
+                            </p>
+                          ))}
+                          {selectedTransfer.progress.length === 0 && <p>No progress records.</p>}
+                        </section>
+                      </div>
+                      <label className={styles.transferRemarks}>
+                        Review notes
+                        <textarea
+                          maxLength={3000}
+                          value={transferRemarks}
+                          onChange={(event) => setTransferRemarks(event.target.value)}
+                          placeholder="Add remarks for the parent and other reviewers (optional)"
+                        />
+                      </label>
+                      {transferNotice && <p className={styles.transferError} role="alert">{transferNotice}</p>}
+                      <footer>
+                        {transferReadOnly ? (
+                          <span>This transfer record is read-only.</span>
+                        ) : selectedTransfer.status === 'pending' ? (
+                          <>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('dismiss')}>Dismiss</button>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('reject')}>Reject</button>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('approve')}>Approve for receiving CDC</button>
+                          </>
+                        ) : selectedTransfer.status === 'awaiting_receiving_cdc' ? (
+                          <>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('decline')}>Decline</button>
+                            <button disabled={transferActionBusy} type="button" onClick={() => void reviewTransfer('accept')}>Accept transfer</button>
+                          </>
+                        ) : (
+                          <span>This transfer record is read-only.</span>
+                        )}
+                      </footer>
+                    </>
+                  ) : (
+                    <p className={styles.transferError} role="alert">{transferNotice}</p>
+                  )}
+                </section>
+              </div>
             )}
             {isStudentIdOpen && selectedStudent && (
               <StudentIdViewer

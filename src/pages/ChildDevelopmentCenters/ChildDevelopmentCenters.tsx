@@ -56,6 +56,40 @@ type TransferHistory = {
   admin_name: string;
 };
 
+type ParentTransferMonitorItem = {
+  id: number;
+  reference: string;
+  child_id: number;
+  reason: string;
+  other_reason: string | null;
+  requested_date: string;
+  remarks: string | null;
+  status: string;
+  previous_teacher_remarks: string | null;
+  receiving_teacher_remarks: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
+  created_at: string;
+  child_name: string;
+  parent_name: string;
+  previous_cdc_name: string;
+  destination_cdc_name: string;
+  previous_teacher_name: string | null;
+  receiving_teacher_name: string | null;
+  documents: Array<{
+    id: number;
+    original_name: string;
+    download_url: string;
+  }>;
+  events: Array<{
+    event_type: string;
+    remarks: string | null;
+    actor_name: string | null;
+    actor_role: string | null;
+    created_at: string;
+  }>;
+};
+
 type CenterActivity = {
   type: 'enrollment' | 'teacher' | 'center';
   title: string;
@@ -262,7 +296,7 @@ function ActivityIcon({ type }: { type: CenterActivity['type'] }) {
 }
 
 export function ChildDevelopmentCenters() {
-  const { request } = useAuth();
+  const { request, download } = useAuth();
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [centers, setCenters] = useState<Center[]>([]);
@@ -290,6 +324,10 @@ export function ChildDevelopmentCenters() {
   const [transferReasons, setTransferReasons] = useState<Record<number, string>>({});
   const [loadingTransfers, setLoadingTransfers] = useState(false);
   const [savingTransferId, setSavingTransferId] = useState<number | null>(null);
+  const [parentTransferMonitorOpen, setParentTransferMonitorOpen] = useState(false);
+  const [parentTransfers, setParentTransfers] = useState<ParentTransferMonitorItem[]>([]);
+  const [parentTransfersLoading, setParentTransfersLoading] = useState(false);
+  const [parentTransfersError, setParentTransfersError] = useState('');
   const latestRequest = useRef(0);
   const centersRef = useRef(centers);
   centersRef.current = centers;
@@ -630,6 +668,56 @@ export function ChildDevelopmentCenters() {
     }
   }
 
+  useEffect(() => {
+    if (!parentTransferMonitorOpen) return;
+    let active = true;
+    setParentTransfersLoading(true);
+    setParentTransfersError('');
+    void request<{ data: ParentTransferMonitorItem[] }>('/api/admin/child-transfers')
+      .then((response) => {
+        if (active) setParentTransfers(response.data);
+      })
+      .catch((loadError: unknown) => {
+        if (active) {
+          setParentTransfersError(
+            loadError instanceof Error
+              ? loadError.message
+              : 'Parent transfer records could not be loaded.',
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setParentTransfersLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [parentTransferMonitorOpen, request]);
+
+  async function downloadParentTransferDocument(
+    transferId: number,
+    documentId: number,
+    name: string,
+  ) {
+    try {
+      const blob = await download(
+        `/api/child-transfers/${transferId}/documents/${documentId}`,
+      );
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (downloadError) {
+      setParentTransfersError(
+        downloadError instanceof Error
+          ? downloadError.message
+          : 'The transfer document could not be downloaded.',
+      );
+    }
+  }
+
   return (
     <section className={styles.page}>
       <header className={styles.pageHeader}>
@@ -643,6 +731,13 @@ export function ChildDevelopmentCenters() {
             municipality.
           </p>
         </div>
+        <button
+          className={styles.secondaryButton}
+          type="button"
+          onClick={() => setParentTransferMonitorOpen(true)}
+        >
+          Parent Transfer Monitoring
+        </button>
       </header>
       {error && (
         <p className={styles.errorState} role="alert">
@@ -651,6 +746,100 @@ export function ChildDevelopmentCenters() {
         </p>
       )}
       {notice && <p className={styles.successState} role="status">{notice}</p>}
+
+      {parentTransferMonitorOpen && (
+        <div className={styles.modalBackdrop}>
+          <section
+            aria-labelledby="parent-transfer-monitor-title"
+            aria-modal="true"
+            className={`${styles.centerModal} ${styles.parentTransferModal}`}
+            role="dialog"
+          >
+            <header className={styles.modalHeader}>
+              <div>
+                <h2 id="parent-transfer-monitor-title">Parent-Initiated Child Transfers</h2>
+                <p>Monitor transfer status, participating CDCs, notes, documents, and review history.</p>
+              </div>
+              <button
+                aria-label="Close parent transfer monitoring"
+                className={styles.closeButton}
+                type="button"
+                onClick={() => setParentTransferMonitorOpen(false)}
+              >
+                ×
+              </button>
+            </header>
+            {parentTransfersError && (
+              <p className={styles.errorState} role="alert">{parentTransfersError}</p>
+            )}
+            {parentTransfersLoading ? (
+              <p className={styles.sideState}><BouncingDots label="Loading parent transfer records" /></p>
+            ) : parentTransfers.length === 0 ? (
+              <p className={styles.sideState}>No parent-initiated transfer requests have been submitted.</p>
+            ) : (
+              <div className={styles.parentTransferList}>
+                {parentTransfers.map((transfer) => (
+                  <article className={styles.parentTransferCard} key={transfer.id}>
+                    <header>
+                      <div>
+                        <strong>{transfer.child_name} · {transfer.reference}</strong>
+                        <span>Parent / Guardian: {transfer.parent_name} · Child ID: {transfer.child_id}</span>
+                      </div>
+                      <span className={styles.parentTransferStatus}>
+                        {transfer.status.replaceAll('_', ' ')}
+                      </span>
+                    </header>
+                    <p className={styles.parentTransferRoute}>
+                      {transfer.previous_cdc_name} ({transfer.previous_teacher_name || 'No current teacher'})
+                      {' → '}
+                      {transfer.destination_cdc_name} ({transfer.receiving_teacher_name || 'No receiving teacher'})
+                    </p>
+                    <dl>
+                      <div><dt>Reason</dt><dd>{transfer.reason === 'Other' ? transfer.other_reason : transfer.reason}</dd></div>
+                      <div><dt>Requested transfer date</dt><dd>{new Date(`${transfer.requested_date}T00:00:00`).toLocaleDateString()}</dd></div>
+                      <div><dt>Parent notes</dt><dd>{transfer.remarks || 'None'}</dd></div>
+                      <div><dt>Current CDC notes</dt><dd>{transfer.previous_teacher_remarks || 'None'}</dd></div>
+                      <div><dt>Receiving CDC notes</dt><dd>{transfer.receiving_teacher_remarks || 'None'}</dd></div>
+                    </dl>
+                    {transfer.documents.length > 0 && (
+                      <div className={styles.parentTransferDocuments}>
+                        <strong>Supporting documents</strong>
+                        {transfer.documents.map((file) => (
+                          <button
+                            key={file.id}
+                            type="button"
+                            onClick={() =>
+                              void downloadParentTransferDocument(
+                                transfer.id,
+                                file.id,
+                                file.original_name,
+                              )
+                            }
+                          >
+                            {file.original_name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <ol className={styles.parentTransferEvents}>
+                      {transfer.events.map((event, index) => (
+                        <li key={`${transfer.id}-${index}`}>
+                          <strong>{event.event_type.replaceAll('_', ' ')}</strong>
+                          <span>
+                            {event.actor_name || 'System'} ({event.actor_role || 'system'}) ·{' '}
+                            {new Date(event.created_at.replace(' ', 'T')).toLocaleString()}
+                          </span>
+                          {event.remarks && <p>{event.remarks}</p>}
+                        </li>
+                      ))}
+                    </ol>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
 
       {centerFormOpen && (
         <div className={styles.modalBackdrop}>

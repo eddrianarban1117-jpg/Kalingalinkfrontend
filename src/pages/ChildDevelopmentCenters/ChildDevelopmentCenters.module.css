@@ -1587,6 +1587,176 @@
   }
 }
 
+.pageHeader > button {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.parentTransferModal {
+  width: min(100%, 72rem);
+}
+
+.parentTransferList {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+}
+
+.parentTransferCard {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border: 1px solid #dce8f4;
+  border-radius: 0.6rem;
+  background: #f9fbfe;
+}
+
+.parentTransferCard > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.parentTransferCard > header > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.parentTransferCard > header strong {
+  color: #183f70;
+  font-size: 0.72rem;
+}
+
+.parentTransferCard > header span,
+.parentTransferRoute {
+  color: #617b9d;
+  font-size: 0.62rem;
+}
+
+.parentTransferStatus {
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  color: #825d12;
+  background: #fff1cd;
+  font-size: 0.57rem;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.parentTransferRoute {
+  margin: 0;
+  font-weight: 750;
+}
+
+.parentTransferCard dl {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.parentTransferCard dl > div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 1fr);
+  gap: 0.45rem;
+}
+
+.parentTransferCard dt {
+  color: #7187a1;
+  font-size: 0.59rem;
+  font-weight: 750;
+}
+
+.parentTransferCard dd {
+  margin: 0;
+  color: #315f99;
+  font-size: 0.6rem;
+  overflow-wrap: anywhere;
+}
+
+.parentTransferDocuments {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.parentTransferDocuments > strong {
+  flex-basis: 100%;
+  color: #315f99;
+  font-size: 0.6rem;
+}
+
+.parentTransferDocuments button {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #cfe2f5;
+  border-radius: 0.4rem;
+  color: #1768b7;
+  background: #fff;
+  font: inherit;
+  font-size: 0.57rem;
+  cursor: pointer;
+}
+
+.parentTransferEvents {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.5rem 0 0;
+  border-top: 1px solid #e1eaf4;
+  list-style: none;
+}
+
+.parentTransferEvents li {
+  display: grid;
+  gap: 0.12rem;
+  padding-left: 0.55rem;
+  border-left: 2px solid #87b9e8;
+}
+
+.parentTransferEvents strong {
+  color: #315f99;
+  font-size: 0.58rem;
+  text-transform: capitalize;
+}
+
+.parentTransferEvents span,
+.parentTransferEvents p {
+  margin: 0;
+  color: #7187a1;
+  font-size: 0.55rem;
+}
+
+:global(html[data-theme='dark']) .parentTransferCard {
+  border-color: #29496b;
+  background: #10243a;
+}
+
+:global(html[data-theme='dark']) .parentTransferCard > header strong,
+:global(html[data-theme='dark']) .parentTransferDocuments > strong,
+:global(html[data-theme='dark']) .parentTransferEvents strong {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .parentTransferCard > header span,
+:global(html[data-theme='dark']) .parentTransferRoute,
+:global(html[data-theme='dark']) .parentTransferCard dt,
+:global(html[data-theme='dark']) .parentTransferCard dd,
+:global(html[data-theme='dark']) .parentTransferEvents span,
+:global(html[data-theme='dark']) .parentTransferEvents p {
+  color: #a9c2de;
+}
+
+@media (max-width: 760px) {
+  .pageHeader > button {
+    white-space: normal;
+  }
+
+  .parentTransferCard > header {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 520px) {
   .page {
     gap: 0.65rem;
