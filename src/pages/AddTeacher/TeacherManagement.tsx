@@ -20,6 +20,8 @@ type Teacher = {
   certification: string | null;
   employee_number: string | null;
   account_active: boolean;
+  can_delete: boolean;
+  delete_block_reason: string | null;
   status: 'pending_review' | 'under_review' | 'revision_required' | 'approved_awaiting_acceptance' | 'rejected' | 'active' | 'deactivated';
   email_status: 'pending' | 'sent' | 'failed' | 'accepted' | null;
   message_sent_at: string | null;
@@ -76,6 +78,11 @@ type TeacherOverview = {
     positions: { name: string; count: number }[];
     gender: { male: number; female: number; other: number };
   };
+};
+
+type TeacherAccountAction = {
+  teacher: Teacher;
+  action: 'deactivate' | 'delete';
 };
 
 function teacherNumber(id: number) {
@@ -230,6 +237,21 @@ function Icon({ name }: { name: string }) {
       </svg>
     );
   }
+  if (name === 'eye') {
+    return (
+      <svg {...base}>
+        <path d="M2.5 12s3.2-6 9.5-6 9.5 6 9.5 6-3.2 6-9.5 6-9.5-6-9.5-6Z" />
+        <circle cx="12" cy="12" r="2.5" />
+      </svg>
+    );
+  }
+  if (name === 'trash') {
+    return (
+      <svg {...base}>
+        <path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3" />
+      </svg>
+    );
+  }
   return (
     <svg {...base}>
       <circle cx="12" cy="8" r="3" />
@@ -256,6 +278,10 @@ export function TeacherManagement() {
   const [reviewMessage, setReviewMessage] = useState('');
   const [reviewError, setReviewError] = useState(false);
   const [downloadingDocumentId, setDownloadingDocumentId] = useState<number | null>(null);
+  const [accountAction, setAccountAction] = useState<TeacherAccountAction | null>(null);
+  const [accountActionReason, setAccountActionReason] = useState('');
+  const [accountActionSaving, setAccountActionSaving] = useState(false);
+  const [accountActionMessage, setAccountActionMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const latestRequest = useRef(0);
@@ -404,6 +430,57 @@ export function TeacherManagement() {
     }
   }
 
+  function openAccountAction(teacher: Teacher, action: TeacherAccountAction['action']) {
+    setAccountAction({ teacher, action });
+    setAccountActionReason('');
+    setAccountActionMessage('');
+  }
+
+  function closeAccountAction() {
+    if (accountActionSaving) return;
+    setAccountAction(null);
+    setAccountActionReason('');
+    setAccountActionMessage('');
+  }
+
+  async function submitAccountAction() {
+    if (!accountAction || accountActionSaving) return;
+    const reason = accountActionReason.trim();
+    if (!reason) {
+      setAccountActionMessage(
+        `Enter a reason for ${accountAction.action === 'deactivate' ? 'deactivating' : 'deleting'} this account.`,
+      );
+      return;
+    }
+
+    setAccountActionSaving(true);
+    setAccountActionMessage('');
+    try {
+      await request(
+        `/api/admin/teachers/${accountAction.teacher.id}${accountAction.action === 'deactivate' ? '/deactivate' : ''}`,
+        {
+          method: accountAction.action === 'deactivate' ? 'PATCH' : 'DELETE',
+          body: JSON.stringify({ reason }),
+        },
+      );
+      if (selectedTeacher?.id === accountAction.teacher.id) {
+        setSelectedTeacher(null);
+        setReviewMessage('');
+      }
+      setAccountAction(null);
+      setAccountActionReason('');
+      await reload();
+    } catch (actionError) {
+      setAccountActionMessage(
+        actionError instanceof Error
+          ? actionError.message
+          : `Teacher account could not be ${accountAction.action === 'deactivate' ? 'deactivated' : 'deleted'}.`,
+      );
+    } finally {
+      setAccountActionSaving(false);
+    }
+  }
+
   useEffect(() => {
     let active = true;
     const refresh = () => {
@@ -519,7 +596,7 @@ export function TeacherManagement() {
             <Icon name="teacher" />
           </span>
           <div>
-            <span>Total Teachers</span>
+            <span>Active Teachers</span>
             <strong>{stats?.total?.toLocaleString() ?? (loading ? <BouncingDots size="small" inline /> : '—')}</strong>
           </div>
           <span aria-hidden="true" className={styles.statArrow}>
@@ -702,15 +779,36 @@ export function TeacherManagement() {
                       </span>
                     </td>
                     <td data-label="Action">
-                      <button
-                        className={styles.reviewButton}
-                        onClick={() => void selectTeacher(teacher)}
-                        type="button"
-                      >
-                        {['pending_review', 'under_review', 'revision_required'].includes(teacher.status)
-                          ? 'Review'
-                          : 'View'}
-                      </button>
+                      <div className={styles.accountActions}>
+                        <button
+                          aria-label={`View ${teacher.name}`}
+                          className={`${styles.accountActionButton} ${styles.viewAction}`}
+                          onClick={() => void selectTeacher(teacher)}
+                          title="View teacher"
+                          type="button"
+                        >
+                          <Icon name="eye" />
+                        </button>
+                        <button
+                          aria-label={`Deactivate ${teacher.name}`}
+                          className={`${styles.accountActionButton} ${styles.deactivateAction}`}
+                          disabled={!teacher.account_active}
+                          onClick={() => openAccountAction(teacher, 'deactivate')}
+                          title={teacher.account_active ? 'Deactivate teacher' : 'Account already inactive'}
+                          type="button"
+                        >
+                          <Icon name="reject" />
+                        </button>
+                        <button
+                          aria-label={`Delete ${teacher.name}`}
+                          className={`${styles.accountActionButton} ${styles.deleteAction}`}
+                          onClick={() => openAccountAction(teacher, 'delete')}
+                          title={teacher.can_delete ? 'Delete teacher' : teacher.delete_block_reason ?? 'Cannot delete this teacher'}
+                          type="button"
+                        >
+                          <Icon name="trash" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -943,6 +1041,71 @@ export function TeacherManagement() {
           )}
         </aside>
       </div>
+      {accountAction && (
+        <div className={styles.dialogBackdrop}>
+          <section
+            aria-labelledby="teacher-account-action-title"
+            aria-modal="true"
+            className={styles.accountActionDialog}
+            role="dialog"
+          >
+            <h2 id="teacher-account-action-title">
+              {accountAction.action === 'deactivate'
+                ? 'Deactivate teacher account'
+                : 'Delete teacher account'}
+            </h2>
+            <p>
+              Are you sure you want to {accountAction.action} {accountAction.teacher.name}’s account?
+              {accountAction.action === 'deactivate'
+                ? ' The account will remain in the directory with Deactivated status.'
+                : ' This permanently removes the account.'}
+            </p>
+            {accountAction.action === 'delete' && !accountAction.teacher.can_delete ? (
+              <p className={styles.actionBlockMessage} role="alert">
+                {accountAction.teacher.delete_block_reason ?? 'This account cannot be deleted.'}
+              </p>
+            ) : (
+              <label className={styles.actionReasonField}>
+                <span>Reason (required)</span>
+                <textarea
+                  autoFocus
+                  maxLength={1000}
+                  onChange={(event) => setAccountActionReason(event.target.value)}
+                  placeholder={`Enter the reason for ${accountAction.action === 'deactivate' ? 'deactivation' : 'deletion'}...`}
+                  rows={3}
+                  value={accountActionReason}
+                />
+              </label>
+            )}
+            {accountActionMessage && (
+              <p className={styles.actionError} role="alert">{accountActionMessage}</p>
+            )}
+            <div className={styles.accountActionDialogButtons}>
+              <button
+                disabled={accountActionSaving}
+                onClick={closeAccountAction}
+                type="button"
+              >
+                Cancel
+              </button>
+              {(accountAction.action !== 'delete' || accountAction.teacher.can_delete) && (
+                <button
+                  className={accountAction.action === 'delete' ? styles.confirmDelete : styles.confirmDeactivate}
+                  disabled={accountActionSaving || !accountActionReason.trim()}
+                  onClick={() => void submitAccountAction()}
+                  type="button"
+                >
+                  {accountActionSaving
+                    ? 'Saving…'
+                    : accountAction.action === 'deactivate'
+                      ? 'Confirm Deactivate'
+                      : 'Confirm Delete'}
+                </button>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

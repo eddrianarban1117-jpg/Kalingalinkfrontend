@@ -369,27 +369,27 @@
 }
 
 .teacherTable th:nth-child(2) {
-  width: 20%;
+  width: 19%;
 }
 
 .teacherTable th:nth-child(3) {
-  width: 9%;
+  width: 8%;
 }
 
 .teacherTable th:nth-child(4) {
-  width: 13%;
+  width: 12%;
 }
 
 .teacherTable th:nth-child(5) {
-  width: 24%;
+  width: 22%;
 }
 
 .teacherTable th:nth-child(6) {
-  width: 14%;
+  width: 13%;
 }
 
 .teacherTable th:nth-child(7) {
-  width: 10%;
+  width: 16%;
 }
 
 .teacherTable th:last-child {
@@ -414,6 +414,50 @@
 
 .teacherTable td:last-child {
   text-align: center;
+}
+
+.accountActions {
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.accountActionButton {
+  display: inline-grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: 0 0 1.65rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.accountActionButton svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.viewAction {
+  color: #1976d2;
+  background: #eff7ff;
+}
+
+.deactivateAction {
+  color: #b57900;
+  background: #fff6d9;
+}
+
+.deleteAction {
+  color: #d93848;
+  background: #fff0f1;
+}
+
+.accountActionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .teacherTable td:nth-child(2) {
@@ -1185,6 +1229,105 @@
   outline-offset: 2px;
 }
 
+.dialogBackdrop {
+  position: fixed;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(10 31 56 / 48%);
+  inset: 0;
+}
+
+.accountActionDialog {
+  width: min(100%, 28rem);
+  padding: 1.1rem;
+  border: 1px solid #dce8f5;
+  border-radius: 0.8rem;
+  background: #fff;
+  box-shadow: 0 1rem 3rem rgb(15 40 72 / 22%);
+}
+
+.accountActionDialog h2 {
+  margin: 0;
+  color: #103f91;
+  font-size: 1rem;
+}
+
+.accountActionDialog > p {
+  margin: 0.55rem 0 0.8rem;
+  color: #55799f;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.actionReasonField {
+  display: grid;
+  gap: 0.35rem;
+  color: #315f9b;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.actionReasonField textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  padding: 0.55rem;
+  border: 1px solid #d9e8f6;
+  border-radius: 0.4rem;
+  color: #174477;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+}
+
+.actionBlockMessage,
+.actionError {
+  padding: 0.6rem;
+  border-radius: 0.4rem;
+  color: #a52c39 !important;
+  background: #fff0f1;
+  font-size: 0.72rem !important;
+}
+
+.accountActionDialogButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.accountActionDialogButtons button {
+  min-height: 2.2rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #cbdced;
+  border-radius: 0.4rem;
+  color: #315f9b;
+  background: #fff;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.accountActionDialogButtons .confirmDeactivate {
+  border-color: #e6aa16;
+  color: #573d00;
+  background: #ffca3a;
+}
+
+.accountActionDialogButtons .confirmDelete {
+  border-color: #d93848;
+  color: #fff;
+  background: #d93848;
+}
+
+.accountActionDialogButtons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 @media (min-width: 1500px) {
   .panel {
     padding: 0.8rem 0.9rem;
@@ -1390,6 +1533,16 @@
 
   .teacherTable td:last-child {
     justify-content: flex-start;
+  }
+
+  .accountActions {
+    gap: 0.15rem;
+  }
+
+  .accountActionButton {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-basis: 1.5rem;
   }
 
   .teacherTable .emptyState {
