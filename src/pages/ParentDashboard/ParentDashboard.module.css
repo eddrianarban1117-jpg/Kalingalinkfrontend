@@ -2125,6 +2125,11 @@ html[data-theme='dark']
     inset 0 0 0.75rem rgb(0 174 255 / 8%);
 }
 
+html[data-theme='dark'] .workspace .stat .statCopy,
+html[data-theme='dark'] .workspace .stat .statCopy :is(strong, b, span) {
+  color: #fff;
+}
+
 html[data-theme='dark']
   .workspace
   :is(
