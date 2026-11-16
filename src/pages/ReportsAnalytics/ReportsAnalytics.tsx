@@ -465,7 +465,7 @@ export function ReportsAnalytics() {
                   return (
                     <div className={styles.centerBar} key={center.id} title={`${center.name}: ${center.enrolled}`}>
                       <strong
-                        style={{ bottom: `calc(1.05rem + ${barHeight}%)` }}
+                        style={{ bottom: `calc(0.25rem + ${barHeight}%)` }}
                       >
                         {center.enrolled}
                       </strong>

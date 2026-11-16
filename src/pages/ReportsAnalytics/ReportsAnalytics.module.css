@@ -324,7 +324,7 @@
   flex: 0 0 1.15rem;
   flex-direction: column;
   justify-content: space-between;
-  padding-bottom: 1.65rem;
+  padding-bottom: 1.8rem;
   color: #6d91bd;
   font-size: 0.43rem;
   text-align: right;
@@ -334,12 +334,12 @@
   position: relative;
   min-width: 0;
   flex: 1;
-  margin-bottom: 1.55rem;
+  margin-bottom: 1.8rem;
 }
 
 .centerBars {
   position: absolute;
-  inset: 0 0 -1.55rem;
+  inset: 0;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: end;
@@ -358,7 +358,7 @@
 
 .centerBar strong {
   position: absolute;
-  bottom: calc(1.05rem + var(--bar-size, 0%));
+  bottom: calc(0.25rem + var(--bar-size, 0%));
   color: #2665a8;
   font-size: 0.4rem;
   font-weight: 600;
@@ -383,12 +383,19 @@
 
 .centerBar small {
   position: absolute;
-  top: calc(100% + 0.14rem);
+  top: calc(100% + 0.12rem);
+  display: -webkit-box;
+  width: 100%;
+  max-height: 1.65rem;
+  padding: 0 0.08rem;
+  overflow: hidden;
   color: #527aa9;
-  font-size: 0.35rem;
-  transform: rotate(-42deg);
-  transform-origin: top left;
-  white-space: nowrap;
+  font-size: 0.38rem;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .donutContent {
@@ -873,7 +880,7 @@
   }
 
   .centerChart {
-    height: 7rem;
+    height: 7.5rem;
   }
 
   .distributionGrid {
