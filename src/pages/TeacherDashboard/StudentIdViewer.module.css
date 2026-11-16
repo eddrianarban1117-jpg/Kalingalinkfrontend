@@ -184,7 +184,7 @@
   overflow: hidden;
   border: 1px solid #c9def8;
   border-radius: clamp(0.6rem, 1.5vw, 1.15rem);
-  background: linear-gradient(135deg, #fff 0%, #fbfdff 74%, #f2f8ff 100%);
+  background: #fff;
   box-shadow: 0 0.5rem 1.5rem rgb(20 83 152 / 16%);
   color: #0a3f86;
   container-type: inline-size;
@@ -198,41 +198,6 @@
   z-index: 0;
   content: '';
   pointer-events: none;
-}
-
-.front::before {
-  top: -40%;
-  left: -9%;
-  width: 37%;
-  height: 82%;
-  border-radius: 0 0 95% 0;
-  background: linear-gradient(145deg, #0781ee, #45b5fa);
-  opacity: 0.96;
-}
-
-.front::after {
-  right: -9%;
-  bottom: -34%;
-  width: 75%;
-  height: 44%;
-  border-radius: 100% 0 0;
-  border-top: 0.55cqi solid #ffca1c;
-  background: #0781e6;
-  box-shadow: 0 -0.5cqi 0 #20b96e;
-  transform: rotate(-2deg);
-}
-
-.frontSweep {
-  position: absolute;
-  z-index: 0;
-  top: -22%;
-  left: 0;
-  width: 52%;
-  height: 44%;
-  border-bottom: 0.35cqi solid #f8c421;
-  border-radius: 0 0 100% 0;
-  background: #fff;
-  transform: skewY(-14deg);
 }
 
 .brand {
@@ -271,6 +236,19 @@
   font-size: 1.65cqi;
   font-weight: 650;
   line-height: 1.15;
+}
+
+.frontBrand {
+  position: relative;
+  z-index: 1;
+  min-height: 20%;
+  border-bottom: 1px solid #d9e8fa;
+}
+
+.frontBrand .brand {
+  justify-content: center;
+  min-height: 100%;
+  padding: 1cqi 5cqi;
 }
 
 .frontContent {
@@ -351,7 +329,7 @@
   z-index: 1;
   left: 4cqi;
   bottom: 3cqi;
-  color: #fff;
+  color: #245c9e;
   font-size: 1.8cqi;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -359,15 +337,6 @@
 
 .back {
   background: linear-gradient(140deg, #fff 0%, #f8fbff 70%, #f0f7ff 100%);
-}
-
-.back::before {
-  top: -40%;
-  right: -5%;
-  width: 40%;
-  height: 60%;
-  border-radius: 0 0 0 100%;
-  background: #0d83e9;
 }
 
 .back::after {

@@ -170,8 +170,9 @@ function StudentIdFront({ student }: { student: StudentIdDetails }) {
       aria-label="Front of student ID"
       className={`${styles.idCard} ${styles.front}`}
     >
-      <div aria-hidden="true" className={styles.frontSweep} />
-      <IdBrand />
+      <div className={styles.frontBrand}>
+        <IdBrand />
+      </div>
       <div className={styles.frontContent}>
         <div
           aria-label={`${student.name} initials`}
