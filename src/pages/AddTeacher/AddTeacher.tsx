@@ -683,7 +683,7 @@ export function AddTeacher({ mode = 'admin' }: AddTeacherProps) {
                 required
                 hint={
                   isPublicRegistration
-                    ? 'Use an email account you can access.'
+                    ? 'Use this email to sign in and receive your activation invitation after admin approval.'
                     : undefined
                 }
               >
