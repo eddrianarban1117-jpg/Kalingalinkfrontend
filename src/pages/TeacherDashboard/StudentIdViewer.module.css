@@ -702,7 +702,7 @@
 
 @media print {
   @page {
-    size: landscape;
+    size: A4 landscape;
     margin: 0;
   }
 
@@ -755,22 +755,29 @@
 
   .printLayout {
     display: flex !important;
-    width: 100%;
-    min-height: 100vh;
+    width: 297mm;
+    height: 210mm;
+    min-height: 0;
     box-sizing: border-box;
     align-items: center;
     justify-content: center;
     gap: 4mm;
     margin: 0;
     padding: 0;
+    overflow: hidden;
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
   .printLayout .idCard {
-    width: 85.6mm;
-    height: 53.98mm;
+    width: 85.6mm !important;
+    min-width: 85.6mm;
+    max-width: 85.6mm;
+    height: 53.98mm !important;
+    min-height: 53.98mm;
+    max-height: 53.98mm;
     flex: 0 0 85.6mm;
+    flex-shrink: 0;
     box-sizing: border-box;
     border: 0.3mm solid #b6d2f3;
     border-radius: 3mm;
@@ -788,6 +795,8 @@
     width: 85.6mm;
     height: 53.98mm;
     flex: 0 0 85.6mm;
+    flex-shrink: 0;
+    box-sizing: border-box;
     break-inside: avoid;
     page-break-inside: avoid;
   }
