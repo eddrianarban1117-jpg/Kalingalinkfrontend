@@ -19,6 +19,7 @@
   padding: 0.42rem 0.7rem;
   border: 1px solid #d2e9fb;
   border-radius: 0.45rem;
+  background-image: linear-gradient(90deg, #eaf6ff 0%, rgb(234 246 255 / 96%) 50%, rgb(234 246 255 / 20%) 100%), var(--hero-image);
   background-position: right 44%;
   background-size: cover;
 }
@@ -194,4 +195,126 @@
   .clearButton { justify-content: center; }
   .tableScroll table { min-width: 43rem; }
   .detailsPanel { min-height: 0; }
+}
+
+:global(html[data-theme='dark']) .page {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .hero {
+  border-color: #29496b;
+  background-image: linear-gradient(90deg, #101f33 0%, rgb(16 31 51 / 96%) 50%, rgb(16 31 51 / 35%) 100%), var(--hero-image) !important;
+}
+
+:global(html[data-theme='dark']) .hero h1,
+:global(html[data-theme='dark']) .listHeader h2,
+:global(html[data-theme='dark']) .detailsHeader h2,
+:global(html[data-theme='dark']) .detailSection h3,
+:global(html[data-theme='dark']) .applicationMeta h3 {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .hero p,
+:global(html[data-theme='dark']) .summaryCopy small,
+:global(html[data-theme='dark']) .tableFooter,
+:global(html[data-theme='dark']) .tableScroll td,
+:global(html[data-theme='dark']) .childCell small,
+:global(html[data-theme='dark']) .parentCell small,
+:global(html[data-theme='dark']) .detailRow dt,
+:global(html[data-theme='dark']) .previewNotice,
+:global(html[data-theme='dark']) .documents li small {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .previewLabel {
+  color: #c3d7ed;
+  background: rgb(16 31 51 / 90%);
+}
+
+:global(html[data-theme='dark']) .filters,
+:global(html[data-theme='dark']) .filters label,
+:global(html[data-theme='dark']) .listPanel,
+:global(html[data-theme='dark']) .detailsPanel {
+  border-color: #29496b;
+  color: #d7e8fb;
+  background: #101f33;
+}
+
+:global(html[data-theme='dark']) .stats .summaryCard {
+  border-color: #29496b;
+  background: #142a42;
+}
+
+:global(html[data-theme='dark']) .summaryCopy strong {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .summaryCopy small {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .filters input,
+:global(html[data-theme='dark']) .filters select {
+  color: #d7e8fb;
+  color-scheme: dark;
+}
+
+:global(html[data-theme='dark']) .filters input::placeholder {
+  color: #8fa9c6;
+}
+
+:global(html[data-theme='dark']) .clearButton,
+:global(html[data-theme='dark']) .reviewButton,
+:global(html[data-theme='dark']) .pagination button {
+  border-color: #355575;
+  color: #c8e3ff;
+  background: #142a42;
+}
+
+:global(html[data-theme='dark']) .tableScroll th {
+  color: #c8def5;
+  background: #172a42;
+}
+
+:global(html[data-theme='dark']) .tableScroll td,
+:global(html[data-theme='dark']) .detailSection,
+:global(html[data-theme='dark']) .tabs {
+  border-color: #263e59;
+}
+
+:global(html[data-theme='dark']) .tabs button {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .tabs .activeTab {
+  color: #68b7ff;
+}
+
+:global(html[data-theme='dark']) .tableScroll tr,
+:global(html[data-theme='dark']) .childCell strong,
+:global(html[data-theme='dark']) .parentCell strong,
+:global(html[data-theme='dark']) .detailRow dd,
+:global(html[data-theme='dark']) .documents li strong {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .tableScroll tbody tr:hover,
+:global(html[data-theme='dark']) .selectedRow {
+  background: #172d47;
+}
+
+:global(html[data-theme='dark']) .reviewButton:hover,
+:global(html[data-theme='dark']) .clearButton:hover {
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark']) .pagination button[aria-current='page'] {
+  border-color: #0877d6;
+  color: #fff;
+  background: #0877d6;
+}
+
+:global(html[data-theme='dark']) .noteHistory {
+  color: #c3d7ed;
+  background: #172d47;
 }

@@ -1128,3 +1128,130 @@
     justify-content: center;
   }
 }
+
+:global(html[data-theme='dark']) .page {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .heading h1,
+:global(html[data-theme='dark']) .studentPanelHeader h2,
+:global(html[data-theme='dark']) .summaryPanel > h2,
+:global(html[data-theme='dark']) .notesPanel > header h2,
+:global(html[data-theme='dark']) .domainSection > h2,
+:global(html[data-theme='dark']) .domainInfo > strong,
+:global(html[data-theme='dark']) .profileCopy strong,
+:global(html[data-theme='dark']) .observationCard strong,
+:global(html[data-theme='dark']) .milestoneList strong,
+:global(html[data-theme='dark']) .progressDonut > span {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .heading p,
+:global(html[data-theme='dark']) .studentPanelHeader > span,
+:global(html[data-theme='dark']) .studentCopy small,
+:global(html[data-theme='dark']) .profileCopy > span,
+:global(html[data-theme='dark']) .domainInfo > small,
+:global(html[data-theme='dark']) .progressTrack > b,
+:global(html[data-theme='dark']) .summaryLegend li,
+:global(html[data-theme='dark']) .noteRow strong,
+:global(html[data-theme='dark']) .noteRow small,
+:global(html[data-theme='dark']) .observationCard > span:last-child > span,
+:global(html[data-theme='dark']) .milestoneList small {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .searchFilter,
+:global(html[data-theme='dark']) .dateFilter,
+:global(html[data-theme='dark']) .filters select,
+:global(html[data-theme='dark']) .studentPanel,
+:global(html[data-theme='dark']) .profilePanel,
+:global(html[data-theme='dark']) .summaryPanel,
+:global(html[data-theme='dark']) .notesPanel {
+  border-color: #29496b;
+  color: #d7e8fb;
+  background: #101f33;
+  box-shadow: none;
+}
+
+:global(html[data-theme='dark']) .searchFilter input,
+:global(html[data-theme='dark']) .dateFilter input,
+:global(html[data-theme='dark']) .dateFilter select,
+:global(html[data-theme='dark']) .filters select {
+  color: #d7e8fb;
+  color-scheme: dark;
+}
+
+:global(html[data-theme='dark']) .searchFilter input::placeholder {
+  color: #8fa9c6;
+}
+
+:global(html[data-theme='dark']) .studentRow {
+  border-bottom-color: #263e59;
+  color: #d7e8fb;
+  background: #101f33;
+}
+
+:global(html[data-theme='dark']) .studentRow:hover,
+:global(html[data-theme='dark']) .selectedStudent {
+  background: #172d47;
+}
+
+:global(html[data-theme='dark']) .studentAvatar,
+:global(html[data-theme='dark']) .profileAvatar {
+  border-color: #29496b;
+}
+
+:global(html[data-theme='dark']) .profileHeader,
+:global(html[data-theme='dark']) .progressTabs,
+:global(html[data-theme='dark']) .noteRow {
+  border-color: #263e59;
+}
+
+:global(html[data-theme='dark']) .progressTabs button {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .progressTabs .activeTab {
+  color: #68b7ff;
+}
+
+:global(html[data-theme='dark']) .domainCard,
+:global(html[data-theme='dark']) .observationCard,
+:global(html[data-theme='dark']) .milestoneList article {
+  border-color: #29496b;
+  background: linear-gradient(110deg, #142a42 0%, #12253a 100%);
+}
+
+:global(html[data-theme='dark']) .progressDonut::before {
+  background: #101f33;
+}
+
+:global(html[data-theme='dark']) .encouragement {
+  color: #c8e3ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark']) .dialog {
+  border: 1px solid #29496b;
+  color: #d7e8fb;
+  background: #101f33;
+}
+
+:global(html[data-theme='dark']) .dialog h2 {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .dialog > header button,
+:global(html[data-theme='dark']) .dialog form > label {
+  color: #c3d7ed;
+}
+
+:global(html[data-theme='dark']) .dialog input,
+:global(html[data-theme='dark']) .dialog select,
+:global(html[data-theme='dark']) .dialog textarea,
+:global(html[data-theme='dark']) .dialogActions button:not([type='submit']) {
+  border-color: #355575;
+  color: #d7e8fb;
+  background: #142a42;
+  color-scheme: dark;
+}

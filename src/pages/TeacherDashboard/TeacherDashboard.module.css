@@ -3566,6 +3566,26 @@
   color: #a9c2de;
 }
 
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceNotice,
+:global(html[data-theme='dark']) .dailyAttendancePage .selectionNotice {
+  border-color: #245c53;
+  color: #8fe0c8;
+  background: #12352f;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .bulk-present,
+:global(html[data-theme='dark']) .dailyAttendancePage .bulk-absent,
+:global(html[data-theme='dark']) .dailyAttendancePage .bulk-late,
+:global(html[data-theme='dark']) .dailyAttendancePage .bulk-excused {
+  border: 1px solid #355575;
+  color: #d7e8fb;
+  background: #172d47;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .bulkAction:hover {
+  filter: brightness(1.15);
+}
+
 @media (max-width: 680px) {
   .transferQueueCard {
     align-items: flex-start;
@@ -3579,4 +3599,173 @@
   .transferHistoryColumns {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage,
+:global(html[data-theme='dark']) .studentsPage {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendancePageTitle h1,
+:global(html[data-theme='dark']) .studentsPage .studentsTitle h1,
+:global(html[data-theme='dark']) .studentsPage .profileHeading h2,
+:global(html[data-theme='dark']) .studentsPage .profileCopy strong,
+:global(html[data-theme='dark']) .studentsPage .cardStudentName {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendancePageTitle p,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceNumber,
+:global(html[data-theme='dark']) .dailyAttendancePage .unrecordedStatus,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceDetails > label,
+:global(html[data-theme='dark']) .dailyAttendancePage .savedAttendanceNote,
+:global(html[data-theme='dark']) .dailyAttendancePage .summaryLegend li,
+:global(html[data-theme='dark']) .studentsPage .studentsTitle p,
+:global(html[data-theme='dark']) .studentsPage .studentCount,
+:global(html[data-theme='dark']) .studentsPage .cardInfo,
+:global(html[data-theme='dark']) .studentsPage .profileCopy > span,
+:global(html[data-theme='dark']) .studentsPage .infoList dt,
+:global(html[data-theme='dark']) .studentsPage .infoList dd {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceControl,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceRosterPanel,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendancePanel,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceNotice,
+:global(html[data-theme='dark']) .dailyAttendancePage .selectionNotice,
+:global(html[data-theme='dark']) .studentsPage .studentFilters label,
+:global(html[data-theme='dark']) .studentsPage .studentCard,
+:global(html[data-theme='dark']) .studentsPage .profilePanel,
+:global(html[data-theme='dark']) .studentsPage .infoSection {
+  border-color: #29496b;
+  background: #101f33;
+  box-shadow: none;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceControl input,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceControl select,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceRemarks,
+:global(html[data-theme='dark']) .studentsPage .studentFilters select,
+:global(html[data-theme='dark']) .studentsPage .transferRemarks textarea,
+:global(html[data-theme='dark']) .studentsPage .transferRemarks input,
+:global(html[data-theme='dark']) .studentsPage .transferRemarks select {
+  color: #d7e8fb;
+  color-scheme: dark;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable {
+  color: #c6d9ee;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable thead,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTip,
+:global(html[data-theme='dark']) .studentsPage .infoSection h3 {
+  color: #c8def5;
+  background: #172a42;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable th,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable td,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable thead th,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceStudent,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendancePanel h2,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceDonut strong,
+:global(html[data-theme='dark']) .dailyAttendancePage .summaryLegend strong,
+:global(html[data-theme='dark']) .studentsPage .studentCopy strong,
+:global(html[data-theme='dark']) .studentsPage .infoSection h3 {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable th,
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable td,
+:global(html[data-theme='dark']) .studentsPage .infoList > div,
+:global(html[data-theme='dark']) .studentsPage .profileTabs,
+:global(html[data-theme='dark']) .studentsPage .profileTabs button {
+  border-color: #263e59;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceTable tbody tr:hover,
+:global(html[data-theme='dark']) .studentsPage .studentRow,
+:global(html[data-theme='dark']) .studentsPage .transferQueueCard {
+  color: #d7e8fb;
+  background: #101f33;
+}
+
+:global(html[data-theme='dark']) .studentsPage .studentRow {
+  border-bottom-color: #263e59;
+}
+
+:global(html[data-theme='dark']) .studentsPage .studentRow:hover,
+:global(html[data-theme='dark']) .studentsPage .selectedStudent,
+:global(html[data-theme='dark']) .studentsPage .selectedCard {
+  border-color: #35618d;
+  background: #172d47;
+}
+
+:global(html[data-theme='dark']) .studentsPage .studentCopy small,
+:global(html[data-theme='dark']) .studentsPage .studentCount,
+:global(html[data-theme='dark']) .studentsPage .infoList dt {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .studentsPage .studentPortrait,
+:global(html[data-theme='dark']) .studentsPage .profilePortrait {
+  background-color: #172d47;
+}
+
+:global(html[data-theme='dark']) .studentsPage .nickname,
+:global(html[data-theme='dark']) .studentsPage .viewProfile,
+:global(html[data-theme='dark']) .studentsPage .viewStudentId,
+:global(html[data-theme='dark']) .studentsPage .profileNickname,
+:global(html[data-theme='dark']) .studentsPage .gradePill,
+:global(html[data-theme='dark']) .studentsPage .closeProfile:hover {
+  color: #c8e3ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark']) .studentsPage .profileTabs button,
+:global(html[data-theme='dark']) .studentsPage .profileActions button:not(.backToStudents) {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .studentsPage .profileTabs .activeProfileTab {
+  color: #68b7ff;
+}
+
+:global(html[data-theme='dark']) .studentsPage .studentAvatar,
+:global(html[data-theme='dark']) .studentsPage .profileAvatar,
+:global(html[data-theme='dark']) .studentsPage .studentPortrait > span:first-child,
+:global(html[data-theme='dark']) .studentsPage .profilePortrait > span,
+:global(html[data-theme='dark']) .studentsPage .studentPortrait > img,
+:global(html[data-theme='dark']) .studentsPage .profilePortrait > img {
+  border-color: #29496b;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceRemarks,
+:global(html[data-theme='dark']) .studentsPage .transferQueueCard,
+:global(html[data-theme='dark']) .studentsPage .transferDetailGrid > div,
+:global(html[data-theme='dark']) .studentsPage .transferDocuments button {
+  border-color: #29496b;
+  background: #142a42;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceRemarks::placeholder,
+:global(html[data-theme='dark']) .studentsPage .transferRemarks small,
+:global(html[data-theme='dark']) .studentsPage .transferQueueHeader p,
+:global(html[data-theme='dark']) .studentsPage .transferQueueCard span,
+:global(html[data-theme='dark']) .studentsPage .transferQueueCard small,
+:global(html[data-theme='dark']) .studentsPage .transferDetailGrid small {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .attendanceDonut::before {
+  background: #101f33;
+}
+
+:global(html[data-theme='dark']) .dailyAttendancePage .selectedStatus.status-present,
+:global(html[data-theme='dark']) .dailyAttendancePage .selectedStatus.status-absent,
+:global(html[data-theme='dark']) .dailyAttendancePage .selectedStatus.status-late,
+:global(html[data-theme='dark']) .dailyAttendancePage .selectedStatus.status-excused {
+  background-color: #1a304a;
 }

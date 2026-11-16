@@ -1188,3 +1188,133 @@
     justify-self: start;
   }
 }
+
+:global(html[data-theme='dark']) .page {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .heading h1,
+:global(html[data-theme='dark']) .summaryCard strong,
+:global(html[data-theme='dark']) .sectionHeading,
+:global(html[data-theme='dark']) .lessonTitle,
+:global(html[data-theme='dark']) .summaryCopy strong,
+:global(html[data-theme='dark']) .overviewGrid h3,
+:global(html[data-theme='dark']) .dialog h2 {
+  color: #e4f1ff;
+}
+
+:global(html[data-theme='dark']) .heading p,
+:global(html[data-theme='dark']) .summaryCard small,
+:global(html[data-theme='dark']) .lessonMeta,
+:global(html[data-theme='dark']) .libraryTile small,
+:global(html[data-theme='dark']) .materialCard small,
+:global(html[data-theme='dark']) .summaryCopy,
+:global(html[data-theme='dark']) .detailFooter > span,
+:global(html[data-theme='dark']) .detailContent,
+:global(html[data-theme='dark']) .dialog form > p {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .summaryCard,
+:global(html[data-theme='dark']) .lessonCard,
+:global(html[data-theme='dark']) .libraryPanel,
+:global(html[data-theme='dark']) .detailPanel,
+:global(html[data-theme='dark']) .emptyState,
+:global(html[data-theme='dark']) .dialog {
+  border-color: #29496b;
+  color: #d7e8fb;
+  background: #101f33;
+  box-shadow: none;
+}
+
+:global(html[data-theme='dark']) .searchFilter,
+:global(html[data-theme='dark']) .filters select,
+:global(html[data-theme='dark']) .dialog input,
+:global(html[data-theme='dark']) .dialog select,
+:global(html[data-theme='dark']) .dialog textarea {
+  border-color: #355575;
+  color: #d7e8fb;
+  background: #142a42;
+  color-scheme: dark;
+}
+
+:global(html[data-theme='dark']) .searchFilter input {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .searchFilter input::placeholder {
+  color: #8fa9c6;
+}
+
+:global(html[data-theme='dark']) .selectedLesson {
+  border-color: #3974aa;
+}
+
+:global(html[data-theme='dark']) .sectionTabs,
+:global(html[data-theme='dark']) .detailTabs,
+:global(html[data-theme='dark']) .detailFooter {
+  border-color: #263e59;
+}
+
+:global(html[data-theme='dark']) .sectionTabs button:not(.activeSectionTab),
+:global(html[data-theme='dark']) .cardActions button:first-child {
+  color: #c8e3ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark']) .detailTabs button {
+  color: #a9c2de;
+}
+
+:global(html[data-theme='dark']) .detailTabs .activeDetailTab {
+  color: #68b7ff;
+}
+
+:global(html[data-theme='dark']) .lessonSummary {
+  background: #172d47;
+}
+
+:global(html[data-theme='dark']) .libraryTile,
+:global(html[data-theme='dark']) .materialCard {
+  border-color: #29496b;
+  color: #d7e8fb;
+  background-color: #142a42;
+}
+
+:global(html[data-theme='dark']) .libraryTile strong,
+:global(html[data-theme='dark']) .materialCard strong {
+  color: #d7e8fb;
+}
+
+:global(html[data-theme='dark']) .lessonStatus[data-status='Finalized'],
+:global(html[data-theme='dark']) .lessonStatus[data-status='For Review'],
+:global(html[data-theme='dark']) .lessonStatus[data-status='Upcoming'],
+:global(html[data-theme='dark']) .lessonStatus[data-status='Draft'],
+:global(html[data-theme='dark']) .lessonStatus[data-status='In Progress'] {
+  color: #c8e3ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark']) .overviewGrid > aside {
+  border-color: #263e59;
+}
+
+:global(html[data-theme='dark']) .detailActions button:not(:last-child),
+:global(html[data-theme='dark']) .cardActions button:last-child,
+:global(html[data-theme='dark']) .dialogActions button:not([type='submit']) {
+  border-color: #355575;
+  color: #c8e3ff;
+  background: #142a42;
+}
+
+:global(html[data-theme='dark']) .notice {
+  border-color: #245c53;
+  color: #8fe0c8;
+  background: #12352f;
+}
+
+:global(html[data-theme='dark']) .errorNotice {
+  border-color: #70404b;
+  color: #ffabb7;
+  background: #3a202a;
+}

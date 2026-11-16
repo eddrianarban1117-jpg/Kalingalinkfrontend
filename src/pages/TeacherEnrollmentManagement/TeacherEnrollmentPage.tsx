@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import childrenBanner from '../../assets/images/children-banner.png';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
@@ -439,8 +439,8 @@ export function TeacherEnrollmentPage() {
       <header
         className={styles.hero}
         style={{
-          backgroundImage: `linear-gradient(90deg, #eaf6ff 0%, rgb(234 246 255 / 96%) 50%, rgb(234 246 255 / 20%) 100%), url("${childrenBanner}")`,
-        }}
+          '--hero-image': `url("${childrenBanner}")`,
+        } as CSSProperties}
       >
         <span aria-hidden="true" className={styles.heroIcon}>
           <Icon name="application" />
