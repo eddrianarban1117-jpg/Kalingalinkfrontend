@@ -25,6 +25,11 @@ import { useAuth } from '../../auth/AuthProvider';
 import { useAnnouncementFeed } from '../../hooks/useAnnouncementFeed';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
 import {
+  formatPhilippineDate,
+  getPhilippineDateString,
+  parsePhilippineDateTime,
+} from '../../utils/date-time';
+import {
   applyThemePreference,
   saveThemePreference,
 } from '../../styles/theme';
@@ -476,11 +481,13 @@ function PanelHeading({
 
 function calculateAge(birthDate: string) {
   const [year, month, day] = birthDate.split('-').map(Number);
-  const today = new Date();
-  let age = today.getUTCFullYear() - year;
+  const [todayYear, todayMonth, todayDay] = getPhilippineDateString()
+    .split('-')
+    .map(Number);
+  let age = todayYear - year;
   if (
-    today.getUTCMonth() + 1 < month ||
-    (today.getUTCMonth() + 1 === month && today.getUTCDate() < day)
+    todayMonth < month ||
+    (todayMonth === month && todayDay < day)
   ) {
     age -= 1;
   }
@@ -488,12 +495,7 @@ function calculateAge(birthDate: string) {
 }
 
 function formatDashboardDate(date: string) {
-  return new Intl.DateTimeFormat('en-PH', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${date.slice(0, 10)}T00:00:00Z`));
+  return formatPhilippineDate(date);
 }
 
 export function ParentDashboard() {
@@ -570,13 +572,11 @@ export function ParentDashboard() {
   const announcements = useMemo<DashboardAnnouncement[]>(
     () =>
       announcementFeed.map((announcement) => {
-        const publishedAt = new Date(
-          announcement.published_at.replace(' ', 'T'),
-        );
+        const publishedAt = parsePhilippineDateTime(announcement.published_at);
         return {
           id: announcement.id,
           title: announcement.title,
-          date: publishedAt.toLocaleDateString('en-PH', {
+          date: formatPhilippineDate(publishedAt, {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
@@ -884,7 +884,13 @@ export function ParentDashboard() {
       .filter(Boolean)
       .join(' ') ||
     'Parent';
-  const greetingHour = new Date().getHours();
+  const greetingHour = Number(
+    new Intl.DateTimeFormat('en', {
+      timeZone: 'Asia/Manila',
+      hour: '2-digit',
+      hourCycle: 'h23',
+    }).format(new Date()),
+  );
   const greeting =
     greetingHour < 12
       ? 'Good Morning'

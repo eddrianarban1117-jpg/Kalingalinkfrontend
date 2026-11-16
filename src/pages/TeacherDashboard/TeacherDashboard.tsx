@@ -21,6 +21,13 @@ import { useNotificationCount } from '../../hooks/useNotificationCount';
 import { StudentIdViewer } from './StudentIdViewer';
 import { studentCode } from './student-id-utils';
 import { applyThemePreference, saveThemePreference } from '../../styles/theme';
+import {
+  formatPhilippineDate,
+  formatPhilippineDateTime,
+  formatPhilippineTime,
+  getPhilippineDateString,
+  parsePhilippineDateTime,
+} from '../../utils/date-time';
 
 type IconName =
   | 'home'
@@ -248,14 +255,11 @@ function Icon({ name }: { name: IconName }) {
 }
 
 function formatShortDate(value: string) {
-  const date = new Date(`${value.slice(0, 10)}T00:00:00`);
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
+  return formatPhilippineDate(value, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 type NavigationItem = {
@@ -546,14 +550,21 @@ const quickActions = [
 ] as const;
 
 function getGreeting() {
-  const hour = new Date().getHours();
+  const hour = Number(
+    new Intl.DateTimeFormat('en', {
+      timeZone: 'Asia/Manila',
+      hour: '2-digit',
+      hourCycle: 'h23',
+    }).format(new Date()),
+  );
   if (hour < 12) return 'Good morning';
   if (hour < 18) return 'Good afternoon';
   return 'Good evening';
 }
 
 function getDateLabel() {
-  return new Intl.DateTimeFormat('en', {
+  return new Intl.DateTimeFormat('en-PH', {
+    timeZone: 'Asia/Manila',
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -562,9 +573,7 @@ function getDateLabel() {
 }
 
 function dateInputValue(date = new Date()) {
-  const localDate = new Date(date);
-  localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
-  return localDate.toISOString().slice(0, 10);
+  return getPhilippineDateString(date);
 }
 
 function escapeHtml(value: string) {
@@ -598,20 +607,14 @@ export function TeacherDashboard() {
   const { announcements: announcementFeed, error: announcementsError } =
     useAnnouncementFeed(false);
   const announcements = announcementFeed.map((announcement) => {
-    const publishedAt = new Date(announcement.published_at.replace(' ', 'T'));
+    const publishedAt = parsePhilippineDateTime(announcement.published_at);
     const authorIsTeacher = announcement.created_by_role === 'teacher';
     return {
       title: announcement.title,
       source: authorIsTeacher
         ? `From: ${announcement.created_by}`
         : 'From: MSWDO Admin',
-      time: publishedAt.toLocaleString('en-PH', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      time: formatPhilippineDateTime(publishedAt),
       tone: authorIsTeacher ? 'purple' : 'green',
     };
   });
@@ -798,14 +801,18 @@ export function TeacherDashboard() {
           '/api/teacher/students',
         );
         if (!active) return;
-        const currentDate = new Date();
+        const [todayYear, todayMonth, todayDay] = getPhilippineDateString()
+          .split('-')
+          .map(Number);
         const students = response.data.map((record) => {
-          const birthDate = new Date(`${record.birth_date}T00:00:00`);
-          let age = currentDate.getFullYear() - birthDate.getFullYear();
+          const [birthYear, birthMonth, birthDay] = record.birth_date
+            .slice(0, 10)
+            .split('-')
+            .map(Number);
+          let age = todayYear - birthYear;
           if (
-            currentDate.getMonth() < birthDate.getMonth() ||
-            (currentDate.getMonth() === birthDate.getMonth() &&
-              currentDate.getDate() < birthDate.getDate())
+            todayMonth < birthMonth ||
+            (todayMonth === birthMonth && todayDay < birthDay)
           ) {
             age -= 1;
           }
@@ -820,7 +827,7 @@ export function TeacherDashboard() {
               .filter(Boolean)
               .join(' '),
             age: Math.max(age, 0),
-            birthday: birthDate.toLocaleDateString(undefined, {
+            birthday: formatPhilippineDate(record.birth_date, {
               month: 'long',
               day: 'numeric',
               year: 'numeric',
@@ -1368,20 +1375,20 @@ export function TeacherDashboard() {
         .toLowerCase()
         .includes(query.trim().toLowerCase()),
   );
-  const today = new Date();
+  const [year, month, day] = getPhilippineDateString().split('-').map(Number);
   const weeklyAttendance = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - (6 - index));
-    const isoDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const date = new Date(Date.UTC(year, month - 1, day, 12));
+    date.setUTCDate(date.getUTCDate() - (6 - index));
+    const isoDate = date.toISOString().slice(0, 10);
     const item = dashboardData?.weekly_attendance.find(
       (record) => record.attendance_date === isoDate,
     );
     return {
-      date: date.toLocaleDateString('en-PH', {
+      date: formatPhilippineDate(isoDate, {
         month: 'short',
         day: 'numeric',
       }),
-      day: date.toLocaleDateString('en-PH', { weekday: 'short' }),
+      day: formatPhilippineDate(isoDate, { weekday: 'short' }),
       present: Number(item?.present ?? 0),
       absent: Number(item?.absent ?? 0),
     };
@@ -3955,21 +3962,19 @@ export function TeacherDashboard() {
                           ]
                             .filter(Boolean)
                             .join(' ');
-                          const status = student.attendance_status;
-                          const age = Math.max(
-                            0,
-                            today.getFullYear() -
-                              new Date(student.birth_date).getFullYear() -
-                              (today <
-                              new Date(
-                                today.getFullYear(),
-                                new Date(student.birth_date).getMonth(),
-                                new Date(student.birth_date).getDate(),
-                              )
-                                ? 1
-                                : 0),
-                          );
-                          return (
+                            const status = student.attendance_status;
+                            const [todayYear, todayMonth, todayDay] =
+                              getPhilippineDateString().split('-').map(Number);
+                            const [birthYear, birthMonth, birthDay] =
+                              student.birth_date.slice(0, 10).split('-').map(Number);
+                            let age = todayYear - birthYear;
+                            if (
+                              todayMonth < birthMonth ||
+                              (todayMonth === birthMonth && todayDay < birthDay)
+                            ) {
+                              age -= 1;
+                            }
+                            return (
                             <>
                               <span
                                 className={`${styles.studentAvatar} ${styles[`avatar${index + 1}`]}`}
@@ -3998,9 +4003,7 @@ export function TeacherDashboard() {
                                   : 'Not recorded'}
                               </span>
                               <span className={styles.studentDate}>
-                                {new Date(
-                                  student.enrolled_at.replace(' ', 'T'),
-                                ).toLocaleDateString('en-PH', {
+                                {formatPhilippineDate(student.enrolled_at, {
                                   month: 'short',
                                   day: 'numeric',
                                 })}
@@ -4121,27 +4124,27 @@ export function TeacherDashboard() {
                 <ul className={styles.activityList} id="activities">
                   {(dashboardData?.upcoming_activities ?? []).map(
                     (activity) => {
-                      const dueAt = new Date(activity.due_at.replace(' ', 'T'));
+                      const dueAt = parsePhilippineDateTime(activity.due_at);
                       return (
                         <li className={styles.activity} key={activity.id}>
                           <time
                             className={styles.activityDate}
-                            dateTime={activity.due_at.replace(' ', 'T')}
+                            dateTime={dueAt.toISOString()}
                           >
                             <small>
-                              {dueAt.toLocaleDateString('en-PH', {
-                                month: 'short',
-                              })}
+                              {formatPhilippineDate(dueAt, { month: 'short' })}
                             </small>
-                            <strong>{dueAt.getDate()}</strong>
+                            <strong>
+                              {new Intl.DateTimeFormat('en-PH', {
+                                timeZone: 'Asia/Manila',
+                                day: 'numeric',
+                              }).format(dueAt)}
+                            </strong>
                           </time>
                           <span className={styles.activityCopy}>
                             <strong>{activity.title}</strong>
                             <small>
-                              {dueAt.toLocaleTimeString('en-PH', {
-                                hour: 'numeric',
-                                minute: '2-digit',
-                              })}{' '}
+                              {formatPhilippineTime(dueAt)}{' '}
                               · {activity.class_name}
                             </small>
                           </span>

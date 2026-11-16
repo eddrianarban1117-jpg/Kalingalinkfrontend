@@ -3,14 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button/Button';
 import { routePaths } from '../../constants/app-constants';
 import { useAuth } from '../../auth/AuthProvider';
+import { getPhilippineDateString } from '../../utils/date-time';
 import logo from '../../../logo2.png';
 import styles from './ParentRegistration.module.css';
 
 function todayForDateInput() {
-  const today = new Date();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${today.getFullYear()}-${month}-${day}`;
+  return getPhilippineDateString();
 }
 
 function FormSection({

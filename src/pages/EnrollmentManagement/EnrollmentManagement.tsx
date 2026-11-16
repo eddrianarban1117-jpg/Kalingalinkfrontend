@@ -2,6 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { EnrollmentApplicationDetails } from './EnrollmentApplicationDetails';
+import {
+  formatPhilippineDate,
+  getPhilippineDateString,
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './EnrollmentManagement.module.css';
 
 type ApplicationStatus =
@@ -128,13 +134,14 @@ type EnrollmentOverview = {
 };
 
 function currentSchoolYear() {
-  const now = new Date();
-  const year = now.getFullYear();
-  return now.getMonth() >= 5 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  const today = getPhilippineDateString();
+  const year = Number(today.slice(0, 4));
+  const month = Number(today.slice(5, 7));
+  return month >= 6 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
 }
 
 function relativeTime(value: string) {
-  const timestamp = new Date(value.replace(' ', 'T')).getTime();
+  const timestamp = parsePhilippineDateTime(value).getTime();
   if (Number.isNaN(timestamp)) return value;
   const minutes = Math.floor(Math.max(0, Date.now() - timestamp) / 60_000);
   if (minutes < 1) return 'Just now';
@@ -159,7 +166,7 @@ function mapApplication(record: ApiApplication): Application {
       now.getDate() < birthDate.getDate())
   )
     age -= 1;
-  const submitted = new Date(record.submitted_at);
+  const submitted = parsePhilippineDateTime(record.submitted_at);
   const status =
     record.status === 'under_review' && record.documents_requested_at
       ? 'Returned for Correction'
@@ -190,7 +197,7 @@ function mapApplication(record: ApiApplication): Application {
       .join(' '),
     date: Number.isNaN(submitted.getTime())
       ? record.submitted_at
-      : submitted.toLocaleDateString(),
+      : formatPhilippineDate(submitted),
     status:
       status === 'Returned for Correction'
         ? status
@@ -1062,7 +1069,7 @@ export function EnrollmentManagement() {
                           {activity.child_name} · {activity.application_number}
                         </span>
                       </span>
-                      <time dateTime={activity.occurred_at}>
+                      <time dateTime={toPhilippineISOString(activity.occurred_at)}>
                         {relativeTime(activity.occurred_at)}
                       </time>
                     </article>

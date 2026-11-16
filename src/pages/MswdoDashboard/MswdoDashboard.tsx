@@ -15,6 +15,12 @@ import { LogoutConfirmation } from '../../components/common/LogoutConfirmation/L
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
+import {
+  formatPhilippineDate,
+  getPhilippineDateString,
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 
 type IconName =
   | 'dashboard'
@@ -209,7 +215,8 @@ const navigationGroups: {
 ];
 
 function getTodayLabel() {
-  return new Intl.DateTimeFormat('en', {
+  return new Intl.DateTimeFormat('en-PH', {
+    timeZone: 'Asia/Manila',
     month: 'long',
     day: 'numeric',
     year: 'numeric',
@@ -290,7 +297,7 @@ const activityAppearance: Record<string, { icon: IconName; color: string }> = {
 };
 
 function relativeTime(value: string) {
-  const timestamp = new Date(value.replace(' ', 'T')).getTime();
+  const timestamp = parsePhilippineDateTime(value).getTime();
   if (Number.isNaN(timestamp)) return value;
   const elapsed = Math.max(0, Date.now() - timestamp);
   const minutes = Math.floor(elapsed / 60_000);
@@ -300,7 +307,7 @@ function relativeTime(value: string) {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days}d ago`;
-  return new Date(timestamp).toLocaleDateString();
+  return formatPhilippineDate(new Date(timestamp));
 }
 
 type MswdoDashboardProps = {
@@ -330,7 +337,13 @@ export function MswdoDashboard({
     [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Admin';
   const firstName = user?.first_name || 'Admin';
   const greeting = useMemo(() => {
-    const hour = new Date().getHours();
+    const hour = Number(
+      new Intl.DateTimeFormat('en', {
+        timeZone: 'Asia/Manila',
+        hour: '2-digit',
+        hourCycle: 'h23',
+      }).format(new Date()),
+    );
     return hour < 12
       ? 'Good Morning'
       : hour < 18
@@ -344,11 +357,19 @@ export function MswdoDashboard({
     ]) ?? [],
   );
   const monthLabels = Array.from({ length: 12 }, (_, index) =>
-    new Date(
-      dashboardData?.year ?? new Date().getFullYear(),
-      index,
-      1,
-    ).toLocaleDateString(undefined, { month: 'short' }),
+    new Intl.DateTimeFormat('en-PH', {
+      timeZone: 'Asia/Manila',
+      month: 'short',
+    }).format(
+      new Date(
+        Date.UTC(
+          dashboardData?.year ?? Number(getPhilippineDateString().slice(0, 4)),
+          index,
+          1,
+          12,
+        ),
+      ),
+    ),
   );
   const maxEnrollment = Math.max(
     10,
@@ -829,7 +850,7 @@ export function MswdoDashboard({
                               <strong>{activity.title}</strong>
                               <span>{activity.description}</span>
                             </span>
-                            <time dateTime={activity.occurred_at}>
+                            <time dateTime={toPhilippineISOString(activity.occurred_at)}>
                               {relativeTime(activity.occurred_at)}
                             </time>
                           </article>

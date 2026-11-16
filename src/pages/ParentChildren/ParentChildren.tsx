@@ -12,6 +12,11 @@ import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { Avatar } from '../../components/common/Avatar/Avatar';
 import { routePaths } from '../../constants/app-constants';
+import {
+  formatPhilippineDate,
+  formatPhilippineDateTime,
+  getPhilippineDateString,
+} from '../../utils/date-time';
 import childrenBanner from '../../assets/images/children-banner.png';
 import emergencyIllustration from '../../../emerg.png';
 import medicalIllustration from '../../../medic.png';
@@ -145,11 +150,7 @@ function formatDate(value: string) {
   if (!value) return '';
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
   if (!match) return value;
-  return new Date(
-    Number(match[1]),
-    Number(match[2]) - 1,
-    Number(match[3]),
-  ).toLocaleDateString(undefined, {
+  return formatPhilippineDate(value.slice(0, 10), {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -157,8 +158,7 @@ function formatDate(value: string) {
 }
 
 function todayDateInputValue() {
-  const today = new Date();
-  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  return getPhilippineDateString();
 }
 
 function calculateAge(value: string) {
@@ -1230,7 +1230,7 @@ export function ParentChildren({ search }: { search: string }) {
                               <li key={`${transfer.id}-${index}`}>
                                 <strong>{event.event_type.replaceAll('_', ' ')}</strong>
                                 <span>
-                                  {event.actor_name || 'System'} · {new Date(event.created_at.replace(' ', 'T')).toLocaleString()}
+                                  {event.actor_name || 'System'} · {formatPhilippineDateTime(event.created_at)}
                                 </span>
                                 {event.remarks && <p>{event.remarks}</p>}
                               </li>

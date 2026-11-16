@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import { formatPhilippineDate } from '../../utils/date-time';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './ParentAttendance.module.css';
 
@@ -183,7 +184,7 @@ function AttendanceRow({
           </span>
         </th>
       )}
-      <td>{new Date(`${day.date}T00:00:00`).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+      <td>{formatPhilippineDate(day.date, { month: 'short', day: 'numeric', year: 'numeric' })}</td>
       <td>
         <StatusMark status={day.status} expected="Present" />
       </td>
@@ -201,7 +202,7 @@ function AttendanceRow({
       </td>
       <td>
         <button
-          aria-label={`${child.name} attendance on ${new Date(`${day.date}T00:00:00`).toLocaleDateString('en-PH')}: ${day.status}. View note`}
+          aria-label={`${child.name} attendance on ${formatPhilippineDate(day.date)}: ${day.status}. View note`}
           className={styles.noteButton}
           type="button"
           onClick={onSelect}
@@ -344,8 +345,8 @@ export function ParentAttendance({ search }: { search: string }) {
   const updateRecords = childRecords
     .flatMap((child) => child.days.map((day) => ({
       child: child.name,
-      message: `${day.status.toLowerCase()} on ${new Date(`${day.date}T00:00:00`).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })}.`,
-      date: new Date(`${day.date}T00:00:00`).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }),
+      message: `${day.status.toLowerCase()} on ${formatPhilippineDate(day.date, { month: 'long', day: 'numeric', year: 'numeric' })}.`,
+      date: formatPhilippineDate(day.date, { month: 'short', day: 'numeric', year: 'numeric' }),
       time: '',
       status: day.status,
       day: day.day,
@@ -709,7 +710,7 @@ export function ParentAttendance({ search }: { search: string }) {
               <>
                 <h2 id="attendance-dialog-title">Attendance Note</h2>
                 <p>
-                  <strong>{note.child}</strong> · {new Date(`${note.date}T00:00:00`).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  <strong>{note.child}</strong> · {formatPhilippineDate(note.date, { month: 'long', day: 'numeric', year: 'numeric' })}
                 </p>
                 <p>{note.detail}</p>
               </>

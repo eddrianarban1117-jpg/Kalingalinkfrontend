@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import { formatPhilippineDate } from '../../utils/date-time';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './LessonPlans.module.css';
 
@@ -85,7 +86,7 @@ const materialColors = ['blue', 'green', 'pink', 'purple', 'yellow', 'teal'];
 
 function formatLessonDate(value: string | null) {
   return value
-    ? new Date(`${value}T00:00:00`).toLocaleDateString(undefined, {
+    ? formatPhilippineDate(value, {
         month: 'short',
         day: 'numeric',
         year: 'numeric',

@@ -3,6 +3,10 @@ import childrenBanner from '../../assets/images/children-banner.png';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { EnrollmentApplicationDetails } from '../EnrollmentManagement/EnrollmentApplicationDetails';
+import {
+  formatPhilippineDateTime,
+  parsePhilippineDateTime,
+} from '../../utils/date-time';
 import styles from './TeacherEnrollmentPage.module.css';
 
 type ApplicationStatus = 'Pending' | 'Under Review' | 'Returned for Correction' | 'Approved' | 'Rejected';
@@ -119,13 +123,7 @@ type ApiApplication = {
 };
 
 function formatDate(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? value
-    : new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(date);
+  return formatPhilippineDateTime(value);
 }
 
 function getAge(value: string) {
@@ -396,8 +394,8 @@ export function TeacherEnrollmentPage() {
       })
       .sort((first, second) => {
         const difference =
-          new Date(first.submittedAt.replace(' ', 'T')).getTime() -
-          new Date(second.submittedAt.replace(' ', 'T')).getTime();
+          parsePhilippineDateTime(first.submittedAt).getTime() -
+          parsePhilippineDateTime(second.submittedAt).getTime();
         return sortOrder === 'newest' ? -difference : difference;
       });
   }, [applications, search, statusFilter, typeFilter, dateFilter, sortOrder]);

@@ -9,6 +9,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { Icon } from '../../components/common/Icon/Icon';
+import {
+  formatPhilippineDate,
+  formatPhilippineTime,
+  getPhilippineDateString,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './EventsPage.module.css';
 
 type EventPhoto = {
@@ -75,32 +81,23 @@ const emptyDraft: EventDraft = {
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 
 function formatDate(value: string) {
-  const date = new Date(`${value}T00:00:00`);
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toLocaleDateString('en-PH', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+  return formatPhilippineDate(value, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 function formatTime(value?: string | null) {
   if (!value) return '';
-  const [hours, minutes] = value.split(':');
-  const date = new Date();
-  date.setHours(Number(hours), Number(minutes), 0, 0);
-  return date.toLocaleTimeString('en-PH', {
+  return formatPhilippineTime(`1970-01-01 ${value}`, {
     hour: 'numeric',
     minute: '2-digit',
   });
 }
 
 function localDateKey(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return getPhilippineDateString(date);
 }
 
 function getEventStatus(event: EventRecord, now = new Date()): EventStatus {
@@ -108,7 +105,18 @@ function getEventStatus(event: EventRecord, now = new Date()): EventStatus {
   if (event.event_date > today) return 'Upcoming';
   if (event.event_date < today) return 'Past';
 
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const currentParts = Object.fromEntries(
+    new Intl.DateTimeFormat('en', {
+      timeZone: 'Asia/Manila',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    })
+      .formatToParts(now)
+      .map(({ type, value }) => [type, value]),
+  );
+  const currentMinutes =
+    Number(currentParts.hour) * 60 + Number(currentParts.minute);
   const start = event.start_time
     ? Number(event.start_time.slice(0, 2)) * 60 +
       Number(event.start_time.slice(3, 5))
@@ -1084,10 +1092,8 @@ export function EventsPage({ mode }: { mode: 'manage' | 'parent' }) {
                                     photo.caption && <p>{photo.caption}</p>
                                   )}
                                   <span>Uploaded by {photo.uploaded_by}</span>
-                                  <time dateTime={photo.uploaded_at}>
-                                    {new Date(
-                                      photo.uploaded_at,
-                                    ).toLocaleDateString('en-PH')}
+                                  <time dateTime={toPhilippineISOString(photo.uploaded_at)}>
+                                    {formatPhilippineDate(photo.uploaded_at)}
                                   </time>
                                   {photo.can_manage &&
                                     editingPhoto !== photo.id && (

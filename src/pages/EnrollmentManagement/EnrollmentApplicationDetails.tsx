@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  formatPhilippineDateTime,
+} from '../../utils/date-time';
 import styles from '../ChildrenRecords/ChildrenRecords.module.css';
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
@@ -169,14 +173,12 @@ function value(input: string | null | undefined) {
 
 function date(input: string | null | undefined) {
   if (!input) return 'Not provided';
-  const parsed = new Date(input.replace(' ', 'T'));
-  return Number.isNaN(parsed.getTime()) ? input : parsed.toLocaleDateString();
+  return formatPhilippineDate(input);
 }
 
 function dateTime(input: string | null | undefined) {
   if (!input) return 'Not provided';
-  const parsed = new Date(input.replace(' ', 'T'));
-  return Number.isNaN(parsed.getTime()) ? input : parsed.toLocaleString();
+  return formatPhilippineDateTime(input);
 }
 
 function childNumber(id: number) {

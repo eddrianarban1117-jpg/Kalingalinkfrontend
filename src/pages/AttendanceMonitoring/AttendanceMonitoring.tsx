@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  getPhilippineDateString,
+} from '../../utils/date-time';
 import styles from './AttendanceMonitoring.module.css';
 
 type AttendanceStatus = 'Present' | 'Absent' | 'Late' | 'Excused';
@@ -269,25 +273,33 @@ export function AttendanceMonitoring() {
   const [query, setQuery] = useState('');
   const [period, setPeriod] = useState('Last 7 Days');
   const [page, setPage] = useState(1);
-  const [monthDate, setMonthDate] = useState(() => new Date());
+  const [monthDate, setMonthDate] = useState(() => {
+    const [year, month] = getPhilippineDateString().split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, 1));
+  });
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let active = true;
-    const endDate = new Date();
+    const [year, month, day] = getPhilippineDateString()
+      .split('-')
+      .map(Number);
+    const endDate = new Date(Date.UTC(year, month - 1, day));
     const startDate = new Date(endDate);
-    if (period === 'Last 7 Days') startDate.setDate(startDate.getDate() - 6);
-    else if (period === 'Last 30 Days') startDate.setDate(startDate.getDate() - 29);
+    if (period === 'Last 7 Days') startDate.setUTCDate(startDate.getUTCDate() - 6);
+    else if (period === 'Last 30 Days') startDate.setUTCDate(startDate.getUTCDate() - 29);
     else {
-      startDate.setMonth(5, 1);
-      if (startDate > endDate) startDate.setFullYear(startDate.getFullYear() - 1);
+      startDate.setUTCMonth(5, 1);
+      if (startDate > endDate) {
+        startDate.setUTCFullYear(startDate.getUTCFullYear() - 1);
+      }
     }
     const toDate = (date: Date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(date.getUTCDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     };
     setLoading(true);
@@ -319,8 +331,8 @@ export function AttendanceMonitoring() {
     };
   }, [period, request]);
 
-  const today = new Date();
-  const todayDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const todayDate = getPhilippineDateString();
+  const [todayYear, todayMonth, todayDay] = todayDate.split('-').map(Number);
   const todayRecords = records.filter(
     (record) => record.attendance_date === todayDate,
   );
@@ -344,17 +356,17 @@ export function AttendanceMonitoring() {
     : 0;
 
   const chartDates = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - index));
-    return date;
+    const date = new Date(
+      Date.UTC(todayYear, todayMonth - 1, todayDay - (6 - index)),
+    );
+    return getPhilippineDateString(date);
   });
   const chartDays = chartDates.map((date) =>
-    date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+    formatPhilippineDate(date, { month: 'short', day: 'numeric' }),
   );
   const chartRates = chartDates.map((date) => {
-    const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const dailyRecords = records.filter(
-      (record) => record.attendance_date === dateString,
+      (record) => record.attendance_date === date,
     );
     const countedDailyRecords = dailyRecords.filter(
       (record) => record.status !== 'Excused',
@@ -370,10 +382,12 @@ export function AttendanceMonitoring() {
   });
   const calendarMarkers = records.reduce<Record<number, string[]>>(
     (markers, record) => {
-      const date = new Date(`${record.attendance_date}T00:00:00`);
+      const [year, month, day] = record.attendance_date
+        .split('-')
+        .map(Number);
       if (
-        date.getFullYear() !== monthDate.getFullYear() ||
-        date.getMonth() !== monthDate.getMonth()
+        year !== monthDate.getUTCFullYear() ||
+        month - 1 !== monthDate.getUTCMonth()
       ) {
         return markers;
       }
@@ -383,20 +397,20 @@ export function AttendanceMonitoring() {
           : record.status === 'Absent'
             ? 'absent'
             : 'ontime';
-      markers[date.getDate()] ??= [];
-      if (!markers[date.getDate()].includes(marker)) {
-        markers[date.getDate()].push(marker);
+      markers[day] ??= [];
+      if (!markers[day].includes(marker)) {
+        markers[day].push(marker);
       }
       return markers;
     },
     {},
   );
   if (
-    monthDate.getFullYear() === today.getFullYear() &&
-    monthDate.getMonth() === today.getMonth()
+    monthDate.getUTCFullYear() === todayYear &&
+    monthDate.getUTCMonth() === todayMonth - 1
   ) {
-    calendarMarkers[today.getDate()] ??= [];
-    calendarMarkers[today.getDate()].push('selected');
+    calendarMarkers[todayDay] ??= [];
+    calendarMarkers[todayDay].push('selected');
   }
 
   const filteredRecords = useMemo(() => {
@@ -419,7 +433,13 @@ export function AttendanceMonitoring() {
   function changeMonth(direction: number) {
     setMonthDate(
       (current) =>
-        new Date(current.getFullYear(), current.getMonth() + direction, 1),
+        new Date(
+          Date.UTC(
+            current.getUTCFullYear(),
+            current.getUTCMonth() + direction,
+            1,
+          ),
+        ),
     );
   }
 
@@ -619,7 +639,7 @@ export function AttendanceMonitoring() {
                     <td data-label="Child Development Center">
                       {record.cdc_name}
                     </td>
-                    <td data-label="Date">{new Date(`${record.attendance_date}T00:00:00`).toLocaleDateString()}</td>
+                    <td data-label="Date">{formatPhilippineDate(record.attendance_date)}</td>
                     <td data-label="Status">
                       <span
                         className={`${styles.status} ${styles[`status${record.status === 'Excused' ? 'Absent' : record.status}`]}`}
@@ -707,8 +727,8 @@ export function AttendanceMonitoring() {
         </section>
         <aside className={styles.sideColumn}>
           <AttendanceCalendar
-            month={monthDate.getMonth()}
-            year={monthDate.getFullYear()}
+            month={monthDate.getUTCMonth()}
+            year={monthDate.getUTCFullYear()}
             onMonthChange={changeMonth}
             markers={calendarMarkers}
           />
@@ -739,7 +759,7 @@ export function AttendanceMonitoring() {
                     <strong>{title}</strong>
                     <span>{name} · {record.cdc_name}</span>
                   </span>
-                  <time>{new Date(`${record.attendance_date}T00:00:00`).toLocaleDateString()}</time>
+                  <time>{formatPhilippineDate(record.attendance_date)}</time>
                 </article>
                 );
               })}

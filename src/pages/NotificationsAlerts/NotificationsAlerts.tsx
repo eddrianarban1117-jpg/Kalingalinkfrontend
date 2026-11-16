@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import { philippineDateTimeInputValue } from '../../utils/date-time';
 import { EventNotifications, type AdminPublishedAnnouncement } from '../EventNotifications/EventNotifications';
 import styles from './NotificationsAlerts.module.css';
 
@@ -74,9 +75,7 @@ function Icon({ name }: { name: 'announcement' | 'check' | 'calendar' | 'search'
 }
 
 function localDateTime(value?: string) {
-  const date = value ? new Date(value.replace(' ', 'T')) : new Date();
-  const offset = date.getTimezoneOffset() * 60_000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+  return philippineDateTimeInputValue(value);
 }
 
 export function NotificationsAlerts() {

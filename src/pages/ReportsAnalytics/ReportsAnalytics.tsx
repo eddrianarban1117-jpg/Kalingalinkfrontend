@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import { formatPhilippineDateTime } from '../../utils/date-time';
 import styles from './ReportsAnalytics.module.css';
 
 type ReportData = {
@@ -625,7 +626,7 @@ export function ReportsAnalytics() {
                     </td>
                     <td data-label="Type">{report.type}</td>
                     <td data-label="Data Refreshed">
-                      {data ? new Date(data.generated_at).toLocaleString() : '—'}
+                      {data ? formatPhilippineDateTime(data.generated_at) : '—'}
                     </td>
                     <td data-label="Snapshot By">{data?.generated_by || '—'}</td>
                     <td data-label="Actions">
@@ -654,7 +655,7 @@ export function ReportsAnalytics() {
           </div>
           <p className={styles.refreshNote}>
             {data
-              ? `Live database snapshot · Updated ${new Date(data.generated_at).toLocaleString()} · Refreshes every 15 seconds`
+              ? `Live database snapshot · Updated ${formatPhilippineDateTime(data.generated_at)} · Refreshes every 15 seconds`
               : 'CSV downloads contain the live database aggregates shown on this page.'}
           </p>
         </section>

@@ -9,6 +9,10 @@ import styles from './TeacherProfile.module.css';
 import { Avatar } from '../../components/common/Avatar/Avatar';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  formatPhilippineDateTime,
+} from '../../utils/date-time';
 
 type ProfileSection =
   | 'Personal Information'
@@ -101,28 +105,23 @@ function mapProfile(record: ProfileRecord): ProfileData {
 
 function formatDate(value: string) {
   if (!value) return '';
-  const date = new Date(value.includes('T') ? value : `${value}T00:00:00`);
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toLocaleDateString(undefined, {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      });
+  return formatPhilippineDate(value, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 function formatDateTime(value: string) {
-  if (!value) return '';
-  const date = new Date(value.replace(' ', 'T'));
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toLocaleString(undefined, {
+  return value
+    ? formatPhilippineDateTime(value, {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-      });
+      })
+    : '';
 }
 
 const personalFields = [

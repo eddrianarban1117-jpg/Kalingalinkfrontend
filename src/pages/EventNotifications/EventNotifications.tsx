@@ -4,6 +4,11 @@ import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
 import { notificationsUpdatedEvent } from '../../hooks/useNotificationCount';
+import {
+  formatPhilippineDateTime,
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './EventNotifications.module.css';
 
 type NotificationSource = 'notification';
@@ -124,13 +129,10 @@ function isAnnouncementCategory(announcement: AdminPublishedAnnouncement, filter
 }
 
 function displayDate(value: string) {
-  const date = new Date(value.replace(' ', 'T'));
+  const date = parsePhilippineDateTime(value);
   return Number.isNaN(date.getTime())
     ? value
-    : date.toLocaleString('en-PH', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      });
+    : formatPhilippineDateTime(date);
 }
 
 function Icon({ name }: { name: 'announcement' | 'bell' | 'calendar' | 'chevron' | 'close' | 'edit' | 'filter' | 'grid' | 'info' | 'mail' | 'plus' | 'settings' | 'trash' }) {
@@ -280,8 +282,9 @@ export function EventNotifications({
         announcement,
       }));
     return [...notificationEntries, ...announcementEntries].sort((left, right) => {
-      const difference = new Date(left.created_at.replace(' ', 'T')).getTime()
-        - new Date(right.created_at.replace(' ', 'T')).getTime();
+      const difference =
+        parsePhilippineDateTime(left.created_at).getTime() -
+        parsePhilippineDateTime(right.created_at).getTime();
       return sortOrder === 'newest' ? -difference : difference;
     });
   }, [adminFilter, notifications, publishedAnnouncements, sortOrder]);
@@ -624,8 +627,8 @@ export function EventNotifications({
         )
         .sort((first, second) => {
           if (!parentDashboard) return 0;
-          const firstCreatedAt = Date.parse(first.created_at.replace(' ', 'T'));
-          const secondCreatedAt = Date.parse(second.created_at.replace(' ', 'T'));
+          const firstCreatedAt = parsePhilippineDateTime(first.created_at).getTime();
+          const secondCreatedAt = parsePhilippineDateTime(second.created_at).getTime();
           if (!Number.isFinite(firstCreatedAt)) {
             return Number.isFinite(secondCreatedAt)
               ? 1
@@ -810,7 +813,7 @@ export function EventNotifications({
                         <span className={styles.adminNotificationTitle}>{entry.notification.title}{entry.notification.unread && <span className={styles.new}>New</span>}</span>
                         <span className={styles.adminNotificationMessage}>{entry.notification.message}</span>
                       </span>
-                      <time className={styles.adminNotificationDate} dateTime={entry.notification.created_at}>{displayDate(entry.notification.created_at)}</time>
+                      <time className={styles.adminNotificationDate} dateTime={toPhilippineISOString(entry.notification.created_at)}>{displayDate(entry.notification.created_at)}</time>
                       <Icon name="chevron" />
                     </button>
                   </li>
@@ -823,7 +826,7 @@ export function EventNotifications({
                         <span className={styles.adminNotificationMessage}>{entry.announcement.message}</span>
                       </span>
                       <span className={styles.adminAnnouncementMeta}>
-                        <time className={styles.adminNotificationDate} dateTime={entry.announcement.published_at}>{displayDate(entry.announcement.published_at)}</time>
+                        <time className={styles.adminNotificationDate} dateTime={toPhilippineISOString(entry.announcement.published_at)}>{displayDate(entry.announcement.published_at)}</time>
                         <span className={styles.statusBadge}>Published</span>
                       </span>
                       <Icon name="chevron" />
@@ -920,7 +923,7 @@ export function EventNotifications({
                     {parentDashboard && <span className={styles.parentNotificationMessage}>{notification.message}</span>}
                     <span className={`${styles.itemMeta} ${parentDashboard ? styles.parentNotificationMeta : ''}`}>
                       <span>{notification.notification_type}</span>
-                      <time dateTime={notification.created_at}>{displayDate(notification.created_at)}</time>
+                      <time dateTime={toPhilippineISOString(notification.created_at)}>{displayDate(notification.created_at)}</time>
                     </span>
                   </span>
                   {parentDashboard && notification.unread && <span aria-label="Unread" className={styles.parentUnreadDot} />}

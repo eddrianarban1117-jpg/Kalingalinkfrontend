@@ -4,6 +4,12 @@ import { ListGridToggle } from '../../components/common/ListGridToggle/ListGridT
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import type { AnnouncementFeedItem } from '../../hooks/useAnnouncementFeed';
+import {
+  formatPhilippineDate,
+  formatPhilippineTime,
+  getPhilippineDateKey,
+  parsePhilippineDateTime,
+} from '../../utils/date-time';
 import { EventNotifications } from '../EventNotifications/EventNotifications';
 import styles from './ParentAnnouncements.module.css';
 
@@ -114,12 +120,11 @@ function Icon({ name }: { name: string }) {
 }
 
 function formatDate(date: string) {
-  return new Intl.DateTimeFormat('en-US', {
+  return formatPhilippineDate(date, {
     month: 'short',
     day: '2-digit',
     year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${date}T12:00:00Z`));
+  });
 }
 
 export function ParentAnnouncements({
@@ -138,14 +143,14 @@ export function ParentAnnouncements({
     () =>
       feed.map((item) => {
         const authorSource = item.created_by_role === 'teacher' ? 'Teacher' : 'MSWDO Admin';
-        const published = new Date(item.published_at.replace(' ', 'T'));
+        const published = parsePhilippineDateTime(item.published_at);
         return {
           id: item.id,
           title: item.title,
           source: authorSource,
           sender: item.created_by,
-          date: item.published_at.slice(0, 10),
-          time: published.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+          date: getPhilippineDateKey(item.published_at),
+          time: formatPhilippineTime(published),
           publishedAt: item.published_at,
           message: item.message,
           tone: authorSource === 'Teacher' ? 'teacher' : 'mswdo',
@@ -195,8 +200,8 @@ export function ParentAnnouncements({
       })
       .sort((first, second) => {
         const difference =
-          new Date(second.publishedAt.replace(' ', 'T')).getTime() -
-          new Date(first.publishedAt.replace(' ', 'T')).getTime();
+          parsePhilippineDateTime(second.publishedAt).getTime() -
+          parsePhilippineDateTime(first.publishedAt).getTime();
         return sortOrder === 'latest' ? difference : -difference;
       });
   }, [announcements, dateRange, enabledSources, search, sortOrder, sourceFilter]);

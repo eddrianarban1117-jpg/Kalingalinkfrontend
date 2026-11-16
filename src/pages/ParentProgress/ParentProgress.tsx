@@ -7,6 +7,10 @@ import {
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  getPhilippineDateString,
+} from '../../utils/date-time';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './ParentProgress.module.css';
 
@@ -58,15 +62,15 @@ type ParentProgressResponse = {
 };
 
 function currentSchoolYear() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const start = now.getMonth() >= 5 ? year : year - 1;
+  const today = getPhilippineDateString();
+  const year = Number(today.slice(0, 4));
+  const month = Number(today.slice(5, 7));
+  const start = month >= 6 ? year : year - 1;
   return `${start}-${start + 1}`;
 }
 
 function formatDate(value: string) {
-  const date = new Date(value.replace(' ', 'T'));
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+  return formatPhilippineDate(value);
 }
 
 function performanceLabel(score: number) {

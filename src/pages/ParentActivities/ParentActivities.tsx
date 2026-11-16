@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  getPhilippineDateKey,
+  getPhilippineDateString,
+} from '../../utils/date-time';
 import childrenBanner from '../../assets/images/children-banner.png';
 import femalePanel from '../../../femalepanel.png';
 import styles from './ParentActivities.module.css';
@@ -50,12 +55,11 @@ function activityStatus(status: Activity['submission_status']): ActivityStatus {
 }
 
 function formatDate(date: string) {
-  return new Intl.DateTimeFormat('en-US', {
+  return formatPhilippineDate(date, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${date.slice(0, 10)}T00:00:00Z`));
+  });
 }
 
 function ageFromBirthDate(birthDate: string) {
@@ -292,7 +296,7 @@ export function ParentActivities({ search }: { search: string }) {
         subjectFilter === 'All Subjects' || activity.subject === subjectFilter;
       const matchesStatus =
         statusFilter === 'All Status' || activity.status === statusFilter;
-      const activityDate = (activity.due_at || activity.scheduled_date || '').slice(0, 10);
+      const activityDate = getPhilippineDateKey(activity.due_at || activity.scheduled_date || '');
       const matchesStart = !startDate || (activityDate !== '' && activityDate >= startDate);
       const matchesEnd = !endDate || (activityDate !== '' && activityDate <= endDate);
       return (
@@ -348,8 +352,10 @@ export function ParentActivities({ search }: { search: string }) {
 
   const upcomingActivities = activities
     .filter((activity) => {
-      const dueDate = activity.due_at?.slice(0, 10);
-      return activity.status !== 'Completed' && dueDate && dueDate >= new Date().toISOString().slice(0, 10);
+      const dueDate = activity.due_at
+        ? getPhilippineDateKey(activity.due_at)
+        : null;
+      return activity.status !== 'Completed' && dueDate && dueDate >= getPhilippineDateString();
     })
     .sort((first, second) =>
       (first.due_at ?? '').localeCompare(second.due_at ?? ''),

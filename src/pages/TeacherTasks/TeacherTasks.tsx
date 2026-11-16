@@ -8,6 +8,12 @@ import {
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  formatPhilippineTime,
+  getPhilippineDateString,
+  parsePhilippineDateTime,
+} from '../../utils/date-time';
 import styles from './TeacherTasks.module.css';
 
 type TaskStatus =
@@ -46,17 +52,14 @@ const taskStatusLabels: Record<ApiTask['status'], TaskStatus> = {
 };
 
 function formatDueDate(value: string) {
-  const date = new Date(value.replace(' ', 'T'));
+  const date = parsePhilippineDateTime(value);
   return {
-    date: date.toLocaleDateString(undefined, {
+    date: formatPhilippineDate(date, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     }),
-    time: date.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
-    }),
+    time: formatPhilippineTime(date),
   };
 }
 
@@ -153,8 +156,7 @@ export function TeacherTasks({ globalSearch }: { globalSearch: string }) {
   const [filter, setFilter] = useState<TaskFilter>('All Tasks');
   const [search, setSearch] = useState('');
   const [dateRange, setDateRange] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    return getPhilippineDateString().slice(0, 7);
   });
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [submissionText, setSubmissionText] = useState('');

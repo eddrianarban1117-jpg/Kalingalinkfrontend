@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { notificationsUpdatedEvent } from '../../hooks/useNotificationCount';
+import {
+  formatPhilippineDate,
+  formatPhilippineTime,
+  getPhilippineDateString,
+  parsePhilippineDateTime,
+} from '../../utils/date-time';
 import styles from './TeacherNotifications.module.css';
 
 type NotificationType = string;
@@ -38,17 +44,14 @@ type NotificationsResponse = {
 };
 
 function formatDate(value: string) {
-  const date = new Date(value.replace(' ', 'T'));
+  const date = parsePhilippineDateTime(value);
   return {
-    date: date.toLocaleDateString(undefined, {
+    date: formatPhilippineDate(date, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     }),
-    time: date.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
-    }),
+    time: formatPhilippineTime(date),
   };
 }
 
@@ -58,10 +61,11 @@ function monthKey(value: string) {
 
 function monthLabel(value: string) {
   const [year, month] = value.split('-').map(Number);
-  return new Date(year, month - 1, 1).toLocaleDateString(undefined, {
+  return new Intl.DateTimeFormat('en-PH', {
     month: 'long',
     year: 'numeric',
-  });
+    timeZone: 'Asia/Manila',
+  }).format(new Date(Date.UTC(year, month - 1, 1, 12)));
 }
 
 function tone(type: NotificationType) {
@@ -136,8 +140,7 @@ export function TeacherNotifications({
   const { request } = useAuth();
   const navigate = useNavigate();
   const currentMonth = useMemo(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    return getPhilippineDateString().slice(0, 7);
   }, []);
   const [notifications, setNotifications] = useState<TeacherNotification[]>([]);
   const [activeTab, setActiveTab] = useState<NotificationTab>('All');

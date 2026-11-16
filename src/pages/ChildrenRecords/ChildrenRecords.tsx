@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  formatPhilippineDateTime,
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './ChildrenRecords.module.css';
 
 const ageOptions = ['0–2 years', '3–4 years', '5–6 years', '7–12 years', '13+ years'];
@@ -110,7 +116,7 @@ type AdminChildHistoryResponse = {
 };
 
 function relativeTime(value: string) {
-  const timestamp = new Date(value.replace(' ', 'T')).getTime();
+  const timestamp = parsePhilippineDateTime(value).getTime();
   if (Number.isNaN(timestamp)) return value;
   const minutes = Math.floor(Math.max(0, Date.now() - timestamp) / 60_000);
   if (minutes < 1) return 'Just now';
@@ -745,7 +751,7 @@ export function ChildrenRecords() {
                       {childNumber(child.id)} • {child.center}
                     </span>
                   </span>
-                  <time dateTime={child.created_at}>{relativeTime(child.created_at)}</time>
+                  <time dateTime={toPhilippineISOString(child.created_at)}>{relativeTime(child.created_at)}</time>
                 </article>
               )) : (
                 <p className={styles.sideState}>
@@ -803,7 +809,7 @@ export function ChildrenRecords() {
                         : '—'}
                     </td>
                     <td>{record.parent_confirmation === 'yes' ? 'Yes' : 'No'} (teacher reported)</td>
-                    <td>{new Date(record.created_at.replace(' ', 'T')).toLocaleString()}</td>
+                    <td>{formatPhilippineDateTime(record.created_at)}</td>
                     <td>
                       <button
                         className={styles.historyButton}
@@ -868,7 +874,7 @@ export function ChildrenRecords() {
                   <h3>Attendance history</h3>
                   {selectedChildHistory.history?.attendance.length ? selectedChildHistory.history.attendance.map((item) => (
                     <article key={item.id}>
-                      <strong>{item.attendance_date} · {item.status}</strong>
+                      <strong>{formatPhilippineDate(item.attendance_date)} · {item.status}</strong>
                       <span>{item.class_name || 'Class unavailable'} · {item.cdc_name || 'CDC unavailable'} · {item.teacher_name || 'Teacher unavailable'}</span>
                     </article>
                   )) : <p>No attendance records.</p>}
@@ -878,7 +884,7 @@ export function ChildrenRecords() {
                   {selectedChildHistory.history?.progress.length ? selectedChildHistory.history.progress.map((item) => (
                     <article key={item.id}>
                       <strong>{item.domain} · {item.skill} · Rating {item.rating}</strong>
-                      <span>{item.recorded_at} · {item.teacher_name || 'Teacher unavailable'}{item.observation ? ` · ${item.observation}` : ''}</span>
+                      <span>{formatPhilippineDateTime(item.recorded_at)} · {item.teacher_name || 'Teacher unavailable'}{item.observation ? ` · ${item.observation}` : ''}</span>
                     </article>
                   )) : <p>No learning progress records.</p>}
                 </section>
@@ -887,7 +893,7 @@ export function ChildrenRecords() {
                   {selectedChildHistory.history?.transfers.length ? selectedChildHistory.history.transfers.map((item) => (
                     <article key={item.id}>
                       <strong>{item.reference} · {item.status.replaceAll('_', ' ')}</strong>
-                      <span>{item.previous_cdc_name || 'Unassigned'} → {item.destination_cdc_name || 'Unassigned'} · {item.requested_date} · {item.reason}</span>
+                      <span>{item.previous_cdc_name || 'Unassigned'} → {item.destination_cdc_name || 'Unassigned'} · {formatPhilippineDate(item.requested_date)} · {item.reason}</span>
                     </article>
                   )) : <p>No transfer records.</p>}
                 </section>
@@ -896,7 +902,7 @@ export function ChildrenRecords() {
                   {selectedChildHistory.history?.removals.length ? selectedChildHistory.history.removals.map((item) => (
                     <article key={item.id}>
                       <strong>{item.outcome === 'other' ? item.reason_details || 'Other' : item.outcome} · Parent confirmation: {item.parent_confirmation} (teacher reported)</strong>
-                      <span>{item.created_at} · {item.previous_cdc_name || 'Unassigned'} → {item.destination_cdc_name || 'Unassigned'} · {item.teacher_name || 'Teacher unavailable'}{item.notes ? ` · ${item.notes}` : ''}</span>
+                      <span>{formatPhilippineDateTime(item.created_at)} · {item.previous_cdc_name || 'Unassigned'} → {item.destination_cdc_name || 'Unassigned'} · {item.teacher_name || 'Teacher unavailable'}{item.notes ? ` · ${item.notes}` : ''}</span>
                     </article>
                   )) : <p>No removal records.</p>}
                 </section>

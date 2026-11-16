@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
+import {
+  formatPhilippineDateTime,
+  getPhilippineDateString,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './TeacherVerification.module.css';
 
 type ReviewEvent = {
@@ -160,7 +165,7 @@ function validate(values: ProfileValues) {
   ) {
     errors.years_of_service = 'Enter a non-negative number of years.';
   }
-  if (values.birth_date && values.birth_date > new Date().toISOString().slice(0, 10)) {
+  if (values.birth_date && values.birth_date > getPhilippineDateString()) {
     errors.birth_date = 'Date of birth cannot be in the future.';
   }
   return errors;
@@ -296,7 +301,7 @@ export function TeacherVerification() {
             aria-describedby={errorMessage ? `${id}-error` : undefined}
             aria-invalid={Boolean(errorMessage)}
             id={id}
-            max={name === 'birth_date' ? new Date().toISOString().slice(0, 10) : undefined}
+            max={name === 'birth_date' ? getPhilippineDateString() : undefined}
             maxLength={name === 'years_of_service' ? undefined : name === 'skills' ? 2000 : 255}
             min={name === 'years_of_service' ? '0' : undefined}
             onChange={(event) => updateField(name, event.target.value)}
@@ -345,8 +350,8 @@ export function TeacherVerification() {
                 <h3>MSWDO Admin Feedback</h3>
                 <p>{profile.review_note}</p>
                 {profile.reviewed_at && (
-                  <time dateTime={profile.reviewed_at}>
-                    {new Date(profile.reviewed_at.replace(' ', 'T')).toLocaleString()}
+                  <time dateTime={toPhilippineISOString(profile.reviewed_at)}>
+                    {formatPhilippineDateTime(profile.reviewed_at)}
                   </time>
                 )}
                 {profile.is_active && profile.verification_status === 'approved' && (
@@ -420,8 +425,8 @@ export function TeacherVerification() {
                   {profile.review_history.map((event) => (
                     <li key={event.id}>
                       <strong>{statusLabel(event.status)}</strong>
-                      <time dateTime={event.created_at}>
-                        {new Date(event.created_at.replace(' ', 'T')).toLocaleString()}
+                      <time dateTime={toPhilippineISOString(event.created_at)}>
+                        {formatPhilippineDateTime(event.created_at)}
                       </time>
                       <small>
                         {event.reviewer ?? 'KalingaLink'}

@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './LearningDevelopment.module.css';
 
 type Program = {
@@ -58,7 +62,7 @@ const months = [
   'Dec',
 ];
 function relativeTime(value: string) {
-  const timestamp = new Date(value.replace(' ', 'T')).getTime();
+  const timestamp = parsePhilippineDateTime(value).getTime();
   if (Number.isNaN(timestamp)) return value;
   const minutes = Math.floor(Math.max(0, Date.now() - timestamp) / 60_000);
   if (minutes < 1) return 'Just now';
@@ -558,7 +562,7 @@ export function LearningDevelopment() {
                     <span>{record.program} · {record.center}</span>
                     <small>{record.domain} · Rating {record.rating}/5</small>
                   </span>
-                  <time className={styles.recentTime} dateTime={record.recorded_at}>{relativeTime(record.recorded_at)}</time>
+                  <time className={styles.recentTime} dateTime={toPhilippineISOString(record.recorded_at)}>{relativeTime(record.recorded_at)}</time>
                 </article>
               )) : (
                 <p className={styles.sideState}>{error || 'No learner progress records are available.'}</p>

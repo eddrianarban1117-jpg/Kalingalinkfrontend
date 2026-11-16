@@ -3,6 +3,11 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
+import {
+  formatPhilippineDateTime,
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './TeacherManagement.module.css';
 
 type Teacher = {
@@ -90,7 +95,7 @@ function teacherNumber(id: number) {
 }
 
 function relativeTime(value: string) {
-  const timestamp = new Date(value.replace(' ', 'T')).getTime();
+  const timestamp = parsePhilippineDateTime(value).getTime();
   if (Number.isNaN(timestamp)) return value;
   const minutes = Math.floor(Math.max(0, Date.now() - timestamp) / 60_000);
   if (minutes < 1) return 'Just now';
@@ -914,7 +919,7 @@ export function TeacherManagement() {
                   <div><dt>Skills</dt><dd>{selectedTeacher.skills || 'Not provided'}</dd></div>
                   <div><dt>Languages</dt><dd>{selectedTeacher.languages || 'Not provided'}</dd></div>
                   <div><dt>Employee Number</dt><dd>{selectedTeacher.employee_number || 'Not provided'}</dd></div>
-                  <div><dt>Last Review / Resubmission</dt><dd>{selectedTeacher.reviewed_at ? new Date(selectedTeacher.reviewed_at.replace(' ', 'T')).toLocaleString() : 'Not submitted'}</dd></div>
+                  <div><dt>Last Review / Resubmission</dt><dd>{selectedTeacher.reviewed_at ? formatPhilippineDateTime(selectedTeacher.reviewed_at) : 'Not submitted'}</dd></div>
                 </dl>
               </section>
 
@@ -998,7 +1003,7 @@ export function TeacherManagement() {
                         {selectedTeacher.review_history.map((event) => (
                           <li key={event.id}>
                             <strong>{event.status}</strong>
-                            <time dateTime={event.created_at}>{relativeTime(event.created_at)}</time>
+                            <time dateTime={toPhilippineISOString(event.created_at)}>{relativeTime(event.created_at)}</time>
                             <p>{event.message}</p>
                             {(event.reviewer || event.reviewer_role) && (
                               <small>

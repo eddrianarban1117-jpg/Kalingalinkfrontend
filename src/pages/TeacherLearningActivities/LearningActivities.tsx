@@ -7,6 +7,10 @@ import {
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import {
+  formatPhilippineDate,
+  getPhilippineDateString,
+} from '../../utils/date-time';
 import childrenBanner from '../../assets/images/children-banner.png';
 import styles from './LearningActivities.module.css';
 
@@ -62,7 +66,7 @@ const statusLabel: Record<ApiLearningActivity['status'], ActivityStatus> = {
 };
 
 function formatDate(value: string) {
-  return new Date(`${value}T00:00:00`).toLocaleDateString(undefined, {
+  return formatPhilippineDate(value, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -196,7 +200,10 @@ export function LearningActivities({ globalSearch }: { globalSearch: string }) {
   const [formObservations, setFormObservations] = useState('');
   const [saving, setSaving] = useState(false);
   const [dateRange, setDateRange] = useState('month');
-  const [monthDate] = useState(() => new Date());
+  const [monthDate] = useState(() => {
+    const [year, month] = getPhilippineDateString().split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, 1));
+  });
 
   const reloadActivities = useCallback(async () => {
     setLoadError('');
@@ -257,19 +264,13 @@ export function LearningActivities({ globalSearch }: { globalSearch: string }) {
 
   const visibleActivities = useMemo(() => {
     const search = `${titleSearch} ${globalSearch}`.trim().toLowerCase();
-    const startOfMonth = new Date(
-      monthDate.getFullYear(),
-      monthDate.getMonth(),
-      1,
-    );
-    const endOfMonth = new Date(
-      monthDate.getFullYear(),
-      monthDate.getMonth() + 1,
-      0,
-    );
+    const year = monthDate.getUTCFullYear();
+    const month = monthDate.getUTCMonth();
+    const startOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const endOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-${String(
+      new Date(Date.UTC(year, month + 1, 0)).getUTCDate(),
+    ).padStart(2, '0')}`;
     return activities.filter((activity) => {
-      const startDate = new Date(`${activity.startDateISO}T00:00:00`);
-      const endDate = new Date(`${activity.endDateISO}T00:00:00`);
       const matchesSearch =
         !search ||
         `${activity.title} ${activity.domain} ${activity.className}`
@@ -282,7 +283,8 @@ export function LearningActivities({ globalSearch }: { globalSearch: string }) {
         activeStatus === 'All Activities' || activity.status === activeStatus;
       const matchesDate =
         dateRange === 'all' ||
-        (startDate <= endOfMonth && endDate >= startOfMonth);
+        (activity.startDateISO <= endOfMonth &&
+          activity.endDateISO >= startOfMonth);
       return (
         matchesSearch &&
         matchesDomain &&
@@ -553,24 +555,30 @@ export function LearningActivities({ globalSearch }: { globalSearch: string }) {
             onChange={(event) => setDateRange(event.target.value)}
           >
             <option value="month">
-              {new Date(
-                monthDate.getFullYear(),
-                monthDate.getMonth(),
-                1,
-              ).toLocaleDateString(undefined, {
+              {formatPhilippineDate(
+                `${monthDate.getUTCFullYear()}-${String(
+                  monthDate.getUTCMonth() + 1,
+                ).padStart(2, '0')}-01`,
+                {
                 month: 'short',
                 day: 'numeric',
-              })}{' '}
+                },
+              )}{' '}
               –{' '}
-              {new Date(
-                monthDate.getFullYear(),
-                monthDate.getMonth() + 1,
-                0,
-              ).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
+              {formatPhilippineDate(
+                `${monthDate.getUTCFullYear()}-${String(
+                  monthDate.getUTCMonth() + 1,
+                ).padStart(2, '0')}-${String(
+                  new Date(
+                    Date.UTC(
+                      monthDate.getUTCFullYear(),
+                      monthDate.getUTCMonth() + 1,
+                      0,
+                    ),
+                  ).getUTCDate(),
+                ).padStart(2, '0')}`,
+                { month: 'short', day: 'numeric', year: 'numeric' },
+              )}
             </option>
             <option value="all">All dates</option>
           </select>

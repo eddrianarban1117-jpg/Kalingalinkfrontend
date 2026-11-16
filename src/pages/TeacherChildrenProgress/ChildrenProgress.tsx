@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
+import { formatPhilippineDate, getPhilippineDateString } from '../../utils/date-time';
 import styles from './ChildrenProgress.module.css';
 
 type DomainStatus = 'On Track' | 'Needs Support' | 'Needs Attention';
@@ -74,16 +75,16 @@ type ProgressNotice = {
 const domainColors = ['teal', 'blue', 'purple', 'yellow', 'pink'];
 const noteColors = ['green', 'blue', 'yellow', 'purple'];
 const currentMonth = () => {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  return getPhilippineDateString().slice(0, 7);
 };
 
 function formatDate(value: string | null) {
   if (!value) return 'Not provided';
-  return new Date(`${value.slice(0, 10)}T00:00:00`).toLocaleDateString(
-    undefined,
-    { month: 'long', day: 'numeric', year: 'numeric' },
-  );
+  return formatPhilippineDate(value.slice(0, 10), {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 function mapStudent(record: ApiStudentProgress): StudentProgress {

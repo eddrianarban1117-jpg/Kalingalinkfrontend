@@ -3,6 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { routePaths } from '../../constants/app-constants';
+import {
+  formatPhilippineDate,
+  formatPhilippineDateTime,
+  formatPhilippineTime,
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import childrenBanner from '../../assets/images/children-banner.png';
 import femalePanel from '../../../femalepanel.png';
 import styles from './ParentApplicationStatus.module.css';
@@ -121,7 +128,7 @@ function mapApplication(record: ApiApplication): Application {
   const birthDate = new Date(record.child_birth_date);
   let age = new Date().getFullYear() - birthDate.getFullYear();
   if (new Date().getMonth() < birthDate.getMonth()) age -= 1;
-  const submitted = new Date(record.submitted_at);
+  const submitted = parsePhilippineDateTime(record.submitted_at);
   return {
     id: record.id,
     number: record.application_number,
@@ -139,10 +146,10 @@ function mapApplication(record: ApiApplication): Application {
         : 'New Enrollment',
     applied: Number.isNaN(submitted.getTime())
       ? record.submitted_at
-      : submitted.toLocaleDateString(),
+      : formatPhilippineDate(submitted),
     time: Number.isNaN(submitted.getTime())
       ? ''
-      : submitted.toLocaleTimeString([], {
+      : formatPhilippineTime(submitted, {
           hour: '2-digit',
           minute: '2-digit',
         }),
@@ -1029,10 +1036,8 @@ export function ParentApplicationStatus({
                                 character.toUpperCase(),
                               )}
                           </strong>
-                          <time dateTime={entry.created_at}>
-                            {new Date(
-                              entry.created_at.replace(' ', 'T'),
-                            ).toLocaleString()}
+                          <time dateTime={toPhilippineISOString(entry.created_at)}>
+                            {formatPhilippineDateTime(entry.created_at)}
                           </time>
                           {entry.note && <p>{entry.note}</p>}
                         </li>

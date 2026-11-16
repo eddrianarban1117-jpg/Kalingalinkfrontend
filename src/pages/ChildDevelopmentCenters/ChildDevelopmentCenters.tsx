@@ -4,6 +4,12 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { useAuth } from '../../auth/AuthProvider';
 import { BouncingDots } from '../../components/animations/BouncingDots';
 import { requiredCdcNames } from '../../constants/app-constants';
+import {
+  formatPhilippineDate,
+  formatPhilippineDateTime,
+  parsePhilippineDateTime,
+  toPhilippineISOString,
+} from '../../utils/date-time';
 import styles from './ChildDevelopmentCenters.module.css';
 import 'leaflet/dist/leaflet.css';
 
@@ -205,7 +211,7 @@ function placeTextMatches(value: string, candidate: string) {
 }
 
 function relativeTime(value: string) {
-  const timestamp = new Date(value.replace(' ', 'T')).getTime();
+  const timestamp = parsePhilippineDateTime(value).getTime();
   if (Number.isNaN(timestamp)) return value;
   const minutes = Math.floor(Math.max(0, Date.now() - timestamp) / 60_000);
   if (minutes < 1) return 'Just now';
@@ -796,7 +802,7 @@ export function ChildDevelopmentCenters() {
                     </p>
                     <dl>
                       <div><dt>Reason</dt><dd>{transfer.reason === 'Other' ? transfer.other_reason : transfer.reason}</dd></div>
-                      <div><dt>Requested transfer date</dt><dd>{new Date(`${transfer.requested_date}T00:00:00`).toLocaleDateString()}</dd></div>
+                      <div><dt>Requested transfer date</dt><dd>{formatPhilippineDate(transfer.requested_date)}</dd></div>
                       <div><dt>Parent notes</dt><dd>{transfer.remarks || 'None'}</dd></div>
                       <div><dt>Current CDC notes</dt><dd>{transfer.previous_teacher_remarks || 'None'}</dd></div>
                       <div><dt>Receiving CDC notes</dt><dd>{transfer.receiving_teacher_remarks || 'None'}</dd></div>
@@ -827,7 +833,7 @@ export function ChildDevelopmentCenters() {
                           <strong>{event.event_type.replaceAll('_', ' ')}</strong>
                           <span>
                             {event.actor_name || 'System'} ({event.actor_role || 'system'}) ·{' '}
-                            {new Date(event.created_at.replace(' ', 'T')).toLocaleString()}
+                            {formatPhilippineDateTime(event.created_at)}
                           </span>
                           {event.remarks && <p>{event.remarks}</p>}
                         </li>
@@ -931,7 +937,7 @@ export function ChildDevelopmentCenters() {
                             <span>
                               Status: {application.documents_requested_at ? 'For Completion' : application.status}
                               {' · Submitted '}
-                              {new Date(application.submitted_at.replace(' ', 'T')).toLocaleDateString()}
+                              {formatPhilippineDate(application.submitted_at)}
                             </span>
                           </div>
                           {application.transfer_allowed ? (
@@ -1001,7 +1007,7 @@ export function ChildDevelopmentCenters() {
                             <span>{transfer.previous_cdc_name} → {transfer.destination_cdc_name}</span>
                             <span>Teacher: {transfer.previous_teacher_name || 'Unassigned'} → {transfer.new_teacher_name}</span>
                             <span>{transfer.reason}</span>
-                            <span>{new Date(transfer.transferred_at.replace(' ', 'T')).toLocaleString()} · Admin: {transfer.admin_name}</span>
+                            <span>{formatPhilippineDateTime(transfer.transferred_at)} · Admin: {transfer.admin_name}</span>
                           </div>
                         </article>
                       ))}
@@ -1421,7 +1427,7 @@ export function ChildDevelopmentCenters() {
                     <strong>{activity.title}</strong>
                     <span>{activity.description}</span>
                   </span>
-                  <time dateTime={activity.occurred_at}>
+                  <time dateTime={toPhilippineISOString(activity.occurred_at)}>
                     {relativeTime(activity.occurred_at)}
                   </time>
                 </article>
