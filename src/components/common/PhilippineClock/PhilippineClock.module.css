@@ -1,0 +1,50 @@
+.clock {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 50;
+  display: grid;
+  gap: 0.15rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: 0 0.3rem 1rem rgb(15 40 70 / 16%);
+  pointer-events: none;
+}
+
+.label {
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.zone {
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+}
+
+@media (max-width: 480px) {
+  .clock {
+    right: 0.5rem;
+    bottom: 0.5rem;
+    padding: 0.5rem 0.65rem;
+  }
+}
+
+@media print {
+  .clock {
+    display: none;
+  }
+}
