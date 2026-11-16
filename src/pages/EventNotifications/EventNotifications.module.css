@@ -1105,6 +1105,321 @@
   cursor: not-allowed;
 }
 
+:global(html[data-theme='dark'] body) .adminPanel {
+  border-color: #243650;
+  color: #e8f0ff;
+  background:
+    radial-gradient(ellipse at 98% 0%, rgb(28 69 117 / 24%), transparent 36%),
+    #101a2a;
+  box-shadow: 0 0.5rem 1.6rem rgb(0 0 0 / 24%);
+}
+
+:global(html[data-theme='dark'] body) .adminHeader {
+  border-color: #23334a;
+}
+
+:global(html[data-theme='dark'] body) .adminHeadingCopy h2 {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .adminHeadingCopy p {
+  color: #9eb2d0;
+}
+
+:global(html[data-theme='dark'] body) .adminHeader .markAll:disabled {
+  border-color: #324862;
+  color: #91a6c5;
+  background: #19283c;
+}
+
+:global(html[data-theme='dark'] body) .adminFilters {
+  border-color: #243650;
+  background: linear-gradient(155deg, #121f32, #0f1929);
+}
+
+:global(html[data-theme='dark'] body) .adminFilters h3 {
+  color: #e8f0ff;
+}
+
+:global(html[data-theme='dark'] body) .adminFilters > button {
+  border-color: #243650;
+  color: #d3def0;
+  background: #172439;
+}
+
+:global(html[data-theme='dark'] body) .adminFilters > button > strong {
+  color: #a9c7f5;
+  background: #203855;
+}
+
+:global(html[data-theme='dark'] body) .adminFilters > button:hover,
+:global(html[data-theme='dark'] body) .adminFilters > button.adminFilterActive {
+  border-color: #1683f8;
+  color: #fff;
+  background: linear-gradient(120deg, #1683f8, #0e63c4);
+}
+
+:global(html[data-theme='dark'] body)
+  .adminFilters
+  > button.adminFilterActive
+  > strong {
+  color: #fff;
+  background: rgb(255 255 255 / 18%);
+}
+
+:global(html[data-theme='dark'] body) .sortControl {
+  border-color: #263a57;
+  color: #dce7f8;
+}
+
+:global(html[data-theme='dark'] body) .sortControl select {
+  border-color: #3a506e;
+  color: #eaf1ff;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .adminListPanel {
+  border-color: #243650;
+  background: #101a2a;
+  box-shadow: 0 0.2rem 0.8rem rgb(0 0 0 / 18%);
+}
+
+:global(html[data-theme='dark'] body) .adminItem {
+  border-color: #293a52;
+  background: linear-gradient(110deg, #162236, #121d2e);
+}
+
+:global(html[data-theme='dark'] body) .adminItem:hover {
+  border-color: #3a5b84;
+  box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 25%);
+}
+
+:global(html[data-theme='dark'] body) .publishedItem {
+  border-color: #293d59;
+  background: linear-gradient(115deg, #17253a, #131f31);
+}
+
+:global(html[data-theme='dark'] body) .adminUnread {
+  border-color: #1b75cb;
+  border-left-color: #1685ee;
+  background: linear-gradient(110deg, #142945, #142236);
+}
+
+:global(html[data-theme='dark'] body) .adminNotificationOpen {
+  color: #e7efff;
+}
+
+:global(html[data-theme='dark'] body) .adminNotificationIcon {
+  color: #60aaff;
+  background: #19395d;
+}
+
+:global(html[data-theme='dark'] body) .eventIcon {
+  color: #c09aff;
+  background: #34284f;
+}
+
+:global(html[data-theme='dark'] body) .systemIcon {
+  color: #ffc45b;
+  background: #4a351b;
+}
+
+:global(html[data-theme='dark'] body) .announcementIcon {
+  color: #63adff;
+  background: #1c3658;
+}
+
+:global(html[data-theme='dark'] body) .generalIcon {
+  color: #58d7a4;
+  background: #173c36;
+}
+
+:global(html[data-theme='dark'] body) .adminNotificationTitle {
+  color: #e9f1ff;
+}
+
+:global(html[data-theme='dark'] body) .adminNotificationMessage,
+:global(html[data-theme='dark'] body) .adminNotificationDate,
+:global(html[data-theme='dark'] body) .adminPagination {
+  color: #a6b8d5;
+}
+
+:global(html[data-theme='dark'] body) .adminNotificationOpen > svg:last-child {
+  color: #91a9ce;
+}
+
+:global(html[data-theme='dark'] body) .statusBadge {
+  border-color: #285d4d;
+  color: #70deb0;
+  background: #15392f;
+}
+
+:global(html[data-theme='dark'] body) .publishedActions button {
+  border-color: #354d6b;
+  color: #8bc4ff;
+  background: #1a2d45;
+}
+
+:global(html[data-theme='dark'] body) .publishedActions button:hover:not(:disabled) {
+  border-color: #4b79aa;
+  background: #213b59;
+}
+
+:global(html[data-theme='dark'] body) .publishedActions button:last-child {
+  border-color: #663b4a;
+  color: #ff9aa8;
+  background: #35212d;
+}
+
+:global(html[data-theme='dark'] body)
+  .publishedActions
+  button:last-child:hover:not(:disabled) {
+  border-color: #945061;
+  background: #462735;
+}
+
+:global(html[data-theme='dark'] body) .adminPageButtons button {
+  border-color: #30445f;
+  color: #c5d6ef;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .adminPageButtons button[aria-current='page'] {
+  border-color: #1683f8;
+  color: #fff;
+  background: #1683f8;
+}
+
+:global(html[data-theme='dark'] body) .createMenuPopover {
+  border-color: #2b3f5b;
+  background: #172439;
+  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 38%);
+}
+
+:global(html[data-theme='dark'] body) .createMenuPopover button {
+  color: #d8e5f8;
+}
+
+:global(html[data-theme='dark'] body) .createMenuPopover button:hover {
+  color: #78b9ff;
+  background: #20334d;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer {
+  border-color: #2a3d58;
+  background: #121e30;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .composerHeading {
+  border-color: #293c56;
+  background: linear-gradient(110deg, #1a2a40, #16243a);
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .composerHeading h3 {
+  color: #edf3ff;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .composerHeading p,
+:global(html[data-theme='dark'] body) .adminComposer .composerFields > label,
+:global(html[data-theme='dark'] body) .adminComposer .composerFields legend,
+:global(html[data-theme='dark'] body) .adminComposer .composerFields .choice {
+  color: #afc1dc;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .composerFields fieldset {
+  border-color: #344a67;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .allEligible {
+  color: #cfddf1;
+  background: #1a2d44;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .preview {
+  border-left-color: #4b9cf0;
+  color: #c6d6ed;
+  background: #1a2b41;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .preview strong {
+  color: #eaf2ff;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .previewUsers,
+:global(html[data-theme='dark'] body) .adminComposer .composerFields small {
+  color: #a6bad7;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .composerActions {
+  border-color: #293c56;
+  background: #121e30;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .markAll,
+:global(html[data-theme='dark'] body) .adminComposer .close {
+  border-color: #3a506e;
+  color: #c8d8ef;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .adminComposer .markAll:hover,
+:global(html[data-theme='dark'] body) .close:hover {
+  background: #223852;
+}
+
+:global(html[data-theme='dark'] body) .composerBackdrop {
+  background: rgb(2 8 20 / 76%);
+}
+
+:global(html[data-theme='dark'] body) .adminPanel .detail {
+  border-color: #2b405c;
+  background: #142136;
+}
+
+:global(html[data-theme='dark'] body) .adminPanel .detailHeader h3 {
+  color: #eef4ff;
+}
+
+:global(html[data-theme='dark'] body) .adminPanel .detailHeader p,
+:global(html[data-theme='dark'] body) .adminPanel .detailType,
+:global(html[data-theme='dark'] body) .adminPanel .message {
+  color: #b6c7df;
+}
+
+:global(html[data-theme='dark'] body) .publishedDetail {
+  border-color: #2b405c;
+  background: #142136;
+}
+
+:global(html[data-theme='dark'] body) .publishedDetailMeta,
+:global(html[data-theme='dark'] body) .publishedFullMessage,
+:global(html[data-theme='dark'] body) .publishedAttachment {
+  border-color: #2a3d58;
+  color: #c7d5e9;
+}
+
+:global(html[data-theme='dark'] body) .publishedDetailMeta dt,
+:global(html[data-theme='dark'] body) .publishedDetailMeta dd,
+:global(html[data-theme='dark'] body) .publishedDetail h3 {
+  color: #e4edfc;
+}
+
+:global(html[data-theme='dark'] body) .publishedAttachment {
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .adminPanel .destination,
+:global(html[data-theme='dark'] body) .adminComposer .destination {
+  border-color: #3a506e;
+  color: #d4e4f9;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .adminPanel .destination:hover,
+:global(html[data-theme='dark'] body) .adminComposer .destination:hover {
+  background: #223852;
+}
+
 @media (max-width: 760px) {
   .adminLayout {
     grid-template-columns: minmax(0, 1fr);

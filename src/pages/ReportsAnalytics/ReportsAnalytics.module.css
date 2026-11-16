@@ -937,3 +937,202 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+:global(html[data-theme='dark'] body) .page {
+  color: #e8f0ff;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon {
+  color: #65b4ff;
+  background: #173659;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon svg {
+  fill: #65b4ff;
+  stroke: #65b4ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader h1 {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader p {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .statCard {
+  border-color: color-mix(in srgb, var(--tone) 38%, #263a57);
+  background: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--tone) 16%, #131f32),
+    #131f32
+  );
+}
+
+:global(html[data-theme='dark'] body) .statCard:not(.teal):not(.gold):not(.pink) {
+  --tone: #3e9fff;
+}
+
+:global(html[data-theme='dark'] body) .teal {
+  --tone: #34d2aa;
+}
+
+:global(html[data-theme='dark'] body) .gold {
+  --tone: #ffbf4a;
+}
+
+:global(html[data-theme='dark'] body) .pink {
+  --tone: #cf7bfa;
+}
+
+:global(html[data-theme='dark'] body) .statIcon,
+:global(html[data-theme='dark'] body) .statArrow {
+  background: color-mix(in srgb, var(--tone) 22%, #131f32);
+}
+
+:global(html[data-theme='dark'] body) .statCard > div > span,
+:global(html[data-theme='dark'] body) .statCard small {
+  color: #b6c7df;
+}
+
+:global(html[data-theme='dark'] body) .statCard > div > strong {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .panel {
+  border-color: #263a57;
+  background: #131f32;
+  box-shadow: 0 0.25rem 0.8rem rgb(0 0 0 / 22%);
+}
+
+:global(html[data-theme='dark'] body) .panelHeader h2 {
+  color: #eaf1ff;
+}
+
+:global(html[data-theme='dark'] body) .rangeSelect,
+:global(html[data-theme='dark'] body) .reportFilter {
+  border-color: #354b68;
+  color: #9dcaff;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .rangeSelect select,
+:global(html[data-theme='dark'] body) .reportFilter select {
+  color: inherit;
+}
+
+:global(html[data-theme='dark'] body) .legend,
+:global(html[data-theme='dark'] body) .monthLabels,
+:global(html[data-theme='dark'] body) .centerBar small,
+:global(html[data-theme='dark'] body) .chartLegendList {
+  color: #b3c5df;
+}
+
+:global(html[data-theme='dark'] body) .yAxis,
+:global(html[data-theme='dark'] body) .centerYAxis {
+  color: #9eb4d2;
+}
+
+:global(html[data-theme='dark'] body) .gridLines span,
+:global(html[data-theme='dark'] body) .centerGrid span {
+  background: #293d59;
+}
+
+:global(html[data-theme='dark'] body) .centerBar strong {
+  color: #d7e5f8;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut,
+:global(html[data-theme='dark'] body) .genderDonut,
+:global(html[data-theme='dark'] body) .centerStatusDonut {
+  background-color: #263a57;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut::before,
+:global(html[data-theme='dark'] body) .genderDonut::before,
+:global(html[data-theme='dark'] body) .centerStatusDonut::before {
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut > span,
+:global(html[data-theme='dark'] body) .genderDonut > span,
+:global(html[data-theme='dark'] body) .centerStatusDonut > span {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut strong,
+:global(html[data-theme='dark'] body) .genderDonut strong,
+:global(html[data-theme='dark'] body) .centerStatusDonut strong {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .chartLegendList strong {
+  color: #c1d0e5;
+}
+
+:global(html[data-theme='dark'] body) .reportTable th {
+  color: #dce8fa;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .reportTable td {
+  border-color: #293c56;
+  color: #afc1dc;
+}
+
+:global(html[data-theme='dark'] body) .reportTable td:first-child strong {
+  color: #e0ebfc;
+}
+
+:global(html[data-theme='dark'] body) .reportIcon,
+:global(html[data-theme='dark'] body) .downloadButton {
+  color: #72b8ff;
+}
+
+:global(html[data-theme='dark'] body) .downloadButton:hover {
+  background: #203650;
+}
+
+:global(html[data-theme='dark'] body) .refreshNote,
+:global(html[data-theme='dark'] body) .chartState,
+:global(html[data-theme='dark'] body) .emptyState {
+  color: #a6bad7 !important;
+}
+
+:global(html[data-theme='dark'] body) .insight {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .insightteal {
+  color: #4cd8b2;
+  background: #173c36;
+}
+
+:global(html[data-theme='dark'] body) .insightpurple {
+  color: #bea5ff;
+  background: #302747;
+}
+
+:global(html[data-theme='dark'] body) .insightgold {
+  color: #ffcd69;
+  background: #44351e;
+}
+
+:global(html[data-theme='dark'] body) .insightpink {
+  color: #ff8eaf;
+  background: #452638;
+}
+
+:global(html[data-theme='dark'] body) .insight strong {
+  color: #e6efff;
+}
+
+:global(html[data-theme='dark'] body) .insight small {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .errorState {
+  border-color: #75404d;
+  color: #ffabb7;
+  background: #351f2a;
+}

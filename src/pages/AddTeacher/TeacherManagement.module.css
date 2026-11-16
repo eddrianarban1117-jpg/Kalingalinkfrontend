@@ -1587,3 +1587,409 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+:global(html[data-theme='dark'] body) .page {
+  color: #e8f0ff;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon {
+  color: #65b4ff;
+  background: #173659;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon svg {
+  fill: #65b4ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader h1 {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader p {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .statCard {
+  border-color: color-mix(in srgb, var(--tone) 38%, #263a57);
+  background: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--tone) 16%, #131f32),
+    #131f32
+  );
+}
+
+:global(html[data-theme='dark'] body) .statCard:not(.teal):not(.gold):not(.pink) {
+  --tone: #3e9fff;
+}
+
+:global(html[data-theme='dark'] body) .teal {
+  --tone: #34d2aa;
+}
+
+:global(html[data-theme='dark'] body) .gold {
+  --tone: #ffbf4a;
+}
+
+:global(html[data-theme='dark'] body) .pink {
+  --tone: #ef6f98;
+}
+
+:global(html[data-theme='dark'] body) .statIcon,
+:global(html[data-theme='dark'] body) .statArrow {
+  background: color-mix(in srgb, var(--tone) 22%, #131f32);
+}
+
+:global(html[data-theme='dark'] body) .statCard > div > span,
+:global(html[data-theme='dark'] body) .statCard small {
+  color: #b6c7df;
+}
+
+:global(html[data-theme='dark'] body) .statCard > div > strong {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .panel {
+  border-color: #263a57;
+  background: #131f32;
+  box-shadow: 0 0.25rem 0.8rem rgb(0 0 0 / 22%);
+}
+
+:global(html[data-theme='dark'] body) .directoryHeader h2,
+:global(html[data-theme='dark'] body) .panelHeader h2 {
+  color: #eaf1ff;
+}
+
+:global(html[data-theme='dark'] body) .search,
+:global(html[data-theme='dark'] body) .filterSelect,
+:global(html[data-theme='dark'] body) .moreFilters .filterSelect {
+  border-color: #354b68;
+  color: #b7c9e2;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .search input {
+  color: #e4edfc;
+}
+
+:global(html[data-theme='dark'] body) .search input::placeholder {
+  color: #91a6c5;
+}
+
+:global(html[data-theme='dark'] body) .search svg,
+:global(html[data-theme='dark'] body) .filterSelect svg {
+  color: #76b9ff;
+}
+
+:global(html[data-theme='dark'] body) .filterSelect select {
+  color: #e4edfc;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .clearFilters {
+  border-color: #354b68;
+  color: #9dcaff;
+  background: #192a40;
+}
+
+:global(html[data-theme='dark'] body) .clearFilters:hover {
+  background: #223852;
+}
+
+:global(html[data-theme='dark'] body) .teacherTable th {
+  color: #dce8fa;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .teacherTable td {
+  border-color: #293c56;
+  color: #b3c5df;
+}
+
+:global(html[data-theme='dark'] body) .teacherTable tbody tr:hover {
+  background: #17283e;
+}
+
+:global(html[data-theme='dark'] body) .teacherTable td:nth-child(2) strong {
+  color: #edf3ff;
+}
+
+:global(html[data-theme='dark'] body) .requestedCenter {
+  color: #9fb4d2;
+}
+
+:global(html[data-theme='dark'] body) .avatar {
+  border-color: #29415e;
+  color: #70b8ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark'] body) .avatar1 {
+  color: #ff8eaf;
+  background: #452638;
+}
+
+:global(html[data-theme='dark'] body) .avatar2 {
+  color: #ffcd69;
+  background: #44351e;
+}
+
+:global(html[data-theme='dark'] body) .avatar3 {
+  color: #55d9c5;
+  background: #173c3d;
+}
+
+:global(html[data-theme='dark'] body) .statusActive,
+:global(html[data-theme='dark'] body) .statusApproved {
+  color: #62deb5;
+  background: #153d33;
+}
+
+:global(html[data-theme='dark'] body) .statusInactive,
+:global(html[data-theme='dark'] body) .statusDeactivated,
+:global(html[data-theme='dark'] body) .statusRejected {
+  color: #ff9aa8;
+  background: #452533;
+}
+
+:global(html[data-theme='dark'] body) .statusPendingReview,
+:global(html[data-theme='dark'] body) .statusRevisionRequired {
+  color: #ffd074;
+  background: #44351e;
+}
+
+:global(html[data-theme='dark'] body) .statusUnderReview,
+:global(html[data-theme='dark'] body) .statusApprovedAwaitingMessage {
+  color: #8fc6ff;
+  background: #1d3858;
+}
+
+:global(html[data-theme='dark'] body) .emptyState,
+:global(html[data-theme='dark'] body) .tableFooter,
+:global(html[data-theme='dark'] body) .refreshHint,
+:global(html[data-theme='dark'] body) .sideState {
+  color: #a6bad7 !important;
+}
+
+:global(html[data-theme='dark'] body) .pagination button {
+  border-color: #30445f;
+  color: #c5d6ef;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .pagination button[aria-current='page'] {
+  border-color: #1683f8;
+  color: #fff;
+  background: #1683f8;
+}
+
+:global(html[data-theme='dark'] body) .positionDonut {
+  background: #263a57;
+}
+
+:global(html[data-theme='dark'] body) .positionDonut::before {
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .positionDonut > span,
+:global(html[data-theme='dark'] body) .positionLegend {
+  color: #afc1dc;
+}
+
+:global(html[data-theme='dark'] body) .positionDonut strong,
+:global(html[data-theme='dark'] body) .positionLegend strong {
+  color: #e0ebfc;
+}
+
+:global(html[data-theme='dark'] body) .genderCards article,
+:global(html[data-theme='dark'] body) .genderCards article + article {
+  border-color: #2b405c;
+  background: linear-gradient(125deg, #1a2a40, #152236);
+}
+
+:global(html[data-theme='dark'] body) .genderIcon {
+  color: #70b8ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark'] body) .genderPink {
+  color: #ff8eaf;
+  background: #452638;
+}
+
+:global(html[data-theme='dark'] body) .genderOther {
+  color: #bea5ff;
+  background: #302747;
+}
+
+:global(html[data-theme='dark'] body) .genderCards article > div > span,
+:global(html[data-theme='dark'] body) .genderCards article > div > small {
+  color: #afc1dc;
+}
+
+:global(html[data-theme='dark'] body) .genderCards article > div > strong {
+  color: #edf3ff;
+}
+
+:global(html[data-theme='dark'] body) .activity {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .activityblue {
+  color: #70b8ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark'] body) .activitypurple {
+  color: #bea5ff;
+  background: #302747;
+}
+
+:global(html[data-theme='dark'] body) .activitygold {
+  color: #ffcd69;
+  background: #44351e;
+}
+
+:global(html[data-theme='dark'] body) .activityteal {
+  color: #58d7b5;
+  background: #173c36;
+}
+
+:global(html[data-theme='dark'] body) .activitypink {
+  color: #ff8eaf;
+  background: #452638;
+}
+
+:global(html[data-theme='dark'] body) .activityText strong {
+  color: #e6efff;
+}
+
+:global(html[data-theme='dark'] body) .activityText > span,
+:global(html[data-theme='dark'] body) .activity time {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .errorState,
+:global(html[data-theme='dark'] body) .actionError {
+  border-color: #75404d;
+  color: #ffabb7 !important;
+  background: #351f2a;
+}
+
+:global(html[data-theme='dark'] body) .reviewIdentity {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .reviewAvatar {
+  color: #ff8eaf;
+  background: #452638;
+}
+
+:global(html[data-theme='dark'] body) .reviewIdentity h3,
+:global(html[data-theme='dark'] body) .reviewSection > h3,
+:global(html[data-theme='dark'] body) .messageStatus > strong,
+:global(html[data-theme='dark'] body) .documentList strong,
+:global(html[data-theme='dark'] body) .reviewHistory strong,
+:global(html[data-theme='dark'] body) .reviewControls h4 {
+  color: #e6efff;
+}
+
+:global(html[data-theme='dark'] body) .reviewIdentity > div > span,
+:global(html[data-theme='dark'] body) .reviewDetails dt,
+:global(html[data-theme='dark'] body) .documentList span,
+:global(html[data-theme='dark'] body) .reviewHistory time,
+:global(html[data-theme='dark'] body) .reviewHistory small {
+  color: #a6bad7;
+}
+
+:global(html[data-theme='dark'] body) .reviewSection {
+  border-color: #2b405c;
+  background: #172439;
+}
+
+:global(html[data-theme='dark'] body) .messageStatus {
+  border-color: #344a67;
+  color: #c4d2e7;
+  background: #1c3049;
+}
+
+:global(html[data-theme='dark'] body) .reviewDetails dd,
+:global(html[data-theme='dark'] body) .reviewHistory li,
+:global(html[data-theme='dark'] body) .reviewHistory p,
+:global(html[data-theme='dark'] body) .reviewNoteField {
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .documentList li,
+:global(html[data-theme='dark'] body) .reviewHistory li,
+:global(html[data-theme='dark'] body) .reviewControls {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .documentList button {
+  border-color: #3a5e82;
+  color: #9dcaff;
+  background: #1b3048;
+}
+
+:global(html[data-theme='dark'] body) .reviewNoteField textarea,
+:global(html[data-theme='dark'] body) .actionReasonField textarea {
+  border-color: #3a506e;
+  color: #e4edfc;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .noteButton,
+:global(html[data-theme='dark'] body) .reviewButton {
+  border-color: #3a5e82 !important;
+  color: #9dcaff;
+  background: #1b3048;
+}
+
+:global(html[data-theme='dark'] body) .reviewSuccess {
+  color: #7de0b5;
+  background: #17352f;
+}
+
+:global(html[data-theme='dark'] body) .dialogBackdrop {
+  background: rgb(2 8 20 / 76%);
+}
+
+:global(html[data-theme='dark'] body) .accountActionDialog {
+  border-color: #2b405c;
+  background: #142136;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 42%);
+}
+
+:global(html[data-theme='dark'] body) .accountActionDialog h2 {
+  color: #edf3ff;
+}
+
+:global(html[data-theme='dark'] body) .accountActionDialog > p,
+:global(html[data-theme='dark'] body) .actionReasonField {
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .actionBlockMessage {
+  color: #ffabb7 !important;
+  background: #351f2a;
+}
+
+:global(html[data-theme='dark'] body) .accountActionDialogButtons button {
+  border-color: #3a506e;
+  color: #d4e4f9;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body)
+  .accountActionDialogButtons
+  .confirmDeactivate {
+  border-color: #d49b1b;
+  color: #302300;
+  background: #ffca3a;
+}
+
+:global(html[data-theme='dark'] body) .accountActionDialogButtons .confirmDelete {
+  border-color: #d93848;
+  color: #fff;
+  background: #d93848;
+}

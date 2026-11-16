@@ -886,6 +886,304 @@
   clip-path: inset(50%);
 }
 
+:global(html[data-theme='dark'] body) .page {
+  color: #edf3ff;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon {
+  color: #65b4ff;
+  background: #173659;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon svg {
+  fill: #65b4ff;
+  stroke: #65b4ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader h1 {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader p {
+  color: #9eb2d0;
+}
+
+:global(html[data-theme='dark'] body) .secondaryButton {
+  border-color: #3a506e;
+  color: #c7dcf6;
+  background: #192a40;
+}
+
+:global(html[data-theme='dark'] body) .secondaryButton:hover {
+  background: #223852;
+}
+
+:global(html[data-theme='dark'] body) .dangerOutline {
+  border-color: #70404b;
+  color: #ff9aa8;
+  background: #34212d;
+}
+
+:global(html[data-theme='dark'] body) .errorBanner {
+  border-color: #75404d;
+  color: #ffabb7;
+  background: #351f2a;
+}
+
+:global(html[data-theme='dark'] body) .successBanner {
+  border-color: #28614e;
+  color: #7de0b5;
+  background: #17352f;
+}
+
+:global(html[data-theme='dark'] body) .statCard {
+  border-color: color-mix(in srgb, var(--tone) 38%, #263a57);
+  background: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--tone) 15%, #131f32),
+    #131f32
+  );
+}
+
+:global(html[data-theme='dark'] body) .blue {
+  --tone: #3e9fff;
+}
+
+:global(html[data-theme='dark'] body) .teal {
+  --tone: #34d2aa;
+}
+
+:global(html[data-theme='dark'] body) .orange {
+  --tone: #ffb84d;
+}
+
+:global(html[data-theme='dark'] body) .purple {
+  --tone: #b18aff;
+}
+
+:global(html[data-theme='dark'] body) .statIcon {
+  background: color-mix(in srgb, var(--tone) 20%, #131f32);
+}
+
+:global(html[data-theme='dark'] body) .statText > span,
+:global(html[data-theme='dark'] body) .statText small {
+  color: #b4c4de;
+}
+
+:global(html[data-theme='dark'] body) .statText strong {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .panel {
+  border-color: #263a57;
+  background: #131f32;
+  box-shadow: 0 0.25rem 0.8rem rgb(0 0 0 / 22%);
+}
+
+:global(html[data-theme='dark'] body) .panelHeader {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .panelHeader h2,
+:global(html[data-theme='dark'] body) .systemNotification strong {
+  color: #eaf1ff;
+}
+
+:global(html[data-theme='dark'] body) .systemNotification {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .systemNotification p,
+:global(html[data-theme='dark'] body) .systemNotification > span {
+  color: #a8bad5;
+}
+
+:global(html[data-theme='dark'] body) .filters > label:not(.searchControl) {
+  color: #b7c8e0;
+}
+
+:global(html[data-theme='dark'] body) .filters select,
+:global(html[data-theme='dark'] body) .filters input,
+:global(html[data-theme='dark'] body) .searchControl {
+  border-color: #3a506e;
+  color: #e4edfc;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .searchControl svg {
+  color: #78b9ff;
+}
+
+:global(html[data-theme='dark'] body) .tableScroll {
+  border-color: #2a3d58;
+}
+
+:global(html[data-theme='dark'] body) .tableScroll table {
+  color: #c7d5e9;
+}
+
+:global(html[data-theme='dark'] body) .tableScroll th {
+  color: #dce8fa;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .tableScroll td {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .tableScroll tbody tr:hover,
+:global(html[data-theme='dark'] body) .tableScroll .selectedRow {
+  background: #1a2c43;
+}
+
+:global(html[data-theme='dark'] body) .titleButton {
+  color: #dceaff;
+}
+
+:global(html[data-theme='dark'] body) .tableScroll td small {
+  color: #a4b8d4;
+}
+
+:global(html[data-theme='dark'] body) .published {
+  color: #71dfb2;
+  background: #173d33;
+}
+
+:global(html[data-theme='dark'] body) .draft {
+  color: #ffd074;
+  background: #44351e;
+}
+
+:global(html[data-theme='dark'] body) .scheduled {
+  color: #c9a9ff;
+  background: #34284f;
+}
+
+:global(html[data-theme='dark'] body) .rowActions button,
+:global(html[data-theme='dark'] body) .pageButtons button {
+  border-color: #3a506e;
+  color: #8dc5ff;
+  background: #192a40;
+}
+
+:global(html[data-theme='dark'] body) .rowActions button:last-child {
+  border-color: #70404b;
+  color: #ff9aa8;
+  background: #34212d;
+}
+
+:global(html[data-theme='dark'] body) .pageButtons button[aria-current='page'] {
+  border-color: #1685e8;
+  color: #fff;
+  background: #1685e8;
+}
+
+:global(html[data-theme='dark'] body) .pagination,
+:global(html[data-theme='dark'] body) .detailsEmpty,
+:global(html[data-theme='dark'] body) .emptyState {
+  color: #a6bad7;
+}
+
+:global(html[data-theme='dark'] body) .detailTitle,
+:global(html[data-theme='dark'] body) .detailMeta,
+:global(html[data-theme='dark'] body) .messageBlock,
+:global(html[data-theme='dark'] body) .attachmentBlock {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .detailTitle h3,
+:global(html[data-theme='dark'] body) .messageBlock h3,
+:global(html[data-theme='dark'] body) .attachmentBlock h3 {
+  color: #e8f0ff;
+}
+
+:global(html[data-theme='dark'] body) .detailMeta dt {
+  color: #9eb2d0;
+}
+
+:global(html[data-theme='dark'] body) .detailMeta dd,
+:global(html[data-theme='dark'] body) .messageBlock p,
+:global(html[data-theme='dark'] body) .attachmentBlock p {
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .attachmentBlock button {
+  border-color: #344a67;
+  color: #8dc5ff;
+  background: #192a40;
+}
+
+:global(html[data-theme='dark'] body) .attachmentBlock button span {
+  color: #a6bad7;
+}
+
+:global(html[data-theme='dark'] body) .modalBackdrop {
+  background: rgb(2 8 20 / 76%);
+}
+
+:global(html[data-theme='dark'] body) .modal,
+:global(html[data-theme='dark'] body) .deleteModal {
+  border-color: #2b405c;
+  background: #142136;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 42%);
+}
+
+:global(html[data-theme='dark'] body) .formModal .modalHeader {
+  border-color: #293c56;
+  background: linear-gradient(110deg, #1a2a40, #16243a);
+}
+
+:global(html[data-theme='dark'] body) .modalHeader h2,
+:global(html[data-theme='dark'] body) .deleteModal h2 {
+  color: #edf3ff;
+}
+
+:global(html[data-theme='dark'] body) .modalHeader p,
+:global(html[data-theme='dark'] body) .deleteModal p {
+  color: #a8bad5;
+}
+
+:global(html[data-theme='dark'] body) .modalHeader > button {
+  border-color: #3a506e;
+  color: #c7d8ef;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .formSectionTitle {
+  border-color: #293c56;
+  color: #dce8fa;
+}
+
+:global(html[data-theme='dark'] body) .formFields > label,
+:global(html[data-theme='dark'] body) .fullField {
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .formFields input,
+:global(html[data-theme='dark'] body) .formFields select,
+:global(html[data-theme='dark'] body) .formFields textarea {
+  border-color: #3a506e;
+  color: #e4edfc;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .currentAttachment {
+  color: #8dc5ff;
+}
+
+:global(html[data-theme='dark'] body) .formActions {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .formModal .formActions {
+  background: #142136;
+}
+
+:global(html[data-theme='dark'] body) .deleteIcon {
+  color: #ff9aa8;
+  background: #482633;
+}
+
 @media (max-width: 1050px) {
   .contentGrid {
     grid-template-columns: minmax(0, 1fr);

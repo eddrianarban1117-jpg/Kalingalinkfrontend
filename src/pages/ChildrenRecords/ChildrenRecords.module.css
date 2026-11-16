@@ -2226,3 +2226,489 @@
 .requestedRequirements p {
   margin: 0.35rem 0 0;
 }
+
+:global(html[data-theme='dark'] body) .page {
+  color: #e8f0ff;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon {
+  color: #65b4ff;
+  background: #173659;
+}
+
+:global(html[data-theme='dark'] body) .titleIcon svg {
+  fill: #65b4ff;
+  stroke: #65b4ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader h1 {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .pageHeader p {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .statCard {
+  border-color: color-mix(in srgb, var(--tone) 38%, #263a57);
+  background: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--tone) 16%, #131f32),
+    #131f32
+  );
+}
+
+:global(html[data-theme='dark'] body) .blue {
+  --tone: #3e9fff;
+}
+
+:global(html[data-theme='dark'] body) .teal {
+  --tone: #34d2aa;
+}
+
+:global(html[data-theme='dark'] body) .pink {
+  --tone: #ef6f98;
+}
+
+:global(html[data-theme='dark'] body) .purple {
+  --tone: #b18aff;
+}
+
+:global(html[data-theme='dark'] body) .statIcon,
+:global(html[data-theme='dark'] body) .statArrow {
+  background: color-mix(in srgb, var(--tone) 22%, #131f32);
+}
+
+:global(html[data-theme='dark'] body) .statCard > div > span,
+:global(html[data-theme='dark'] body) .statCard > div > strong small {
+  color: #b6c7df;
+}
+
+:global(html[data-theme='dark'] body) .statCard > div > strong {
+  color: #f0f5ff;
+}
+
+:global(html[data-theme='dark'] body) .panel {
+  border-color: #263a57;
+  background: #131f32;
+  box-shadow: 0 0.25rem 0.8rem rgb(0 0 0 / 22%);
+}
+
+:global(html[data-theme='dark'] body) .panelHeader h2 {
+  color: #eaf1ff;
+}
+
+:global(html[data-theme='dark'] body) .search,
+:global(html[data-theme='dark'] body) .selectFilter {
+  border-color: #354b68;
+  color: #b7c9e2;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .search input {
+  color: #e4edfc;
+}
+
+:global(html[data-theme='dark'] body) .search input::placeholder {
+  color: #91a6c5;
+}
+
+:global(html[data-theme='dark'] body) .search svg,
+:global(html[data-theme='dark'] body) .selectFilter > span[aria-hidden='true'],
+:global(html[data-theme='dark'] body) .selectFilter svg {
+  color: #76b9ff;
+}
+
+:global(html[data-theme='dark'] body) .selectFilter select {
+  color: #e4edfc;
+}
+
+:global(html[data-theme='dark'] body) .clearFilters {
+  border-color: #354b68;
+  color: #9dcaff;
+  background: #192a40;
+}
+
+:global(html[data-theme='dark'] body) .clearFilters:hover {
+  background: #223852;
+}
+
+:global(html[data-theme='dark'] body) .childrenTable th,
+:global(html[data-theme='dark'] body) .removalsTable th {
+  color: #dce8fa;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .childrenTable td,
+:global(html[data-theme='dark'] body) .removalsTable td {
+  border-color: #293c56;
+  color: #b3c5df;
+}
+
+:global(html[data-theme='dark'] body) .childrenTable tbody tr:hover {
+  background: #17283e;
+}
+
+:global(html[data-theme='dark'] body) .childrenTable td:nth-child(2) strong,
+:global(html[data-theme='dark'] body) .removalsTable td:first-child strong {
+  color: #edf3ff;
+}
+
+:global(html[data-theme='dark'] body) .checkboxColumn input {
+  accent-color: #1683f8;
+}
+
+:global(html[data-theme='dark'] body) .childAvatar,
+:global(html[data-theme='dark'] body) .recentAvatar {
+  border-color: #29415e;
+  color: #70b8ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark'] body) .avatar1,
+:global(html[data-theme='dark'] body) .recentpink {
+  color: #ff8eaf;
+  background: #452638;
+}
+
+:global(html[data-theme='dark'] body) .avatar2,
+:global(html[data-theme='dark'] body) .recentgold {
+  color: #ffcd69;
+  background: #44351e;
+}
+
+:global(html[data-theme='dark'] body) .avatar3,
+:global(html[data-theme='dark'] body) .recentteal {
+  color: #55d9c5;
+  background: #173c3d;
+}
+
+:global(html[data-theme='dark'] body) .avatar4 {
+  color: #bea5ff;
+  background: #302747;
+}
+
+:global(html[data-theme='dark'] body) .genderMale {
+  color: #68b7ff;
+}
+
+:global(html[data-theme='dark'] body) .genderFemale {
+  color: #ff8eaf;
+}
+
+:global(html[data-theme='dark'] body) .genderOther {
+  color: #bea5ff;
+}
+
+:global(html[data-theme='dark'] body) .enrolled,
+:global(html[data-theme='dark'] body) .approved {
+  color: #62deb5;
+  background: #153d33;
+}
+
+:global(html[data-theme='dark'] body) .pending,
+:global(html[data-theme='dark'] body) .returned {
+  color: #ffd074;
+  background: #44351e;
+}
+
+:global(html[data-theme='dark'] body) .withdrawn {
+  color: #bac8dc;
+  background: #2a3749;
+}
+
+:global(html[data-theme='dark'] body) .reviewing {
+  color: #8fc6ff;
+  background: #1d3858;
+}
+
+:global(html[data-theme='dark'] body) .rejected {
+  color: #ff9aa8;
+  background: #452533;
+}
+
+:global(html[data-theme='dark'] body) .more,
+:global(html[data-theme='dark'] body) .viewAll {
+  color: #68b7ff;
+}
+
+:global(html[data-theme='dark'] body) .errorState {
+  border-color: #75404d;
+  color: #ffabb7;
+  background: #351f2a;
+}
+
+:global(html[data-theme='dark'] body) .sideState,
+:global(html[data-theme='dark'] body) .tableFooter,
+:global(html[data-theme='dark'] body) .refreshHint {
+  color: #a6bad7;
+}
+
+:global(html[data-theme='dark'] body) .pagination button,
+:global(html[data-theme='dark'] body) .historyButton {
+  border-color: #30445f;
+  color: #c5d6ef;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .pagination button[aria-current='page'] {
+  border-color: #1683f8;
+  color: #fff;
+  background: #1683f8;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut {
+  background-color: #263a57;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut::before {
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut > span,
+:global(html[data-theme='dark'] body) .legend {
+  color: #afc1dc;
+}
+
+:global(html[data-theme='dark'] body) .ageDonut strong,
+:global(html[data-theme='dark'] body) .legend strong {
+  color: #e0ebfc;
+}
+
+:global(html[data-theme='dark'] body) .genderSummary article {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .genderIcon.blue {
+  color: #70b8ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark'] body) .genderIcon.pink {
+  color: #ff8eaf;
+  background: #452638;
+}
+
+:global(html[data-theme='dark'] body) .genderIcon.purple {
+  color: #bea5ff;
+  background: #302747;
+}
+
+:global(html[data-theme='dark'] body) .genderSummary article > strong {
+  color: #e6efff;
+}
+
+:global(html[data-theme='dark'] body) .genderSummary article > span:last-child {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .recentChild {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .recentText strong {
+  color: #e6efff;
+}
+
+:global(html[data-theme='dark'] body) .recentText > span,
+:global(html[data-theme='dark'] body) .recentChild time {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .removalsTable td:first-child small {
+  color: #a6bad7;
+}
+
+:global(html[data-theme='dark'] body) .dialogBackdrop,
+:global(html[data-theme='dark'] body) .reviewOverlay {
+  background: rgb(2 8 20 / 76%);
+}
+
+:global(html[data-theme='dark'] body) .detailsDialog,
+:global(html[data-theme='dark'] body) .childHistoryDialog {
+  border-color: #2b405c;
+  background: #142136;
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 42%);
+}
+
+:global(html[data-theme='dark'] body) .detailsHeader,
+:global(html[data-theme='dark'] body) .childHistoryHeader {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .detailBody {
+  background: #101a2a;
+}
+
+:global(html[data-theme='dark'] body) .childSummary,
+:global(html[data-theme='dark'] body) .detailCard {
+  border-color: #2b405c;
+  background: #172439;
+  box-shadow: 0 3px 12px rgb(0 0 0 / 18%);
+}
+
+:global(html[data-theme='dark'] body) .childSummaryAvatar {
+  color: #70b8ff;
+  background: #1b3858;
+}
+
+:global(html[data-theme='dark'] body) .childSummaryName > strong,
+:global(html[data-theme='dark'] body) .detailRow dd,
+:global(html[data-theme='dark'] body) .childProfileSummary dd,
+:global(html[data-theme='dark'] body) .historySection article strong {
+  color: #e4edfc;
+}
+
+:global(html[data-theme='dark'] body) .summaryItem {
+  border-color: #344a67;
+}
+
+:global(html[data-theme='dark'] body) .summaryItem > span,
+:global(html[data-theme='dark'] body) .detailRow dt,
+:global(html[data-theme='dark'] body) .childProfileSummary dt,
+:global(html[data-theme='dark'] body) .historySection article span,
+:global(html[data-theme='dark'] body) .historySection > p {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .detailCard > h3 {
+  border-color: #2b405c;
+  color: #dce8fa;
+  background: #1a2c43;
+}
+
+:global(html[data-theme='dark'] body) .detailCard > h3 svg {
+  color: #77b9ff;
+}
+
+:global(html[data-theme='dark'] body) .detailRow,
+:global(html[data-theme='dark'] body) .historySection article {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .emergencyCard,
+:global(html[data-theme='dark'] body) .historySection,
+:global(html[data-theme='dark'] body) .childProfileSummary {
+  border-color: #2b405c;
+  background: #172439;
+}
+
+:global(html[data-theme='dark'] body) .emergencyCard > strong,
+:global(html[data-theme='dark'] body) .detailSubheading,
+:global(html[data-theme='dark'] body) .historySection h3 {
+  color: #dce8fa;
+}
+
+:global(html[data-theme='dark'] body) .applicationLinkBanner {
+  border-color: #304f70;
+  color: #a9d2ff;
+  background: #1a3048;
+}
+
+:global(html[data-theme='dark'] body) .detailHint {
+  color: #a8bbd7;
+}
+
+:global(html[data-theme='dark'] body) .detailActions {
+  border-color: #293c56;
+  background: #142136;
+  box-shadow: 0 -3px 12px rgb(0 0 0 / 18%);
+}
+
+:global(html[data-theme='dark'] body) .closeAction,
+:global(html[data-theme='dark'] body) .detailActions .reviewButtons button:last-child {
+  border-color: #3a506e !important;
+  color: #d4e4f9;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .detailActions .reviewForm {
+  border-color: #293c56;
+}
+
+:global(html[data-theme='dark'] body) .detailActions .reviewForm label {
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .reviewDialog {
+  border-color: #2b405c;
+  background: #142136;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 42%);
+}
+
+:global(html[data-theme='dark'] body) .reviewDialog h2,
+:global(html[data-theme='dark'] body) .requirementChecklist legend,
+:global(html[data-theme='dark'] body) .requirementPreview h3 {
+  color: #e6efff;
+}
+
+:global(html[data-theme='dark'] body) .reviewDialog > p,
+:global(html[data-theme='dark'] body) .requirementContext span,
+:global(html[data-theme='dark'] body) .reviewDialog form > label,
+:global(html[data-theme='dark'] body) .requirementRemarksLabel,
+:global(html[data-theme='dark'] body) .requirementPreview {
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .reviewDialog textarea {
+  border-color: #3a506e;
+  color: #e4edfc;
+  background: #18263b;
+}
+
+:global(html[data-theme='dark'] body) .reviewDialogActions button {
+  border-color: #3a506e;
+  color: #d4e4f9;
+  background: #1a2a40;
+}
+
+:global(html[data-theme='dark'] body) .requirementContext,
+:global(html[data-theme='dark'] body) .requirementPreview {
+  border-color: #2b405c;
+  background: #172439;
+}
+
+:global(html[data-theme='dark'] body) .requirementChecklist fieldset {
+  border-color: #344a67;
+}
+
+:global(html[data-theme='dark'] body) .requirementOption {
+  border-color: #293c56;
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .requirementOption strong {
+  color: #e4edfc;
+}
+
+:global(html[data-theme='dark'] body) .requirementStatusList li {
+  border-color: #2b405c;
+  background: #172439;
+}
+
+:global(html[data-theme='dark'] body) .requirementStatusList li > span,
+:global(html[data-theme='dark'] body) .requirementStatusList li > small {
+  color: #bdcce1;
+}
+
+:global(html[data-theme='dark'] body) .requirementComplete {
+  color: #62deb5;
+}
+
+:global(html[data-theme='dark'] body) .requirementIncomplete {
+  color: #ff9aa8;
+}
+
+:global(html[data-theme='dark'] body) .requirementForVerification {
+  color: #8fc6ff;
+}
+
+:global(html[data-theme='dark'] body) .requirementCorrectionRequested {
+  color: #ffd074;
+}
+
+:global(html[data-theme='dark'] body) .requestedRequirements {
+  border-color: #6a542d;
+  color: #f0cf88;
+  background: #342b1d;
+}
