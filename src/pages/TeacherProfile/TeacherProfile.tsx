@@ -3,7 +3,6 @@ import {
   useEffect,
   useRef,
   useState,
-  type ChangeEvent,
   type FormEvent,
 } from 'react';
 import styles from './TeacherProfile.module.css';
@@ -18,17 +17,6 @@ type ProfileSection =
   | 'Address and Emergency Contact';
 
 type ProfileData = Record<string, string>;
-type ProfilePhotoResponse = {
-  data: {
-    profile: {
-      first_name: string;
-      last_name: string;
-      email: string;
-      profile_photo: string | null;
-    };
-  };
-};
-
 const emptyProfile: ProfileData = {
   fullName: '',
   email: '',
@@ -315,14 +303,10 @@ function EditButton({
 }
 
 export function TeacherProfile() {
-  const { request, download, updateUser, user } = useAuth();
+  const { request, download } = useAuth();
   const [profile, setProfile] = useState<ProfileData>(emptyProfile);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
-  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
-  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
-  const [photoSaving, setPhotoSaving] = useState(false);
   const [editingSection, setEditingSection] = useState<ProfileSection | null>(
     null,
   );
@@ -332,7 +316,6 @@ export function TeacherProfile() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const latestRequest = useRef(0);
-  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const reloadProfile = useCallback(async (isActive: () => boolean = () => true) => {
     const requestId = ++latestRequest.current;
@@ -403,13 +386,6 @@ export function TeacherProfile() {
     };
   }, [download, profilePhoto]);
 
-  useEffect(
-    () => () => {
-      if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
-    },
-    [photoPreviewUrl],
-  );
-
   function startEditing(section: ProfileSection) {
     setDraft(profile);
     setNotice('');
@@ -465,67 +441,6 @@ export function TeacherProfile() {
       );
     } finally {
       setSaving(false);
-    }
-  }
-
-  function chooseProfilePhoto(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
-    if (
-      !['image/jpeg', 'image/png'].includes(file.type) ||
-      !/\.(jpe?g|png)$/i.test(file.name)
-    ) {
-      setError('Choose a JPG or PNG profile picture.');
-      return;
-    }
-    if (file.size === 0 || file.size > 2 * 1024 * 1024) {
-      setError('The profile picture must be no larger than 2 MB.');
-      return;
-    }
-
-    setError('');
-    setSelectedPhoto(file);
-    setPhotoPreviewUrl(URL.createObjectURL(file));
-  }
-
-  async function saveProfilePhoto(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!selectedPhoto || !user || photoSaving) return;
-
-    setPhotoSaving(true);
-    setError('');
-    setNotice('');
-    try {
-      const payload = new FormData();
-      payload.append('first_name', user.first_name);
-      payload.append('last_name', user.last_name);
-      payload.append('email', user.email);
-      payload.append('profile_photo', selectedPhoto);
-
-      const response = await request<ProfilePhotoResponse>(
-        '/api/settings/profile-photo',
-        { method: 'POST', body: payload },
-      );
-      const savedProfile = response.data?.profile;
-      if (!savedProfile?.profile_photo) {
-        throw new Error('The server did not confirm the profile picture update.');
-      }
-
-      updateUser({ profile_photo: savedProfile.profile_photo });
-      setProfilePhoto(savedProfile.profile_photo);
-      setPhotoDialogOpen(false);
-      setSelectedPhoto(null);
-      setPhotoPreviewUrl('');
-      setNotice('Profile picture saved.');
-    } catch (photoError) {
-      setError(
-        photoError instanceof Error
-          ? photoError.message
-          : 'The profile picture could not be saved.',
-      );
-    } finally {
-      setPhotoSaving(false);
     }
   }
 
@@ -619,26 +534,6 @@ export function TeacherProfile() {
                 className={styles.avatar}
                 name={profile.fullName || 'Teacher'}
                 src={profilePhotoUrl}
-              />
-              <button
-                aria-label="Edit profile picture"
-                className={styles.photoEditButton}
-                type="button"
-                onClick={() => {
-                  setError('');
-                  setSelectedPhoto(null);
-                  setPhotoPreviewUrl('');
-                  setPhotoDialogOpen(true);
-                }}
-              >
-                <ProfileIcon name="edit" />
-              </button>
-              <input
-                ref={photoInputRef}
-                accept="image/jpeg,image/png"
-                className={styles.hiddenFileInput}
-                type="file"
-                onChange={chooseProfilePhoto}
               />
             </div>
             {loading ? (
@@ -783,51 +678,6 @@ export function TeacherProfile() {
                   />
                 )}
 
-                {photoDialogOpen && (
-                  <div className={styles.dialogBackdrop}>
-                    <form
-                      aria-labelledby="edit-photo-title"
-                      aria-modal="true"
-                      className={styles.photoDialog}
-                      role="dialog"
-                      onSubmit={saveProfilePhoto}
-                    >
-                      <h2 id="edit-photo-title">Edit Profile Picture</h2>
-                      <div className={styles.photoPreview}>
-                        <Avatar
-                          name={profile.fullName || 'Teacher'}
-                          src={photoPreviewUrl || profilePhotoUrl}
-                        />
-                      </div>
-                      <p className={styles.photoHelp}>
-                        JPG or PNG, up to 2 MB. The image will be cropped to fit the
-                        circle.
-                      </p>
-                      <button
-                        className={styles.choosePhotoButton}
-                        type="button"
-                        onClick={() => photoInputRef.current?.click()}
-                      >
-                        Choose Image
-                      </button>
-                      <div className={styles.dialogActions}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPhotoDialogOpen(false);
-                            setSelectedPhoto(null);
-                            setPhotoPreviewUrl('');
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button disabled={!selectedPhoto || photoSaving} type="submit">
-                          {photoSaving ? 'Uploading…' : 'Save'}
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
               </label>
             ))}
             <div className={styles.dialogActions}>
