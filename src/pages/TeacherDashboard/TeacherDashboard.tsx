@@ -754,6 +754,7 @@ export function TeacherDashboard() {
   const [transferFormRemarks, setTransferFormRemarks] = useState('');
   const [transferDate, setTransferDate] = useState('');
   const [transferReview, setTransferReview] = useState(false);
+  const [removalConfirmationOpen, setRemovalConfirmationOpen] = useState(false);
   const [removalFormOpen, setRemovalFormOpen] = useState(false);
   const [removalOutcome, setRemovalOutcome] = useState('');
   const [removalOtherReason, setRemovalOtherReason] = useState('');
@@ -3025,7 +3026,7 @@ export function TeacherDashboard() {
                   <button
                     className={styles.transferReviewButton}
                     type="button"
-                    onClick={openStudentRemoval}
+                    onClick={() => setRemovalConfirmationOpen(true)}
                   >
                     Remove Student
                   </button>
@@ -3345,6 +3346,42 @@ export function TeacherDashboard() {
                     </>
                   )}
                 </form>
+              </div>
+            )}
+            {removalConfirmationOpen && (
+              <div className={styles.transferModalBackdrop}>
+                <section
+                  aria-labelledby="student-removal-confirmation-title"
+                  aria-modal="true"
+                  className={styles.transferReviewModal}
+                  role="dialog"
+                >
+                  <header>
+                    <div>
+                      <p>Remove Student</p>
+                      <h2 id="student-removal-confirmation-title">
+                        Are you sure you want to remove this student?
+                      </h2>
+                    </div>
+                  </header>
+                  <footer>
+                    <button
+                      type="button"
+                      onClick={() => setRemovalConfirmationOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRemovalConfirmationOpen(false);
+                        void openStudentRemoval();
+                      }}
+                    >
+                      Yes
+                    </button>
+                  </footer>
+                </section>
               </div>
             )}
             {removalFormOpen && (
