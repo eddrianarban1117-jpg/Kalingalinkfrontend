@@ -133,7 +133,7 @@ function displayDate(value: string) {
       });
 }
 
-function Icon({ name }: { name: 'announcement' | 'bell' | 'calendar' | 'chevron' | 'close' | 'filter' | 'grid' | 'info' | 'mail' | 'plus' | 'settings' }) {
+function Icon({ name }: { name: 'announcement' | 'bell' | 'calendar' | 'chevron' | 'close' | 'edit' | 'filter' | 'grid' | 'info' | 'mail' | 'plus' | 'settings' | 'trash' }) {
   const shared = {
     'aria-hidden': true as const,
     fill: 'none',
@@ -154,6 +154,8 @@ function Icon({ name }: { name: 'announcement' | 'bell' | 'calendar' | 'chevron'
       return <svg {...shared}><path d="m9 18 6-6-6-6" /></svg>;
     case 'close':
       return <svg {...shared}><path d="m6 6 12 12M18 6 6 18" /></svg>;
+    case 'edit':
+      return <svg {...shared}><path d="m4 20 4.2-.9L19 8.3 15.7 5 5 15.7 4 20Z" /><path d="m13.8 6.9 3.3 3.3" /></svg>;
     case 'filter':
       return <svg {...shared}><path d="M4 5h16l-6 7v6l-4 2v-8z" /></svg>;
     case 'grid':
@@ -164,6 +166,8 @@ function Icon({ name }: { name: 'announcement' | 'bell' | 'calendar' | 'chevron'
       return <svg {...shared}><path d="M12 5v14m-7-7h14" /></svg>;
     case 'settings':
       return <svg {...shared}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a8 8 0 0 0 0-6l1.4-1.1-1.4-2.4-1.7.7a8 8 0 0 0-1.6-.9L15.8 3h-2.8l-.3 2.3a8 8 0 0 0-1.6.9l-1.7-.7L8 7.9 9.4 9a8 8 0 0 0 0 6L8 16.1l1.4 2.4 1.7-.7a8 8 0 0 0 1.6.9l.3 2.3h2.8l.3-2.3a8 8 0 0 0 1.6-.9l1.7.7 1.4-2.4z" transform="translate(-1 -1)" /></svg>;
+    case 'trash':
+      return <svg {...shared}><path d="M4 7h16m-10 4v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3" /></svg>;
     default:
       return <svg {...shared}><circle cx="12" cy="12" r="9" /><path d="M12 11v5m0-8h.01" /></svg>;
   }
@@ -817,7 +821,6 @@ export function EventNotifications({
                       <span className={styles.adminNotificationCopy}>
                         <span className={styles.adminNotificationTitle}>{entry.announcement.title}</span>
                         <span className={styles.adminNotificationMessage}>{entry.announcement.message}</span>
-                        <span className={styles.announcementAudience}>Audience: {entry.announcement.audience}</span>
                       </span>
                       <span className={styles.adminAnnouncementMeta}>
                         <time className={styles.adminNotificationDate} dateTime={entry.announcement.published_at}>{displayDate(entry.announcement.published_at)}</time>
@@ -826,8 +829,8 @@ export function EventNotifications({
                       <Icon name="chevron" />
                     </button>
                     <div className={styles.publishedActions}>
-                      <button aria-label={`Edit ${entry.announcement.title}`} disabled={!onEditAnnouncement} onClick={() => { setSelectedAnnouncement(null); onEditAnnouncement?.(entry.announcement); }} type="button">Edit</button>
-                      <button aria-label={`Delete ${entry.announcement.title}`} disabled={!onDeleteAnnouncement} onClick={() => { setSelectedAnnouncement(null); onDeleteAnnouncement?.(entry.announcement); }} type="button">Delete</button>
+                      <button aria-label={`Edit ${entry.announcement.title}`} disabled={!onEditAnnouncement} onClick={() => { setSelectedAnnouncement(null); onEditAnnouncement?.(entry.announcement); }} title="Edit announcement" type="button"><Icon name="edit" /></button>
+                      <button aria-label={`Delete ${entry.announcement.title}`} disabled={!onDeleteAnnouncement} onClick={() => { setSelectedAnnouncement(null); onDeleteAnnouncement?.(entry.announcement); }} title="Delete announcement" type="button"><Icon name="trash" /></button>
                     </div>
                   </li>
                 ))}
