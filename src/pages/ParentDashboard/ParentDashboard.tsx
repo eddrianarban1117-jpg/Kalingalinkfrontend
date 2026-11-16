@@ -24,6 +24,10 @@ import { EventsPage } from '../Events/EventsPage';
 import { useAuth } from '../../auth/AuthProvider';
 import { useAnnouncementFeed } from '../../hooks/useAnnouncementFeed';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
+import {
+  applyThemePreference,
+  saveThemePreference,
+} from '../../styles/theme';
 
 type ParentNavigationItem = {
   label: string;
@@ -505,6 +509,9 @@ export function ParentDashboard() {
   const [search, setSearch] = useState('');
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(
+    () => document.documentElement.dataset.theme === 'dark',
+  );
   const [profile, setProfile] = useState(initialProfile);
   const [profileError, setProfileError] = useState('');
   const [profileNotice, setProfileNotice] = useState('');
@@ -538,6 +545,14 @@ export function ParentDashboard() {
   });
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState('');
+
+  function toggleTheme() {
+    const preference = isDarkMode ? 'light' : 'dark';
+    applyThemePreference(preference);
+    saveThemePreference(user?.id, preference);
+    setIsDarkMode(preference === 'dark');
+  }
+
   async function handleLogout() {
     setIsLogoutDialogOpen(false);
     setIsNavigationOpen(false);
@@ -1046,6 +1061,42 @@ export function ParentDashboard() {
               <Icon name="bell" />
               {unreadNotifications > 0 && (
                 <span>{unreadNotifications}</span>
+              )}
+            </button>
+            <button
+              aria-label={
+                isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'
+              }
+              className={styles.themeToggle}
+              onClick={toggleTheme}
+              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              type="button"
+            >
+              {isDarkMode ? (
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5a8.6 8.6 0 1 0 12 12Z" />
+                </svg>
+              ) : (
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+                </svg>
               )}
             </button>
             <button
