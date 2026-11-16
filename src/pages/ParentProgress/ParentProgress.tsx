@@ -175,6 +175,7 @@ export function ParentProgress({ search }: { search: string }) {
   const [schoolYears, setSchoolYears] = useState<string[]>([]);
   const [schoolYear, setSchoolYear] = useState(currentSchoolYear);
   const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
+  const [selectedReport, setSelectedReport] = useState<ProgressRecord | null>(null);
   const [showAllReports, setShowAllReports] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -236,6 +237,15 @@ export function ParentProgress({ search }: { search: string }) {
       document.removeEventListener('visibilitychange', refresh);
     };
   }, [loadProgress]);
+
+  useEffect(() => {
+    if (!selectedReport) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedReport(null);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [selectedReport]);
 
   const filteredChildren = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -466,6 +476,14 @@ export function ParentProgress({ search }: { search: string }) {
             </header>
             <div className={styles.reportScroll}>
               <table className={styles.reportTable}>
+                <colgroup>
+                  <col className={styles.reportDateColumn} />
+                  <col className={styles.reportDomainColumn} />
+                  <col className={styles.reportSkillColumn} />
+                  <col className={styles.reportPerformanceColumn} />
+                  <col className={styles.reportNoteColumn} />
+                  <col className={styles.reportActionColumn} />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -473,14 +491,19 @@ export function ParentProgress({ search }: { search: string }) {
                     <th>Skill / Activity</th>
                     <th>Performance</th>
                     <th>Teacher&apos;s Note</th>
+                    <th><span className={styles.visuallyHidden}>Details</span></th>
                   </tr>
                 </thead>
                 <tbody>
                   {reportRows.map((report) => (
                     <tr key={report.id}>
-                      <td>{formatDate(report.date)}</td>
-                      <td>{report.domain}</td>
-                      <td>{report.skill}</td>
+                      <td className={styles.reportDate}>{formatDate(report.date)}</td>
+                      <td>
+                        <span className={styles.reportClamp}>{report.domain}</span>
+                      </td>
+                      <td>
+                        <span className={styles.reportClamp}>{report.skill}</span>
+                      </td>
                       <td>
                         <span>
                           {report.rating}/5 ({report.rating * 20}%)
@@ -495,12 +518,26 @@ export function ParentProgress({ search }: { search: string }) {
                           {performanceLabel(report.rating * 20)}
                         </b>
                       </td>
-                      <td>{report.observation || 'No note provided'}</td>
+                      <td>
+                        <span className={styles.reportClamp}>
+                          {report.observation || 'No note provided'}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          aria-label={`View progress details for ${report.domain}: ${report.skill}`}
+                          className={styles.reportViewButton}
+                          onClick={() => setSelectedReport(report)}
+                          type="button"
+                        >
+                          View
+                        </button>
+                      </td>
                     </tr>
                   ))}
                   {!reportRows.length && (
                     <tr>
-                      <td colSpan={5} className={styles.emptyState}>
+                      <td colSpan={6} className={styles.emptyState}>
                         No progress records for this child and school year.
                       </td>
                     </tr>
@@ -599,6 +636,53 @@ export function ParentProgress({ search }: { search: string }) {
           </aside>
         </aside>
       </div>
+      {selectedReport && (
+        <div
+          className={styles.reportDialogBackdrop}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setSelectedReport(null);
+          }}
+          role="presentation"
+        >
+          <section
+            aria-labelledby="progress-report-title"
+            aria-modal="true"
+            className={styles.reportDialog}
+            role="dialog"
+          >
+            <header className={styles.reportDialogHeader}>
+              <div>
+                <p>Teacher-recorded progress · {formatDate(selectedReport.date)}</p>
+                <h2 id="progress-report-title">{selectedReport.domain}</h2>
+              </div>
+              <button
+                aria-label="Close progress details"
+                onClick={() => setSelectedReport(null)}
+                type="button"
+              >
+                ×
+              </button>
+            </header>
+            <dl className={styles.reportDetails}>
+              <div>
+                <dt>Skill / Activity</dt>
+                <dd>{selectedReport.skill}</dd>
+              </div>
+              <div>
+                <dt>Performance</dt>
+                <dd>
+                  {selectedReport.rating}/5 ({selectedReport.rating * 20}%) ·{' '}
+                  {performanceLabel(selectedReport.rating * 20)}
+                </dd>
+              </div>
+              <div>
+                <dt>Teacher&apos;s Note</dt>
+                <dd>{selectedReport.observation || 'No note provided'}</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

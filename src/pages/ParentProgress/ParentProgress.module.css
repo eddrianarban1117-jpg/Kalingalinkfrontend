@@ -467,9 +467,34 @@
 
 .reportTable {
   width: 100%;
-  min-width: 34rem;
+  min-width: 46rem;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.46rem;
+}
+
+.reportDateColumn {
+  width: 8%;
+}
+
+.reportDomainColumn {
+  width: 14%;
+}
+
+.reportSkillColumn {
+  width: 21%;
+}
+
+.reportPerformanceColumn {
+  width: 18%;
+}
+
+.reportNoteColumn {
+  width: 33%;
+}
+
+.reportActionColumn {
+  width: 6%;
 }
 
 .reportTable thead {
@@ -494,6 +519,18 @@
   white-space: nowrap;
 }
 
+.reportDate {
+  white-space: nowrap;
+}
+
+.reportClamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+}
+
 .reportTable td:nth-child(4) > span {
   margin-right: 0.35rem;
 }
@@ -516,6 +553,106 @@
 .reportTable td:nth-child(4) b.reportAttention {
   color: #a96700;
   background: #fff0c8;
+}
+
+.reportViewButton {
+  min-width: 2.15rem;
+  min-height: 1.45rem;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid #b9ddf8;
+  border-radius: 0.35rem;
+  color: #0872d4;
+  background: #fff;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.reportViewButton:hover {
+  background: #edf7ff;
+}
+
+.reportDialogBackdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(10 29 53 / 55%);
+}
+
+.reportDialog {
+  width: min(100%, 38rem);
+  max-height: min(85vh, 42rem);
+  overflow: auto;
+  border: 1px solid #cfe4f8;
+  border-radius: 0.8rem;
+  background: #fff;
+  box-shadow: 0 1rem 3rem rgb(9 35 66 / 25%);
+}
+
+.reportDialogHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid #e6eff8;
+  background: #f5faff;
+}
+
+.reportDialogHeader p {
+  margin: 0 0 0.3rem;
+  color: #6684a8;
+  font-size: 0.72rem;
+}
+
+.reportDialogHeader h2 {
+  margin: 0;
+  color: #14599f;
+  font-size: 1.05rem;
+}
+
+.reportDialogHeader button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border: 1px solid #cfe0f2;
+  border-radius: 0.5rem;
+  color: #275b91;
+  background: #fff;
+  font: inherit;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.reportDetails {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 1.1rem;
+}
+
+.reportDetails > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.reportDetails dt {
+  color: #6684a8;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.reportDetails dd {
+  margin: 0;
+  color: #315d8c;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .reportNote {
@@ -868,5 +1005,14 @@
 
   .encouragement {
     grid-column: auto;
+  }
+
+  .reportDialogBackdrop {
+    padding: 0.65rem;
+  }
+
+  .reportDialogHeader,
+  .reportDetails {
+    padding: 0.85rem;
   }
 }
